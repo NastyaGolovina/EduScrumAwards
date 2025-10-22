@@ -37,3 +37,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Database Files ###
+src/main/java/UPT_SQ/EduScrumAwards/model/DatabaseCreator.java
+src/main/resources/application.properties
+src/main/resources/hibernate.cfg.xml
