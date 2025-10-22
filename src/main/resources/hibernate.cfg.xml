@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Database connection settings -->
+        <!-- Set the Driver Class -->
+        <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <!-- Set URL -->
+        <property name="connection.url">jdbc:mysql://localhost:3306/EduScrumAwards</property>
+        <!-- Set the user name -->
+        <property name="connection.username">root</property>
+        <!-- Set the password (use your MySQL password) -->
+        <property name="connection.password">yfcnz212006</property>
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">true</property>
+
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+
+        <!-- Automatically update tables based on entity classes -->
+        <!--        <property name="hibernate.hbm2ddl.auto">update</property>-->
+
+        <!-- Automatically create DB -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Set the annotated classes (inform the complete namespace) -->
+<!--        <mapping class="UPT_PL.Team_3.Country" />-->
+<!--        <mapping class="UPT_PL.Team_3.LogisticsSite" />-->
+<!--        <mapping class="UPT_PL.Team_3.LogisticsSupplyChain" />-->
+<!--        <mapping class="UPT_PL.Team_3.Product" />-->
+<!--        <mapping class="UPT_PL.Team_3.ProductsByCountry" />-->
+<!--        <mapping class="UPT_PL.Team_3.Transport" />-->
+<!--        <mapping class="UPT_PL.Team_3.RouteLine" />-->
+<!--        <mapping class="UPT_PL.Team_3.Calculation" />-->
+        <!--   SupplyReceiveProductsCountries     -->
+        <!--    SuppliedTransport    -->
+    </session-factory>
+</hibernate-configuration>
