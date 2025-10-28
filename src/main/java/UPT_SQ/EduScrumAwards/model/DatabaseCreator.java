@@ -9,7 +9,7 @@ public class DatabaseCreator {
     public static void main(String[] args) {
         String url = "jdbc:mysql://localhost:3306/";
         String user = "root";
-        String password = "yfcnz212006"; // your password
+        String password = ""; // your password
 
         try (Connection connection = DriverManager.getConnection(url, user, password);
              Statement statement = connection.createStatement()) {
