@@ -3,15 +3,21 @@ package UPT_SQ.EduScrumAwards.model;
 import java.util.ArrayList;
 
 public class Award {
+
+
     private int awardID;
     private String awardName;
     private String awardDescription;
     private int pointsValue;
-    //Enum automatic, manual !!!!!
-    private String assignType;
+    private AwardType assignType;
     private ArrayList<AwardRule> awardRules;
 
-    public Award(int awardID, String awardName, String awardDescription, int pointsValue, String assignType, ArrayList<AwardRule> awardRules) {
+    public enum AwardType {
+        AUTOMATIC,
+        MANUAL
+    }
+
+    public Award(int awardID, String awardName, String awardDescription, int pointsValue, AwardType assignType, ArrayList<AwardRule> awardRules) {
         this.awardID = awardID;
         this.awardName = awardName;
         this.awardDescription = awardDescription;
@@ -52,11 +58,11 @@ public class Award {
         this.pointsValue = pointsValue;
     }
 
-    public String getAssignType() {
+    public AwardType getAssignType() {
         return assignType;
     }
 
-    public void setAssignType(String assignType) {
+    public void setAssignType(AwardType assignType) {
         this.assignType = assignType;
     }
 
