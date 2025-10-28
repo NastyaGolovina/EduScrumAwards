@@ -46,6 +46,5 @@ public class Sprint {
 
     public void setGoals(ArrayList<Goal> goals) {
         this.goals = goals;
-
     }
 }
