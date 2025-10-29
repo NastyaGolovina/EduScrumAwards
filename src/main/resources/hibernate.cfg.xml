@@ -10,7 +10,7 @@
         <!-- Set the user name -->
         <property name="connection.username">root</property>
         <!-- Set the password (use your MySQL password) -->
-        <property name="connection.password"></property>
+        <property name="connection.password">yfcnz212006</property>
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">true</property>
 
@@ -23,14 +23,8 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Set the annotated classes (inform the complete namespace) -->
-<!--        <mapping class="UPT_PL.Team_3.Country" />-->
-<!--        <mapping class="UPT_PL.Team_3.LogisticsSite" />-->
-<!--        <mapping class="UPT_PL.Team_3.LogisticsSupplyChain" />-->
-<!--        <mapping class="UPT_PL.Team_3.Product" />-->
-<!--        <mapping class="UPT_PL.Team_3.ProductsByCountry" />-->
-<!--        <mapping class="UPT_PL.Team_3.Transport" />-->
-<!--        <mapping class="UPT_PL.Team_3.RouteLine" />-->
-<!--        <mapping class="UPT_PL.Team_3.Calculation" />-->
+        <mapping class="UPT_SQ.EduScrumAwards.model.Award" />
+
         <!--   SupplyReceiveProductsCountries     -->
         <!--    SuppliedTransport    -->
     </session-factory>
