@@ -3,8 +3,8 @@ package UPT_SQ.EduScrumAwards.model;
 import jakarta.persistence.*;
 
 /**
- * Classe base para usuários do sistema EduScrum Awards
- * Esta classe representa um usuário genérico no sistema, podendo ser um professor ou um aluno.
+ * Base class for users in the EduScrum Awards system
+ * This class represents a generic user in the system, which can be a teacher or a student.
  *
  * @author [Ana Souto]
  * @version 29/10/2025
@@ -32,9 +32,9 @@ public class User {
     @Column(name = "role", nullable = false)
     private UserRole role;
 
-    // Construtores
+    // Constructors
     public User() {
-        // Construtor padrão necessário para JPA/Hibernate
+        // Default constructor required for JPA/Hibernate
     }
 
     public User(String name, String login, String password, UserRole role) {
@@ -44,7 +44,7 @@ public class User {
         this.role = role;
     }
 
-    // Getters e Setters
+    // Getters and Setters
     public Long getUserId() {
         return userId;
     }

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe que representa um Professor no sistema EduScrum Awards
- * Um professor pode lecionar múltiplos cursos e criar projetos
+ * Class that represents a Teacher in the EduScrum Awards system
+ * A teacher can teach multiple courses and create projects
  *
  * @author [Ana Souto]
  * @version 29/10/2025
@@ -16,11 +16,11 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Teacher extends User {
 
-    // 📚 RELAÇÃO COM COURSES: Um Teacher pode lecionar múltiplos Courses
+    // RELATIONSHIP WITH COURSES: A Teacher can teach multiple Courses
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CourseTeacher> courseTeachers = new ArrayList<>();
 
-    // Construtores
+    // Constructors
     public Teacher() {
         super();
         this.setRole(UserRole.TEACHER);
@@ -30,25 +30,25 @@ public class Teacher extends User {
         super(name, login, password, UserRole.TEACHER);
     }
 
-    // 🔄 MÉTODOS PARA GERENCIAR RELAÇÃO COM COURSES
+    // METHODS TO MANAGE RELATIONSHIP WITH COURSES
 
     /**
-     * Adiciona um curso ao professor com indicação de responsabilidade
-     * @param course Curso a ser adicionado
-     * @param isResponsible true se o professor é o responsável pelo curso
+     * Adds a course to the teacher with responsibility indication
+     * @param course Course to be added
+     * @param isResponsible true if the teacher is responsible for the course
      */
     public void addCourse(Course course, Boolean isResponsible) {
         CourseTeacher courseTeacher = new CourseTeacher(course, this, isResponsible);
         this.courseTeachers.add(courseTeacher);
-        // Mantém a consistência bidirecional
+        // Maintains bidirectional consistency
         if (course != null && course.getCourseTeachers() != null) {
             course.getCourseTeachers().add(courseTeacher);
         }
     }
 
     /**
-     * Remove um curso do professor
-     * @param course Curso a ser removido
+     * Removes a course from the teacher
+     * @param course Course to be removed
      */
     public void removeCourse(Course course) {
         CourseTeacher courseTeacherToRemove = null;
@@ -66,8 +66,8 @@ public class Teacher extends User {
     }
 
     /**
-     * Retorna todos os cursos que o professor leciona
-     * @return Lista de cursos
+     * Returns all courses that the teacher teaches
+     * @return List of courses
      */
     public List<Course> getCourses() {
         List<Course> courses = new ArrayList<>();
@@ -80,9 +80,9 @@ public class Teacher extends User {
     }
 
     /**
-     * Verifica se o professor é responsável por um curso específico
-     * @param course Curso a verificar
-     * @return true se for responsável
+     * Checks if the teacher is responsible for a specific course
+     * @param course Course to check
+     * @return true if responsible
      */
     public boolean isResponsibleForCourse(Course course) {
         for (CourseTeacher ct : this.courseTeachers) {
@@ -95,48 +95,48 @@ public class Teacher extends User {
         return false;
     }
 
-    // 💼 MÉTODOS DE NEGÓCIO (a serem implementados)
+    // BUSINESS METHODS (to be implemented)
 
     /**
-     * Método para criar um novo curso
-     * TODO: Implementar quando a classe Course estiver pronta
+     * Method to create a new course
+     * TODO: Implement when the Course class is ready
      */
     public void createCourse() {
-        // Lógica será implementada posteriormente
+        // Logic will be implemented later
         System.out.println("Creating new course...");
     }
 
     /**
-     * Método para criar um novo projeto
-     * TODO: Implementar quando a classe Project estiver pronta
+     * Method to create a new project
+     * TODO: Implement when the Project class is ready
      */
     public void createProject() {
-        // Lógica será implementada posteriormente
+        //Logic will be implemented later
         System.out.println("Creating new project...");
     }
 
     /**
-     * Método para atribuir um award manualmente
-     * TODO: Implementar quando a classe Award estiver pronta
-     * @param student Estudante que receberá o award
-     * @param award Award a ser atribuído
+     * Method to manually assign an award
+     * TODO: Implement when the Award class is ready
+     * @param student Student who will receive the award
+     * @param award Award to be assigned
      */
     public void assignAward(Student student, Award award) {
-        // TODO: Implementar quando a classe Award estiver pronta
+        // TODO: Implement when the Award class is ready
         System.out.println("Assigning award to student: " + student.getName());
     }
 
     /**
-     * Método para gerar dashboard de performance
-     * TODO: Implementar geração de dashboard
+     * Method to generate performance dashboard
+     * TODO: Implement dashboard generation
      */
     public void generateDashboard() {
-        // TODO: Implementar geração de dashboard
+        // TODO: Implement dashboard generetion
         System.out.println("Generating teacher dashboard...");
-        // Futuramente: retornará dados de performance dos cursos e projetos
+        // In the future> will return course and project performance data
     }
 
-    // Getters e Setters
+    // Getters and Setters
     public List<CourseTeacher> getCourseTeachers() {
         return courseTeachers;
     }

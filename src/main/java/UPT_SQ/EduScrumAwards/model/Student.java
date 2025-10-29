@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe que representa um Estudante no sistema EduScrum Awards
- * Um estudante pode participar de múltiplas equipes e acumular awards
+ * Class that represents a Student in the EduScrum Awards system
+ * A student can participate in multiple teams and accumulate awards
  *
  * @author [Ana Souto]
  * @version 29/10/2025
@@ -16,28 +16,28 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Student extends User {
 
-    // 🎯 CAMPOS ESPECÍFICOS DO STUDENT
+    // STUDENT-SPECIFIC FIELDS
     @Column(name = "student_number", unique = true, length = 20)
     private String studentNumber;
 
     @Column(name = "current_semester")
     private Integer currentSemester;
 
-    // SCORE (transient - calculado dinamicamente)
+    // SCORE (transient - dynamically calculated)
     @Transient
     private Integer totalScore = 0;
 
-    // RELAÇÕES (comentadas até as outras classes estarem prontas)
+    // RELATIONSHIPS (commented until other classes are ready)
 
-    // Relacionamento com TeamMember (será implementado pela Lily)
+    // Relationship with TeamMember (to be implemented by Lily)
     // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     // private List<TeamMember> teamMemberships = new ArrayList<>();
 
-    // Relacionamento com StudentAward (será implementado pela Anastasia)
+    // Relationship with StudentAward (to be implemented by Anastasia)
     // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     // private List<StudentAward> studentAwards = new ArrayList<>();
 
-    // Construtores
+    // Constructors
     public Student() {
         super();
         this.setRole(UserRole.STUDENT);
@@ -53,19 +53,19 @@ public class Student extends User {
         this.currentSemester = currentSemester;
     }
 
-    //MÉTODOS DE NEGÓCIO
+    // BUSINESS METHODS
 
     /**
-     * Calcula o score total do estudante baseado nos awards recebidos
-     * TODO: Implementar cálculo real quando StudentAward estiver pronto
-     * @return Score total do estudante
+     * Calculates the student's total score based on received awards
+     * TODO: Implement real calculation when StudentAward is ready
+     * @return Student's total score
      */
     public Integer calculateTotalScore() {
-        // TODO: Implementar cálculo baseado nos awards quando StudentAward estiver pronto
-        // Por enquanto, retornamos um valor placeholder
+        // TODO: Implement calculation based on awards when StudentAward is ready
+        // For now, return a placeholder value
         System.out.println("Calculating total score for student: " + this.getName());
 
-        // Futuramente: percorrer studentAwards e somar os pontos
+        // In the future: iterate through studentAwards and sum points
         // for (StudentAward award : studentAwards) {
         //     this.totalScore += award.getAward().getPointsValue();
         // }
@@ -74,50 +74,50 @@ public class Student extends User {
     }
 
     /**
-     * Retorna a lista de awards do estudante
-     * TODO: Implementar quando StudentAward estiver pronto
-     * @return Lista de awards do estudante
+     * Returns the student's award list
+     * TODO: Implement when StudentAward is ready
+     * @return List of student awards
      */
     public List<StudentAward> getStudentAwards() {
-        // TODO: Implementar quando StudentAward estiver pronto
+        // TODO: Implement when StudentAward is ready
         System.out.println("Retrieving student awards...");
         return new ArrayList<>();
     }
 
     /**
-     * Método para o estudante receber um award
-     * TODO: Implementar quando StudentAward estiver pronto
-     * @param award Award a ser recebido
+     * Method for the student to receive an award
+     * TODO: Implement when StudentAward is ready
+     * @param award Award to be received
      */
     public void earnAward(Award award) {
-        // TODO: Implementar quando Award e StudentAward estiverem prontos
+        // TODO: Implement when Award and StudentAward are ready
         System.out.println("Student " + this.getName() + " earned award: " + award.getAwardName());
-        // Futuramente: criar StudentAward e adicionar à lista
+        // In the future: create StudentAward and add to list
     }
 
     /**
-     * Gera dashboard pessoal do estudante
-     * TODO: Implementar geração de dashboard do estudante
+     * Generates student's personal dashboard
+     * TODO: Implement student dashboard generation
      */
     public void generateDashboard() {
-        // TODO: Implementar geração de dashboard do estudante
+        // TODO: Implement student dashboard generation
         System.out.println("Generating student dashboard for: " + this.getName());
-        // Futuramente: retornará progresso, awards, ranking, etc.
+        // In the future: will return progress, awards, ranking, etc.
     }
 
     /**
-     * Verifica se o estudante está em um curso específico
-     * TODO: Implementar quando as relações estiverem completas
-     * @param course Curso a verificar
-     * @return true se o estudante está no curso
+     * Checks if the student is enrolled in a specific course
+     * TODO: Implement when relationships are complete
+     * @param course Course to check
+     * @return true if student is enrolled in the course
      */
     public boolean isEnrolledInCourse(Course course) {
-        // TODO: Implementar via Team -> Project -> Course
+        // TODO: Implement via Team -> Project -> Course
         System.out.println("Checking if student is enrolled in course: " + course.getCourseName());
         return false;
     }
 
-    // Getters e Setters
+    // Getters and Setters
     public String getStudentNumber() {
         return studentNumber;
     }
@@ -142,7 +142,7 @@ public class Student extends User {
         this.totalScore = totalScore;
     }
 
-    // Getters para relacionamentos (serão descomentados quando as classes estiverem prontas)
+    // Getters for relationships (will be uncommented when classes are ready)
     /*
     public List<TeamMember> getTeamMemberships() {
         return teamMemberships;
