@@ -1,21 +1,31 @@
 package UPT_SQ.EduScrumAwards.model;
 
-import java.util.ArrayList;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
+@Entity
+@Table(name = "Awards")
 public class Award {
 
 
+    @Id
+    @Column(name = "award_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int awardID;
+    @Column(name = "award_name",length = 100, nullable = false)
     private String awardName;
+    @Column(name = "award_description",length = 500, nullable = false)
     private String awardDescription;
+    @Column(name = "points_value")
     private int pointsValue;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     private AwardType assignType;
+    @Transient
     private ArrayList<AwardRule> awardRules;
-
-    public enum AwardType {
-        AUTOMATIC,
-        MANUAL
-    }
 
     public Award(int awardID, String awardName, String awardDescription, int pointsValue, AwardType assignType, ArrayList<AwardRule> awardRules) {
         this.awardID = awardID;
@@ -24,6 +34,14 @@ public class Award {
         this.pointsValue = pointsValue;
         this.assignType = assignType;
         this.awardRules = awardRules;
+    }
+
+    public Award(String awardName, String awardDescription, int pointsValue, AwardType assignType) {
+        this.awardName = awardName;
+        this.awardDescription = awardDescription;
+        this.pointsValue = pointsValue;
+        this.assignType = assignType;
+        this.awardRules = new ArrayList<AwardRule>();
     }
 
     public int getAwardID() {

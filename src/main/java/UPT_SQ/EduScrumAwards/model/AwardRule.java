@@ -1,11 +1,27 @@
 package UPT_SQ.EduScrumAwards.model;
 
+
+import jakarta.persistence.*;
+
+//@Entity
+//@Table(name = "Award_Rules")
 public class AwardRule {
+//    @Id
+//    @Column(name = "rule_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ruleId;
+//    @ManyToOne
+//    @JoinColumn(name = "award_id")
     private Award award;
+//    @ManyToOne
+//    @JoinColumn(name = "project_id")
     private Project project;
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
     private Teacher  teacher;
+//    @Column(name = "is_All_Goals_Completed")
     private boolean isAllGoalsCompleted;
+//    @Column(name = "completion_percent")
     private double completionPercent;
 
     public AwardRule(double completionPercent, boolean isAllGoalsCompleted, Teacher teacher, Project project, Award award, int ruleId) {
