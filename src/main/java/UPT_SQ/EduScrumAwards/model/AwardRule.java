@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class AwardRule {
 //    @Id
 //    @Column(name = "rule_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ruleId;
 //    @ManyToOne
 //    @JoinColumn(name = "award_id")

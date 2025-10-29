@@ -1,15 +1,35 @@
 package UPT_SQ.EduScrumAwards.model;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 
+//@Entity
+//@Table(name = "Student_Award")
 public class StudentAward {
+
+//    @Id
+//    @Column(name = "student_award_id")
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int studentAwardId;
+//    @ManyToOne
+//    @JoinColumn(name = "award_id")
     private Award award;
+//    @ManyToOne
+//    @JoinColumn(name = "student_id")
     private Student student;
+//    @ManyToOne
+//    @JoinColumn(name = "teacher_id")
     private Teacher teacher;
+//    @ManyToOne
+//    @JoinColumn(name = "project_id")
     private Project project;
+//    @ManyToOne
+//    @JoinColumn(name = "team_id")
     private Team team;
+//    @Column(name = "date")
     private Date date;
+//    @Column(name = "points")
     private int points;
 
     public StudentAward(int studentAwardId, Award award, Student student, Teacher teacher, Project project, Team team, Date date, int points) {

@@ -26,11 +26,6 @@ public class Award {
     @Transient
     private ArrayList<AwardRule> awardRules;
 
-    /**
-     * No-args constructor required by Hibernate
-     */
-    public Award() {
-    }
 
     public Award(int awardID, String awardName, String awardDescription, int pointsValue, AwardType assignType, ArrayList<AwardRule> awardRules) {
         this.awardID = awardID;
