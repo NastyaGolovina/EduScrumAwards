@@ -23,6 +23,12 @@ public class TestMain {
         session.getTransaction().commit();
         session.close();
         DatabaseHelper.exit();
+//
+//        Global g = new Global();
+//        g.createAward("Top Performer",
+//                "Awarded for outstanding performance",
+//                100,
+//                "AUTOMATIC");
 
     }
 }
