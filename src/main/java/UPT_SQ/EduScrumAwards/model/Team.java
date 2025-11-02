@@ -48,17 +48,30 @@ public class Team {
     }
 
     /**
-     * Full constructor for creating a team with a specified ID and name.
-     * Initializes an empty list of team members.
+     * Full constructor for creating a team with all attributes specified.
      *
      * @param teamID   the unique ID of the team
      * @param teamName the name of the team
+     * @param membersList A list of all members who belong to this team.
      */
-    public Team (int teamID, String teamName) {
+    public Team (int teamID, String teamName, ArrayList<TeamMember> membersList) {
         this.teamID = teamID;
         this.teamName = teamName;
-        membersList = new ArrayList<>();
+        this.membersList = membersList;
     }
+
+    /**
+     * a constructor for creating a team without specifying an ID or member list
+     * Initializes an empty list of team member list.
+     *
+     * @param teamName the name of the team
+     *
+     */
+    public Team (String teamName) {
+        this.teamName = teamName;
+        this.membersList = new ArrayList<TeamMember>();
+    }
+
 
     /** @return the unique ID of the team */
     public int getTeamID() {

@@ -60,23 +60,55 @@ public class TeamMember {
     private Team team;
 
     /**
-     * Empty constructor for creating a team member.
+     * empty constructor
      */
     public TeamMember() {
-
     }
 
     /**
-     * Full constructor for creating a team member with all key attributes specified.
+     * Constructor for creating a team member without relationships (teamMemberID, studentID).
+     * Useful when the Student or Team will be assigned later.
+     *
+     * @param name the full name of the team member
+     * @param role the role assigned to the team member
+     */
+    public TeamMember(String name, Role role) {
+        this.name = name;
+        this.role = role;
+    }
+
+    /**
+     * Constructor for creating a team member and immediately linking it
+     * to a Student and a Team but without teamMemberID
+     *
+     * @param name the full name of the team member
+     * @param role the role assigned to the team member
+     * @param student the Student entity associated with this member
+     * @param team the Team entity this member belongs to
+     */
+    public TeamMember(String name, Role role, Student student, Team team) {
+        this.name = name;
+        this.role = role;
+        this.student = student;
+        this.team = team;
+    }
+
+    /**
+     * Full constructor to create team member with all attributes specified.
+     * includes the generated ID as well.
      *
      * @param teamMemberId the unique ID of the team member
-     * @param name the name of the team member
-     * @param role the role of the team member
+     * @param name the full name of the team member
+     * @param role the role assigned to the team member
+     * @param student the Student entity associated with this member
+     * @param team the Team entity this member belongs to
      */
-    public TeamMember( int teamMemberId, String name, Role role) {
+    public TeamMember(int teamMemberId, String name, Role role, Student student, Team team) {
         this.teamMemberId = teamMemberId;
         this.name = name;
         this.role = role;
+        this.student = student;
+        this.team = team;
     }
 
     // getters/setters
