@@ -1,6 +1,5 @@
 package UPT_SQ.EduScrumAwards.model;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
 
 /**
  * Represents a team member entity in the EduScrum Awards system.
@@ -19,7 +18,7 @@ import org.springframework.data.annotation.Id;
  */
 
 @Entity
-@Table(name = "team_members")
+@Table(name = "Team_Members")
 public class TeamMember {
 
     /**
@@ -28,7 +27,7 @@ public class TeamMember {
     public enum Role { SCRUM_MASTER, PRODUCT_OWNER, DEVELOPER, QA_ENGINEER }
 
     @Id
-    @Column(name = "team_member_id", length = 36)
+    @Column(name = "Team_Member_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int teamMemberId;
 
@@ -46,7 +45,7 @@ public class TeamMember {
      * The "student_id" foreign key column stores the reference to the Student entity.
      */
     @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "Student_ID", nullable = false)
     private Student student;
 
     /**
@@ -56,7 +55,7 @@ public class TeamMember {
      * The "team_id" foreign key column stores the reference to the Team entity.
      */
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "Team_ID", nullable = false)
     private Team team;
 
     /**

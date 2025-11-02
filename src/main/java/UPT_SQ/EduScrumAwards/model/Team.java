@@ -1,6 +1,7 @@
 package UPT_SQ.EduScrumAwards.model;
 import jakarta.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a team entity in the EduScrum Awards system.
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 @Table(name = "Team")
 public class Team {
     @Id  // Annotated with @Id to mark it as the primary key
-    @Column(name = "Team_ID", length = 36)
+    @Column(name = "Team_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int teamID;
 
@@ -39,7 +40,8 @@ public class Team {
      * are no longer referenced by this team.
      */
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ArrayList<TeamMember> membersList;
+    private List<TeamMember> membersList = new ArrayList<>();
+
 
     /**
      * Empty constructor for creating a team.
@@ -54,7 +56,7 @@ public class Team {
      * @param teamName the name of the team
      * @param membersList A list of all members who belong to this team.
      */
-    public Team (int teamID, String teamName, ArrayList<TeamMember> membersList) {
+    public Team (int teamID, String teamName, List<TeamMember> membersList) {
         this.teamID = teamID;
         this.teamName = teamName;
         this.membersList = membersList;
@@ -93,12 +95,12 @@ public class Team {
         this.teamName = teamName;
     }
     /** @return the list of team members associated with this team */
-    public ArrayList<TeamMember> getMembersList() {
+    public List<TeamMember> getMembersList() {
         return membersList;
     }
 
     /** @param membersList sets the list of team members for this team */
-    public void setMembersList(ArrayList<TeamMember> membersList) {
+    public void setMembersList(List<TeamMember> membersList) {
         this.membersList = membersList;
     }
 
