@@ -6,7 +6,7 @@ import jakarta.persistence.*;
  * Base class for users in the EduScrum Awards system
  * This class represents a generic user in the system, which can be a teacher or a student.
  *
- * @author [Ana Souto]
+ * @author [Ana Carolina Souto]
  * @version 29/10/2025
  */
 @Entity

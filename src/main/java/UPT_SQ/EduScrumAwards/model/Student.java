@@ -8,7 +8,7 @@ import java.util.List;
  * Class that represents a Student in the EduScrum Awards system
  * A student can participate in multiple teams and accumulate awards
  *
- * @author [Ana Souto]
+ * @author [Ana Carolina Souto]
  * @version 29/10/2025
  */
 @Entity
