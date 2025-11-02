@@ -32,68 +32,68 @@ public class Teacher extends User {
 
     // METHODS TO MANAGE RELATIONSHIP WITH COURSES
 
-    /**
-     * Adds a course to the teacher with responsibility indication
-     * @param course Course to be added
-     * @param isResponsible true if the teacher is responsible for the course
-     */
-    public void addCourse(Course course, Boolean isResponsible) {
-        CourseTeacher courseTeacher = new CourseTeacher(course, this, isResponsible);
-        this.courseTeachers.add(courseTeacher);
-        // Maintains bidirectional consistency
-        if (course != null && course.getCourseTeachers() != null) {
-            course.getCourseTeachers().add(courseTeacher);
-        }
-    }
-
-    /**
-     * Removes a course from the teacher
-     * @param course Course to be removed
-     */
-    public void removeCourse(Course course) {
-        CourseTeacher courseTeacherToRemove = null;
-        for (CourseTeacher ct : this.courseTeachers) {
-            if (ct.getCourse() != null && ct.getCourse().equals(course)) {
-                courseTeacherToRemove = ct;
-                break;
-            }
-        }
-        if (courseTeacherToRemove != null) {
-            this.courseTeachers.remove(courseTeacherToRemove);
-            courseTeacherToRemove.setCourse(null);
-            courseTeacherToRemove.setTeacher(null);
-        }
-    }
-
-    /**
-     * Returns all courses that the teacher teaches
-     * @return List of courses
-     */
-    public List<Course> getCourses() {
-        List<Course> courses = new ArrayList<>();
-        for (CourseTeacher ct : this.courseTeachers) {
-            if (ct.getCourse() != null) {
-                courses.add(ct.getCourse());
-            }
-        }
-        return courses;
-    }
-
-    /**
-     * Checks if the teacher is responsible for a specific course
-     * @param course Course to check
-     * @return true if responsible
-     */
-    public boolean isResponsibleForCourse(Course course) {
-        for (CourseTeacher ct : this.courseTeachers) {
-            if (ct.getCourse() != null &&
-                    ct.getCourse().equals(course) &&
-                    Boolean.TRUE.equals(ct.getIsResponsible())) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    /**
+//     * Adds a course to the teacher with responsibility indication
+//     * @param course Course to be added
+//     * @param isResponsible true if the teacher is responsible for the course
+//     */
+//    public void addCourse(Course course, Boolean isResponsible) {
+//        CourseTeacher courseTeacher = new CourseTeacher(course, this, isResponsible);
+//        this.courseTeachers.add(courseTeacher);
+//        // Maintains bidirectional consistency
+//        if (course != null && course.getCourseTeachers() != null) {
+//            course.getCourseTeachers().add(courseTeacher);
+//        }
+//    }
+//
+//    /**
+//     * Removes a course from the teacher
+//     * @param course Course to be removed
+//     */
+//    public void removeCourse(Course course) {
+//        CourseTeacher courseTeacherToRemove = null;
+//        for (CourseTeacher ct : this.courseTeachers) {
+//            if (ct.getCourse() != null && ct.getCourse().equals(course)) {
+//                courseTeacherToRemove = ct;
+//                break;
+//            }
+//        }
+//        if (courseTeacherToRemove != null) {
+//            this.courseTeachers.remove(courseTeacherToRemove);
+//            courseTeacherToRemove.setCourse(null);
+//            courseTeacherToRemove.setTeacher(null);
+//        }
+//    }
+//
+//    /**
+//     * Returns all courses that the teacher teaches
+//     * @return List of courses
+//     */
+//    public List<Course> getCourses() {
+//        List<Course> courses = new ArrayList<>();
+//        for (CourseTeacher ct : this.courseTeachers) {
+//            if (ct.getCourse() != null) {
+//                courses.add(ct.getCourse());
+//            }
+//        }
+//        return courses;
+//    }
+//
+//    /**
+//     * Checks if the teacher is responsible for a specific course
+//     * @param course Course to check
+//     * @return true if responsible
+//     */
+//    public boolean isResponsibleForCourse(Course course) {
+//        for (CourseTeacher ct : this.courseTeachers) {
+//            if (ct.getCourse() != null &&
+//                    ct.getCourse().equals(course) &&
+//                    Boolean.TRUE.equals(ct.getIsResponsible())) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     // BUSINESS METHODS (to be implemented)
 
