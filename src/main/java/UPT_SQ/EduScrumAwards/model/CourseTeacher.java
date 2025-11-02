@@ -4,19 +4,36 @@
  * Subject - Software Quality
  * Teacher - Fátima Leal
  * Developers of the file - José Ángel (53150)
- * Date - 28/10/2025 (SPRINT 1)
- * Version: 0.0
+ * Date - 29/10/2025 (SPRINT 1)
+ * Version: 0.2
  */
 package UPT_SQ.EduScrumAwards.model;
+
+import jakarta.persistence.*;
 
 /**
  * Class that represente a teacher as a course director
  */
+@Entity
+@Table(name = "CourseTeachers")
 public class CourseTeacher {
-    private final int courseTeacherID;
+    @Id
+    @Column(name = "course_teacher_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int courseTeacherID;
+
+    @Transient
     private Course course;
-    // private Teacher teacher;
+    @Transient
+    private Teacher teacher;
+
+    @Column(name = "is_responsible")
     private boolean isResponsible;
+
+    /**
+     * No-args constructor required by Hibernate
+     */
+    public CourseTeacher() {}
 
     /**
      * Constructor of the class CourseTeacher

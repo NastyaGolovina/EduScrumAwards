@@ -14,19 +14,22 @@ public class DatabaseHelper {
     public DatabaseHelper() {
     }
 
-    protected void setup() {
+    public void setup() {
         final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
-                .configure() // configures settings	from hibernate.cfg.xml
+                .configure() // configures settings from hibernate.cfg.xml
                 .build();
         try {
             sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
         } catch (Exception ex) {
             StandardServiceRegistryBuilder.destroy(registry);
+            throw ex;
         }
     }
 
-    protected void exit() {
-        // code to close Hibernate Session factory
+    public void exit() {
+        if (sessionFactory != null && !sessionFactory.isClosed()) {
+            sessionFactory.close();
+        }
     }
 
     /**
@@ -35,8 +38,4 @@ public class DatabaseHelper {
     public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
-
-
-
-
 }
