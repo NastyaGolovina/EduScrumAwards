@@ -41,11 +41,31 @@ public class TestMain {
         session.close();
         DatabaseHelper.exit();
 
+
+
+
+
+
+
+
+//        //test Global
 //        Global g = new Global();
-//        g.createAward("Top Performer",
-//                "Awarded for outstanding performance",
+////        g.createAward("Top Performer",
+////                "Awarded for outstanding performance",
+////                100,
+////                "AUTOMATIC");
+//        g.readAllAwardWithJplq();
+//        for(int i = 0; i < g.getAwards().size(); i++)
+//        {
+//            System.out.println("Award ID: " + g.getAwards().get(i));
+//        }
+//        System.out.println(g.updateAward(1,"Dragon Rider",
+//                "Awarded for fearlessness and strategy",
 //                100,
-//                "AUTOMATIC");
+//                "AUTOMATIC"));
+
+        
+        
 
     }
 }

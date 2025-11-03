@@ -138,6 +138,16 @@ public class Award {
         this.awardRules = awardRules;
     }
 
+    @Override
+    public String toString() {
+        return "Award{" +
+                "awardID=" + awardID +
+                ", awardName='" + awardName + '\'' +
+                ", awardDescription='" + awardDescription + '\'' +
+                ", pointsValue=" + pointsValue +
+                ", assignType=" + assignType +
+                '}';
+    }
 }
 
 
