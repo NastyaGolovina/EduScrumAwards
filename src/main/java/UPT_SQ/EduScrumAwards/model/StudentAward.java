@@ -50,7 +50,7 @@ public class StudentAward {
     /**
      * Constructs a new {@code StudentAward} instance with the specified parameters.
      *
-     * @param studentAwardId the unique identifier for this student award
+     *
      * @param award the award associated with this record
      * @param student the student who received the award
      * @param teacher the teacher who assigned or approved the award
@@ -59,8 +59,7 @@ public class StudentAward {
      * @param date the date when the award was granted
      * @param points the number of points associated with the award
      */
-    public StudentAward(int studentAwardId, Award award, Student student, Teacher teacher, Project project, Team team, Date date, int points) {
-        this.studentAwardId = studentAwardId;
+    public StudentAward(Award award, Student student, Teacher teacher, Project project, Team team, Date date, int points) {
         this.award = award;
         this.student = student;
         this.teacher = teacher;

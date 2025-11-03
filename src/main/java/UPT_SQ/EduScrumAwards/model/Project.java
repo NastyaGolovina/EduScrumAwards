@@ -10,6 +10,8 @@ public class Project {
     private Course course;
     private ArrayList<Sprint>sprints;
 
+    public Project() {}
+
     public Project(int projectId, String projectName, Team team, Course course, ArrayList<Sprint> sprints) {
         this.projectId = projectId;
         this.projectName = projectName;
