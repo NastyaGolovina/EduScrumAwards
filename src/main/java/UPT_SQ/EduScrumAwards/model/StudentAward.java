@@ -41,7 +41,6 @@ public class StudentAward {
 //    @Column(name = "points")
     private int points;
 
-
     /**
      * Empty constructor for creating an StudentAward.
      */
@@ -49,7 +48,6 @@ public class StudentAward {
 
     /**
      * Constructs a new {@code StudentAward} instance with the specified parameters.
-     *
      *
      * @param award the award associated with this record
      * @param student the student who received the award
