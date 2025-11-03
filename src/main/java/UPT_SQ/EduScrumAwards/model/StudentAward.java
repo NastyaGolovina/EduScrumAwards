@@ -16,7 +16,6 @@ import java.util.Date;
 //@Entity
 //@Table(name = "Student_Award")
 public class StudentAward {
-
 //    @Id
 //    @Column(name = "student_award_id")
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
