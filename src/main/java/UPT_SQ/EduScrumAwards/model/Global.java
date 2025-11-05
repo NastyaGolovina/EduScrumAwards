@@ -4,7 +4,15 @@ import org.hibernate.Session;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * The {@code Global} class serves as a centralized data container for managing
+ * users, courses, teams, awards, and student awards across the system.
+ *
+ * This class initializes and maintains lists for each of these entities,
+ * providing getter and setter methods for accessing and updating them.
+ * It is typically used to store and share global application data
+ * throughout the program.
+ */
 //@Component
 public class Global {
     private ArrayList<User> users;
@@ -13,6 +21,10 @@ public class Global {
     private ArrayList<Award> awards;
     private ArrayList<StudentAward> studentsAwards;
 
+    /**
+     * Constructs a new {@code Global} instance and initializes all lists
+     * (users, courses, teams, awards, and student awards) as empty {@link ArrayList}s.
+     */
     public Global() {
         users = new ArrayList<>();
         courses = new ArrayList<>();
@@ -21,42 +33,92 @@ public class Global {
         studentsAwards = new ArrayList<>();
     }
 
+    /**
+     * Returns the list of all users.
+     *
+     * @return a list of {@link User} objects
+     */
     public ArrayList<User> getUsers() {
         return users;
     }
 
+    /**
+     * Sets the list of users.
+     *
+     * @param users a list of {@link User} objects to set
+     */
     public void setUsers(ArrayList<User> users) {
         this.users = users;
     }
 
+    /**
+     * Returns the list of all courses.
+     *
+     * @return a list of {@link Course} objects
+     */
     public ArrayList<Course> getCourses() {
         return courses;
     }
 
+    /**
+     * Sets the list of courses.
+     *
+     * @param courses a list of {@link Course} objects to set
+     */
     public void setCourses(ArrayList<Course> courses) {
         this.courses = courses;
     }
 
+    /**
+     * Returns the list of all teams.
+     *
+     * @return a list of {@link Team} objects
+     */
     public ArrayList<Team> getTeams() {
         return teams;
     }
 
+    /**
+     * Sets the list of teams.
+     *
+     * @param teams a list of {@link Team} objects to set
+     */
     public void setTeams(ArrayList<Team> teams) {
         this.teams = teams;
     }
 
+    /**
+     * Returns the list of all awards.
+     *
+     * @return a list of {@link Award} objects
+     */
     public ArrayList<Award> getAwards() {
         return awards;
     }
 
+    /**
+     * Sets the list of awards.
+     *
+     * @param awards a list of {@link Award} objects to set
+     */
     public void setAwards(ArrayList<Award> awards) {
         this.awards = awards;
     }
 
+    /**
+     * Returns the list of all student awards.
+     *
+     * @return a list of {@link StudentAward} objects
+     */
     public ArrayList<StudentAward> getStudentsAwards() {
         return studentsAwards;
     }
 
+    /**
+     * Sets the list of student awards.
+     *
+     * @param studentsAwards a list of {@link StudentAward} objects to set
+     */
     public void setStudentsAwards(ArrayList<StudentAward> studentsAwards) {
         this.studentsAwards = studentsAwards;
     }
@@ -187,6 +249,27 @@ public class Global {
             return "ERROR: One of the field is empty";
         }
         return "ERROR: Award with this id does not exist";
+    }
+
+    /**
+     * Searches for a {@link StudentAward} in the list of student awards by its ID.
+     *
+     * This method iterates through the {@code studentsAwards} list to find
+     * a {@link StudentAward} with the specified {@code studentAwardId}.
+     * Returns the matching object if found, otherwise returns {@code null}.
+     *
+     * @param studentAwardId the unique identifier of the {@link StudentAward} to search for
+     * @return the {@link StudentAward} with the given ID, or {@code null} if not found
+     */
+    public StudentAward searchStudentAward(int studentAwardId) {
+        int i = 0;
+        while (i < studentsAwards.size() && studentsAwards.get(i).getStudentAwardId() != studentAwardId) {
+            i++;
+        }
+        if (i != studentsAwards.size()) {
+            return studentsAwards.get(i);
+        }
+        return null;
     }
 
 }

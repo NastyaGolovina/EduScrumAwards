@@ -138,6 +138,36 @@ public class Award {
         this.awardRules = awardRules;
     }
 
+
+    /**
+     * Searches for an {@link AwardRule} in the list of award rules by its rule ID.
+     *
+     * This method iterates through the {@code awardRules} list until it finds
+     * an {@link AwardRule} whose {@code ruleId} matches the provided {@code ruledId}.
+     * If a matching rule is found, it is returned; otherwise, {@code null} is returned.
+     *
+     * @param ruledId the unique identifier of the {@link AwardRule} to search for
+     * @return the {@link AwardRule} with the specified ID, or {@code null} if not found
+     */
+    public AwardRule searchAwardRule(int ruledId) {
+        int i = 0;
+        while (i < awardRules.size() && awardRules.get(i).getRuleId() != ruledId) {
+            i++;
+        }
+        if (i != awardRules.size()) {
+            return awardRules.get(i);
+        }
+        return null;
+    }
+
+    /**
+     * Returns a string representation of the {@link Award} object.
+     *
+     * The returned string includes key information such as the award ID,
+     * name, description, points value, and assignment type.
+     *
+     * @return a string representation of the {@link Award}
+     */
     @Override
     public String toString() {
         return "Award{" +

@@ -162,4 +162,26 @@ public class AwardRule {
     public void setCompletionPercent(double completionPercent) {
         this.completionPercent = completionPercent;
     }
+
+
+
+    /**
+     * Returns a string representation of the {@link AwardRule} object.
+     *
+     * The returned string includes information such as the rule ID, associated award,
+     * project, teacher, completion status, and completion percentage.
+     *
+     * @return a string representation of the {@link AwardRule}
+     */
+    @Override
+    public String toString() {
+        return "AwardRule{" +
+                "ruleId=" + ruleId +
+                ", award=" + award +
+                ", project=" + project +
+                ", teacher=" + teacher +
+                ", isAllGoalsCompleted=" + isAllGoalsCompleted +
+                ", completionPercent=" + completionPercent +
+                '}';
+    }
 }

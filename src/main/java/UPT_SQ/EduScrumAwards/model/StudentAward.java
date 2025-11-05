@@ -209,4 +209,26 @@ public class StudentAward {
     public void setPoints(int points) {
         this.points = points;
     }
+
+    /**
+     * Returns a string representation of the {@link StudentAward} object.
+     *
+     * The returned string includes details such as the student award ID,
+     * award, student, teacher, project, team, date, and points.
+     *
+     * @return a string representation of the {@link StudentAward}
+     */
+    @Override
+    public String toString() {
+        return "StudentAward{" +
+                "studentAwardId=" + studentAwardId +
+                ", award=" + award +
+                ", student=" + student +
+                ", teacher=" + teacher +
+                ", project=" + project +
+                ", team=" + team +
+                ", date=" + date +
+                ", points=" + points +
+                '}';
+    }
 }
