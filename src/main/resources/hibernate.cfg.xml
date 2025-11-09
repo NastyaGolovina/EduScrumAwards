@@ -7,10 +7,10 @@
         <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <!-- Set URL -->
         <property name="connection.url">jdbc:mysql://localhost:3306/EduScrumAwards</property>
-        <!-- Set the user name -->
+        <!-- Set the username -->
         <property name="connection.username">root</property>
         <!-- Set the password (use your MySQL password) -->
-        <property name="connection.password">Lyyngn1723</property>
+        <property name="connection.password"></property>
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">true</property>
 
@@ -27,9 +27,12 @@
         <mapping class="UPT_SQ.EduScrumAwards.model.Team"/>
         <mapping class="UPT_SQ.EduScrumAwards.model.TeamMember"/>
         <mapping class="UPT_SQ.EduScrumAwards.model.Student"/>
+        <mapping class="UPT_SQ.EduScrumAwards.model.Project"/>
+        <mapping class="UPT_SQ.EduScrumAwards.model.Goal"/>
+        <mapping class="UPT_SQ.EduScrumAwards.model.Sprint"/>
+        <mapping class="UPT_SQ.EduScrumAwards.model.Course"/>
 
-
-         <!--   SupplyReceiveProductsCountries     -->
+        <!--   SupplyReceiveProductsCountries     -->
         <!--    SuppliedTransport    -->
     </session-factory>
 </hibernate-configuration>
