@@ -52,6 +52,22 @@ public class TestMain {
         Goal goal1 = new Goal("Implement login feature", 10, false);
         goal1.setSprint(sprint1);
 
+        AwardRule awardRule = new AwardRule();
+        awardRule.setAward(award);
+        awardRule.setProject(project);
+        awardRule.setTeacher(teacher);
+        awardRule.setAllGoalsCompleted(false);
+        awardRule.setCompletionPercent(75.0);
+
+        StudentAward studentAward = new StudentAward();
+        studentAward.setAward(award);
+        studentAward.setStudent(student);
+        studentAward.setTeacher(teacher);
+        studentAward.setProject(project);
+        studentAward.setTeam(team);
+        studentAward.setDate(new Date());
+        studentAward.setPoints(100);
+
         DatabaseHelper DatabaseHelper = new DatabaseHelper();
         DatabaseHelper.setup();
         Session session = DatabaseHelper.getSessionFactory().openSession();
@@ -67,6 +83,9 @@ public class TestMain {
         session.persist(project);
         session.persist(sprint1);
         session.persist(goal1);
+
+        session.persist(awardRule);
+        session.persist(studentAward);
 
 
         session.getTransaction().commit();

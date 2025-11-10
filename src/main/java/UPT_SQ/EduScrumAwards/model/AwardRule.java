@@ -12,25 +12,25 @@ import jakarta.persistence.*;
  * @version 1.0
  * @since 2025-10-31
  */
-//@Entity
-//@Table(name = "Award_Rules")
+@Entity
+@Table(name = "Award_Rules")
 public class AwardRule {
-//    @Id
-//    @Column(name = "rule_id")
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @Column(name = "rule_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ruleId;
-//    @ManyToOne
-//    @JoinColumn(name = "award_id")
+    @ManyToOne
+    @JoinColumn(name = "award_id")
     private Award award;
-//    @ManyToOne
-//    @JoinColumn(name = "project_id")
+    @ManyToOne
+    @JoinColumn(name = "project_id")
     private Project project;
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private Teacher  teacher;
-//    @Column(name = "is_All_Goals_Completed")
+    @Column(name = "is_All_Goals_Completed")
     private boolean isAllGoalsCompleted;
-//    @Column(name = "completion_percent")
+    @Column(name = "completion_percent")
     private double completionPercent;
 
     /**

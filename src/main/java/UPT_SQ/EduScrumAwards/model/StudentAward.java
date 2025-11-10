@@ -13,31 +13,31 @@ import java.util.Date;
  * @version 1.0
  * @since 2025-10-31
  */
-//@Entity
-//@Table(name = "Student_Award")
+@Entity
+@Table(name = "Student_Award")
 public class StudentAward {
-//    @Id
-//    @Column(name = "student_award_id")
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @Column(name = "student_award_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int studentAwardId;
-//    @ManyToOne
-//    @JoinColumn(name = "award_id")
+    @ManyToOne
+    @JoinColumn(name = "award_id")
     private Award award;
-//    @ManyToOne
-//    @JoinColumn(name = "student_id")
+    @ManyToOne
+    @JoinColumn(name = "student_id")
     private Student student;
-//    @ManyToOne
-//    @JoinColumn(name = "teacher_id")
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
     private Teacher teacher;
-//    @ManyToOne
-//    @JoinColumn(name = "project_id")
+    @ManyToOne
+    @JoinColumn(name = "project_id")
     private Project project;
-//    @ManyToOne
-//    @JoinColumn(name = "team_id")
+    @ManyToOne
+    @JoinColumn(name = "team_id")
     private Team team;
-//    @Column(name = "date")
+    @Column(name = "date")
     private Date date;
-//    @Column(name = "points")
+    @Column(name = "points")
     private int points;
 
     /**
