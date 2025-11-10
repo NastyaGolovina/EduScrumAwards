@@ -22,9 +22,12 @@ public class CourseTeacher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int courseTeacherID;
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "course_id", nullable = false)
     private Course course;
-    @Transient
+
+    @ManyToOne
+    @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
 
     @Column(name = "is_responsible")
@@ -39,11 +42,13 @@ public class CourseTeacher {
      * Constructor of the class CourseTeacher
      * @param courseTeacherID Integer of the ID
      * @param course Course
+     * @param teacher Teacher
      * @param isResponsible Boolean that indicates if the teacher is the responsible for the course
      */
-    public CourseTeacher(int courseTeacherID, Course course, boolean isResponsible) {
+    public CourseTeacher(int courseTeacherID, Course course, Teacher teacher, boolean isResponsible) {
         this.courseTeacherID = courseTeacherID;
         this.course = course;
+        this.teacher = teacher;
         this.isResponsible = isResponsible;
     }
 
@@ -53,6 +58,7 @@ public class CourseTeacher {
      */
     public int getCourseTeacherID() { return courseTeacherID; }
     public Course getCourse() { return course; }
+    public Teacher getTeacher() { return teacher; }
     public boolean isResponsible() { return isResponsible; }
 
     /**
@@ -60,5 +66,6 @@ public class CourseTeacher {
      * The params are the attribute to change
      */
     public void setCourse(Course course) { this.course = course; }
+    public void setTeacher(Teacher teacher) { this.teacher = teacher; }
     public void setIsResponsible(boolean isResponsible) { this.isResponsible = isResponsible; }
 }

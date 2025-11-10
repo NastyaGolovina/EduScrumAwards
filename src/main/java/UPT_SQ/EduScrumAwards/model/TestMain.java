@@ -8,34 +8,40 @@ public class TestMain {
     public static void main(String[] args) {
         //just to test
         // we will remove this class later
+        long ts = System.currentTimeMillis();
         Award award = new Award(
-                "Top Performer",
+                "Top Performer " + ts,
                 "Awarded for outstanding performance",
                 100,
                 AwardType.AUTOMATIC
         );
 
         Team team = new Team(
-                "IronMan"
+                "IronMan-" + ts
         );
 
         Student student = new Student();
-        student.setName("Alice");
-        student.setLogin("alice2");
+        student.setName("Alice " + ts);
+        student.setLogin("alice_" + ts);
         student.setPassword("pass123");
 
         TeamMember mem = new TeamMember("Alice Wonderland", TeamMember.Role.PRODUCT_OWNER);
         mem.setTeam(team);
         mem.setStudent(student);
 
-        Course course = new Course();
-        course.setCourseName("AI Course");
+        Teacher teacher = new Teacher();
+        teacher.setName("Prof. Smith " + ts);
+        teacher.setLogin("prof_smith_" + ts);
+        teacher.setPassword("pass123");
+
+        int courseId = (int)((ts % 1000000000L) + 1); // ensure positive, avoids PK clash on reruns
+        Course course = new Course(courseId, "Test Course " + ts);
+        CourseTeacher courseTeacher = new CourseTeacher(0, course, teacher, true);
 
         Project project = new Project();
-        project.setProjectName("AI Development");
+        project.setProjectName("AI Development " + ts);
         project.setTeam(team);
         project.setCourse(course);
-
 
         Sprint sprint1 = new Sprint();
         sprint1.setStartDate(new Date()); // today
@@ -55,7 +61,9 @@ public class TestMain {
         session.persist(team);
         session.persist(student);
         session.persist(mem);
+        session.persist(teacher);
         session.persist(course);
+        session.persist(courseTeacher);
         session.persist(project);
         session.persist(sprint1);
         session.persist(goal1);
@@ -83,8 +91,8 @@ public class TestMain {
 //                100,
 //                "AUTOMATIC"));
 
-        
-        
+
+
 
     }
 }
