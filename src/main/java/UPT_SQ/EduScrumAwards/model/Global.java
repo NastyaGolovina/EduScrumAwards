@@ -20,6 +20,7 @@ public class Global {
     private  ArrayList<Team> teams;
     private ArrayList<Award> awards;
     private ArrayList<StudentAward> studentsAwards;
+    private ArrayList<CourseTeacher> courseTeachers;
 
     /**
      * Constructs a new {@code Global} instance and initializes all lists
@@ -31,6 +32,7 @@ public class Global {
         teams = new ArrayList<>();
         awards = new ArrayList<>();
         studentsAwards = new ArrayList<>();
+        courseTeachers = new ArrayList<>();
     }
 
     /**
@@ -123,10 +125,26 @@ public class Global {
         this.studentsAwards = studentsAwards;
     }
 
+    /**
+     * Returns the list of all CourseTeacher entries.
+     * @return list of CourseTeacher
+     */
+    public ArrayList<CourseTeacher> getCourseTeachers() {
+        return courseTeachers;
+    }
+
+    /**
+     * Sets the list of CourseTeacher entries.
+     * @param courseTeachers list to set
+     */
+    public void setCourseTeachers(ArrayList<CourseTeacher> courseTeachers) {
+        this.courseTeachers = courseTeachers;
+    }
+
 //    public void readFromDB() {
-//
+
 //    }
-//
+
 
     /**
      * Creates a new Award object and saves it to the database.
@@ -372,6 +390,94 @@ public class Global {
             return "ERROR: Name is empty!";
         }
         return "ERROR: Course with this id does not exist";
+    }
+
+    /**
+     * Creates a new CourseTeacher and saves it to the database.
+     *
+     * @param course the associated Course (must not be null)
+     * @param teacher the associated Teacher (must not be null)
+     * @param isResponsible whether the teacher is responsible for the course
+     * @return "Success" if created and saved; error message otherwise
+     */
+    public String createCourseTeacher(Course course, Teacher teacher, boolean isResponsible) {
+        if (course == null) {
+            return "ERROR: Course is null!";
+        }
+        if (teacher == null) {
+            return "ERROR: Teacher is null!";
+        }
+        CourseTeacher newCt = new CourseTeacher(0, course, teacher, isResponsible);
+        courseTeachers.add(newCt);
+
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        session.persist(newCt);
+
+        session.getTransaction().commit();
+        session.close();
+        DatabaseHelper.exit();
+        return "Success";
+    }
+
+    /**
+     * Loads all CourseTeacher objects from the database and stores them locally.
+     */
+    public void readAllCourseTeacherWithJplq() {
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+
+        List<CourseTeacher> list = session.createQuery("SELECT ct FROM CourseTeacher ct", CourseTeacher.class).getResultList();
+        courseTeachers = (ArrayList<CourseTeacher>) list;
+
+        session.close();
+        DatabaseHelper.exit();
+    }
+
+    /**
+     * Searches the local list of CourseTeacher by ID.
+     * @param id CourseTeacher ID
+     * @return the CourseTeacher if found, otherwise null
+     */
+    public CourseTeacher searchCourseTeacher(int id) {
+        int i = 0;
+        while (i < courseTeachers.size() && courseTeachers.get(i).getCourseTeacherID() != id) {
+            i++;
+        }
+        if (i != courseTeachers.size()) {
+            return courseTeachers.get(i);
+        }
+        return null;
+    }
+
+    /**
+     * Updates the isResponsible flag of a CourseTeacher and merges it in the database.
+     * @param id the CourseTeacher ID
+     * @param isResponsible new value for responsibility flag
+     * @return "Success" if updated; error message otherwise
+     */
+    public String updateCourseTeacher(int id, boolean isResponsible) {
+        CourseTeacher ct = searchCourseTeacher(id);
+        if (ct != null) {
+            ct.setIsResponsible(isResponsible);
+
+            DatabaseHelper DatabaseHelper = new DatabaseHelper();
+            DatabaseHelper.setup();
+            Session session = DatabaseHelper.getSessionFactory().openSession();
+            session.beginTransaction();
+
+            session.merge(ct);
+
+            session.getTransaction().commit();
+            session.close();
+            DatabaseHelper.exit();
+            return "Success";
+        }
+        return "ERROR: CourseTeacher with this id does not exist";
     }
 
 }
