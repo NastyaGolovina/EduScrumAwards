@@ -1,7 +1,8 @@
 package UPT_SQ.EduScrumAwards.model;
 
 import org.hibernate.Session;
-
+import org.hibernate.Transaction;
+import java.util.List;
 import java.util.Date;
 
 public class TestMain {
@@ -21,7 +22,7 @@ public class TestMain {
 
         Student student = new Student();
         student.setName("Alice");
-        student.setLogin("alice2");
+        student.setLogin("alice4");
         student.setPassword("pass123");
 
         TeamMember mem = new TeamMember("Alice Wonderland", TeamMember.Role.PRODUCT_OWNER);
@@ -46,9 +47,9 @@ public class TestMain {
         Goal goal1 = new Goal("Implement login feature", 10, false);
         goal1.setSprint(sprint1);
 
-        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-        DatabaseHelper.setup();
-        Session session = DatabaseHelper.getSessionFactory().openSession();
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
         session.beginTransaction();
 
         session.persist(award);
@@ -63,8 +64,23 @@ public class TestMain {
 
         session.getTransaction().commit();
         session.close();
-        DatabaseHelper.exit();
 
+        // =============================================
+        // NEW TESTS - USER, TEACHER AND STUDENT
+        // =============================================
+        System.out.println("===  STARTING THE TESTS - USER/TEACHER/STUDENT ===");
+
+        try {
+            // Execute new tests using the same DatabaseHelper
+            UserTeacherStudentCRUD(databaseHelper);
+        } catch (Exception e) {
+            System.err.println("Error during new tests: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            databaseHelper.exit();
+        }
+
+        System.out.println("=== ALL TESTS COMPLETED ===");
 
 
 //        //test Global
@@ -83,8 +99,233 @@ public class TestMain {
 //                100,
 //                "AUTOMATIC"));
 
-        
-        
+    }
 
+    private static void UserTeacherStudentCRUD(DatabaseHelper databaseHelper) {
+        System.out.println("\n🔧 STARTING CRUD TESTS FOR USER/TEACHER/STUDENT ");
+
+        try {
+            // Teste 1: Criar e inserir dados
+            System.out.println("\n TEST 1 - INSERT DATA");
+            //CreateAndInsertUsers(databaseHelper);
+
+            // Teste 2: Editar dados
+            System.out.println("\n TEST 2 - EDIT DATA");
+            //UpdateUsersOperations(databaseHelper);
+
+            // Teste 3: Deletar dados
+            System.out.println("\n TEST 3 - DELETE DATA");
+            //DeleteUsersOperations(databaseHelper);
+
+            // Teste 4: Listar dados restantes
+            System.out.println("\n TEST 4 - VERIFY REMAINING DATA");
+            ListRemainingUsersData(databaseHelper);
+
+            System.out.println("\n ALL CRUD TESTS SUCCESSFULLY COMPLETED!");
+
+        } catch (Exception e) {
+            System.err.println(" Error in CRUD tests: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    private static void CreateAndInsertUsers(DatabaseHelper databaseHelper) {
+        Session session = databaseHelper.getSessionFactory().openSession();
+        Transaction transaction = null;
+
+        try {
+            transaction = session.beginTransaction();
+
+            // Insert Students
+            Student student1 = new Student("Ana Silva", "ana.silva", "password123", "2023001", 2);
+            session.persist(student1);
+            System.out.println("✓ Student inserido: " + student1.getName() + " (Nº: " + student1.getStudentNumber() + ")");
+
+            Student student2 = new Student("João Pereira", "joao.pereira", "pass456", "2023002", 3);
+            session.persist(student2);
+            System.out.println("✓ Student inserido: " + student2.getName() + " (Nº: " + student2.getStudentNumber() + ")");
+
+            // Insert Teachers
+            Teacher teacher1 = new Teacher("Dr. Carlos Santos", "carlos.santos", "teacher123");
+            session.persist(teacher1);
+            System.out.println("✓ Teacher inserido: " + teacher1.getName());
+
+            Teacher teacher2 = new Teacher("Prof. Maria Oliveira", "maria.oliveira", "teach456");
+            session.persist(teacher2);
+            System.out.println("✓ Teacher inserido: " + teacher2.getName());
+
+            transaction.commit();
+            System.out.println("✓ Transação commitada com sucesso");
+
+            // Verify inserted data
+            verifyInsertedData(session);
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+                System.err.println("✗ Erro - Rollback realizado");
+            }
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
+
+    private static void verifyInsertedData(Session session) {
+        System.out.println("\n VERIFICANDO DADOS INSERIDOS COM QUERY DA BASE DE DADOS:");
+
+        // List all Users
+        List<User> users = session.createQuery("FROM User", User.class).list();
+        System.out.println();
+        System.out.println(" Total Users on dataBase: " + users.size());
+        for (User user : users) {
+            System.out.println("   User: " + user.getName() +
+                    " (" + user.getRole() + ") - ID: " + user.getUserId() +
+                    " - Login: " + user.getLogin());
+        }
+
+        // List Students specifically
+        List<Student> students = session.createQuery("FROM Student", Student.class).list();
+        System.out.println();
+        System.out.println(" Total Students: " + students.size());
+        for (Student student : students) {
+            System.out.println("    Student: " + student.getName() +
+                    " - Número: " + student.getStudentNumber() +
+                    " - Semestre: " + student.getCurrentSemester());
+        }
+
+        // List Teachers specifically
+        List<Teacher> teachers = session.createQuery("FROM Teacher", Teacher.class).list();
+        System.out.println();
+        System.out.println(" Total Teachers: " + teachers.size());
+        for (Teacher teacher : teachers) {
+            System.out.println("   Teacher: " + teacher.getName());
+        }
+    }
+
+    private static void UpdateUsersOperations(DatabaseHelper databaseHelper) {
+        Session session = databaseHelper.getSessionFactory().openSession();
+        Transaction transaction = null;
+
+        try {
+            transaction = session.beginTransaction();
+
+            // Find and edit Student
+            Student studentToUpdate = session.createQuery("FROM Student WHERE studentNumber = '2023001'", Student.class)
+                    .uniqueResult();
+            if (studentToUpdate != null) {
+                String oldName = studentToUpdate.getName();
+                Integer oldSemester = studentToUpdate.getCurrentSemester();
+                studentToUpdate.setName("Ana Silva Costa (Atualizado)");
+                studentToUpdate.setCurrentSemester(6);
+                session.merge(studentToUpdate);
+                System.out.println("✓ Student editado: '" + oldName + "' -> '" + studentToUpdate.getName() + "'");
+                System.out.println("✓ Semestre atualizado: " + oldSemester + " -> " + studentToUpdate.getCurrentSemester());
+            } else {
+                System.out.println("✗ Student não encontrado para edição");
+            }
+
+            // Find and edit Teacher
+            Teacher teacherToUpdate = session.createQuery("FROM Teacher WHERE login = 'carlos.santos'", Teacher.class)
+                    .uniqueResult();
+            if (teacherToUpdate != null) {
+                String oldName = teacherToUpdate.getName();
+                teacherToUpdate.setName("Dr. Carlos Santos Silva (Atualizado)");
+                session.merge(teacherToUpdate);
+                System.out.println("✓ Teacher editado: '" + oldName + "' -> '" + teacherToUpdate.getName() + "'");
+            } else {
+                System.out.println("✗ Teacher não encontrado para edição");
+            }
+
+            transaction.commit();
+            System.out.println("✓ Todas as edições foram commitadas com sucesso");
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+                System.err.println("✗ Erro - Rollback realizado");
+            }
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
+
+    private static void DeleteUsersOperations(DatabaseHelper databaseHelper) {
+        Session session = databaseHelper.getSessionFactory().openSession();
+        Transaction transaction = null;
+
+        try {
+            transaction = session.beginTransaction();
+
+            // Delete Student
+            Student studentToDelete = session.createQuery("FROM Student WHERE studentNumber = '2023001'", Student.class)
+                    .uniqueResult();
+            if (studentToDelete != null) {
+                System.out.println("✓ Student encontrado para deleção: " + studentToDelete.getName());
+                session.remove(studentToDelete);
+                System.out.println("✓ Student deletado: " + studentToDelete.getName());
+            } else {
+                System.out.println("✗ Student não encontrado para deleção");
+            }
+
+            // Delete Teacher
+            Teacher teacherToDelete = session.createQuery("FROM Teacher WHERE login = 'carlos.santos'", Teacher.class)
+                    .uniqueResult();
+            if (teacherToDelete != null) {
+                System.out.println("✓ Teacher encontrado para deleção: " + teacherToDelete.getName());
+                session.remove(teacherToDelete);
+                System.out.println("✓ Teacher deletado: " + teacherToDelete.getName());
+            } else {
+                System.out.println("✗ Teacher não encontrado para deleção");
+            }
+
+            transaction.commit();
+            System.out.println("✓ Todas as deleções foram commitadas com sucesso");
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+                System.err.println("✗ Erro - Rollback realizado");
+            }
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
+
+    private static void ListRemainingUsersData(DatabaseHelper databaseHelper) {
+        Session session = databaseHelper.getSessionFactory().openSession();
+
+        try {
+            // List remaining Users
+            List<User> remainingUsers = session.createQuery("FROM User", User.class).list();
+            System.out.println(" FINAL REPORT - REMAINING DATA IN DATABASE:");
+            System.out.println();
+            System.out.println("   Total remaining Users: " + remainingUsers.size());
+
+            for (User user : remainingUsers) {
+
+                System.out.println("   " + user.getName() +
+                        " (" + user.getRole() + ")" +
+                        " - ID: " + user.getUserId() +
+                        " - Login: " + user.getLogin());
+            }
+
+            // Final statistics
+            List<Student> remainingStudents = session.createQuery("FROM Student", Student.class).list();
+            List<Teacher> remainingTeachers = session.createQuery("FROM Teacher", Teacher.class).list();
+
+            System.out.println("\n FINAL STATISTICS: ");
+            System.out.println();
+            System.out.println("    Remaining Students: " + remainingStudents.size());
+            System.out.println();
+            System.out.println("    Remaining Teachers: " + remainingTeachers.size());
+            System.out.println();
+            System.out.println("    Total Users overall: " + remainingUsers.size());
+
+        } finally {
+            session.close();
+        }
     }
 }

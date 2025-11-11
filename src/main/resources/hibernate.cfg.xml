@@ -10,7 +10,7 @@
         <!-- Set the username -->
         <property name="connection.username">root</property>
         <!-- Set the password (use your MySQL password) -->
-        <property name="connection.password"></property>
+        <property name="connection.password">Projetos2024</property>
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">true</property>
 
@@ -31,6 +31,9 @@
         <mapping class="UPT_SQ.EduScrumAwards.model.Goal"/>
         <mapping class="UPT_SQ.EduScrumAwards.model.Sprint"/>
         <mapping class="UPT_SQ.EduScrumAwards.model.Course"/>
+        <mapping class="UPT_SQ.EduScrumAwards.model.User"/>
+        <mapping class="UPT_SQ.EduScrumAwards.model.Teacher"/>
+        <mapping class="UPT_SQ.EduScrumAwards.model.Student"/>
 
         <!--   SupplyReceiveProductsCountries     -->
         <!--    SuppliedTransport    -->

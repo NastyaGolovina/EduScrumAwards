@@ -9,8 +9,8 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Teacher extends User {
 
-    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CourseTeacher> courses = new ArrayList<>();
+    /*@OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CourseTeacher> courses = new ArrayList<>();*/
 
     public Teacher() {
         super();
@@ -27,13 +27,13 @@ public class Teacher extends User {
     }
 
     // Getters and Setters
-    public List<CourseTeacher> getCourses() {
+    /*public List<CourseTeacher> getCourses() {
         return courses;
     }
 
     public void setCourses(List<CourseTeacher> courses) {
         this.courses = courses;
-    }
+    }*/
 
     @Override
     public String toString() {
@@ -41,7 +41,7 @@ public class Teacher extends User {
                 "userId=" + getUserId() +
                 ", name='" + getName() + '\'' +
                 ", login='" + getLogin() + '\'' +
-                ", coursesCount=" + (courses != null ? courses.size() : 0) +
+                /*", coursesCount=" + (courses != null ? courses.size() : 0) +*/
                 '}';
     }
 }
