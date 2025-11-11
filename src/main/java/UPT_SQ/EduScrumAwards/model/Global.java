@@ -20,6 +20,7 @@ public class Global {
     private  ArrayList<Team> teams;
     private ArrayList<Award> awards;
     private ArrayList<StudentAward> studentsAwards;
+    private ArrayList<CourseTeacher> courseTeachers;
 
     /**
      * Constructs a new {@code Global} instance and initializes all lists
@@ -31,6 +32,7 @@ public class Global {
         teams = new ArrayList<>();
         awards = new ArrayList<>();
         studentsAwards = new ArrayList<>();
+        courseTeachers = new ArrayList<>();
     }
 
     /**
@@ -123,10 +125,26 @@ public class Global {
         this.studentsAwards = studentsAwards;
     }
 
+    /**
+     * Returns the list of all CourseTeacher entries.
+     * @return list of CourseTeacher
+     */
+    public ArrayList<CourseTeacher> getCourseTeachers() {
+        return courseTeachers;
+    }
+
+    /**
+     * Sets the list of CourseTeacher entries.
+     * @param courseTeachers list to set
+     */
+    public void setCourseTeachers(ArrayList<CourseTeacher> courseTeachers) {
+        this.courseTeachers = courseTeachers;
+    }
+
 //    public void readFromDB() {
-//
+
 //    }
-//
+
 
     /**
      * Creates a new Award object and saves it to the database.
@@ -270,6 +288,196 @@ public class Global {
             return studentsAwards.get(i);
         }
         return null;
+    }
+
+    /**
+     * Creates a new Course and saves it to the database.
+     *
+     * @param courseId   The ID of the course. Must be a positive integer.
+     * @param courseName The name of the course. Must not be empty and no longer than 100 characters.
+     * @return "Success" if the course was created and saved; otherwise, an error message describing the issue.
+     */
+    public String createCourse(int courseId, String courseName) {
+        if (courseId <= 0) {
+            return "ERROR: Invalid course ID!";
+        }
+        if (courseName == null || courseName.isEmpty()) {
+            return "ERROR: Name is empty!";
+        }
+        if (courseName.length() > 100) {
+            return "ERROR: Name is too long!";
+        }
+
+        Course newCourse = new Course(courseId, courseName);
+        courses.add(newCourse);
+
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        session.persist(newCourse);
+
+        session.getTransaction().commit();
+        session.close();
+        DatabaseHelper.exit();
+        return "Success";
+    }
+
+    /**
+     * Loads all Course objects from the database and stores them in the local courses list.
+     * Uses JPQL to query the database.
+     */
+    public void readAllCourseWithJplq() {
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+
+        List<Course> courseList = session.createQuery("SELECT c FROM Course c", Course.class).getResultList();
+
+        courses = (ArrayList<Course>) courseList;
+        session.close();
+        DatabaseHelper.exit();
+    }
+
+    /**
+     * Searches for a course in the local courses list by its unique ID.
+     *
+     * @param courseId The ID of the course to search for.
+     * @return The Course object with the given ID if found; otherwise, returns null.
+     */
+    public Course searchCourse(int courseId) {
+        int i = 0;
+        while (i < courses.size() && courses.get(i).getCourseID() != courseId) {
+            i++;
+        }
+        if (i != courses.size()) {
+            return courses.get(i);
+        }
+        return null;
+    }
+
+    /**
+     * Updates an existing course with the specified ID.
+     *
+     * @param id         The ID of the course to update.
+     * @param courseName The new name of the course. Must not be empty and no longer than 100 characters.
+     * @return "Success" if the course was successfully updated, or an error message if validation fails or the course does not exist.
+     */
+    public String updateCourse(int id, String courseName) {
+        Course course = searchCourse(id);
+        if (course != null) {
+            if (courseName != null && !courseName.isEmpty()) {
+                if (courseName.length() <= 100) {
+                    course.setCourseName(courseName);
+
+                    DatabaseHelper DatabaseHelper = new DatabaseHelper();
+                    DatabaseHelper.setup();
+                    Session session = DatabaseHelper.getSessionFactory().openSession();
+                    session.beginTransaction();
+
+                    session.merge(course);
+
+                    session.getTransaction().commit();
+                    session.close();
+                    DatabaseHelper.exit();
+
+                    return "Success";
+                } else {
+                    return "ERROR: Name is too long!";
+                }
+            }
+            return "ERROR: Name is empty!";
+        }
+        return "ERROR: Course with this id does not exist";
+    }
+
+    /**
+     * Creates a new CourseTeacher and saves it to the database.
+     *
+     * @param course the associated Course (must not be null)
+     * @param teacher the associated Teacher (must not be null)
+     * @param isResponsible whether the teacher is responsible for the course
+     * @return "Success" if created and saved; error message otherwise
+     */
+    public String createCourseTeacher(Course course, Teacher teacher, boolean isResponsible) {
+        if (course == null) {
+            return "ERROR: Course is null!";
+        }
+        if (teacher == null) {
+            return "ERROR: Teacher is null!";
+        }
+        CourseTeacher newCt = new CourseTeacher(0, course, teacher, isResponsible);
+        courseTeachers.add(newCt);
+
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        session.persist(newCt);
+
+        session.getTransaction().commit();
+        session.close();
+        DatabaseHelper.exit();
+        return "Success";
+    }
+
+    /**
+     * Loads all CourseTeacher objects from the database and stores them locally.
+     */
+    public void readAllCourseTeacherWithJplq() {
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+
+        List<CourseTeacher> list = session.createQuery("SELECT ct FROM CourseTeacher ct", CourseTeacher.class).getResultList();
+        courseTeachers = (ArrayList<CourseTeacher>) list;
+
+        session.close();
+        DatabaseHelper.exit();
+    }
+
+    /**
+     * Searches the local list of CourseTeacher by ID.
+     * @param id CourseTeacher ID
+     * @return the CourseTeacher if found, otherwise null
+     */
+    public CourseTeacher searchCourseTeacher(int id) {
+        int i = 0;
+        while (i < courseTeachers.size() && courseTeachers.get(i).getCourseTeacherID() != id) {
+            i++;
+        }
+        if (i != courseTeachers.size()) {
+            return courseTeachers.get(i);
+        }
+        return null;
+    }
+
+    /**
+     * Updates the isResponsible flag of a CourseTeacher and merges it in the database.
+     * @param id the CourseTeacher ID
+     * @param isResponsible new value for responsibility flag
+     * @return "Success" if updated; error message otherwise
+     */
+    public String updateCourseTeacher(int id, boolean isResponsible) {
+        CourseTeacher ct = searchCourseTeacher(id);
+        if (ct != null) {
+            ct.setIsResponsible(isResponsible);
+
+            DatabaseHelper DatabaseHelper = new DatabaseHelper();
+            DatabaseHelper.setup();
+            Session session = DatabaseHelper.getSessionFactory().openSession();
+            session.beginTransaction();
+
+            session.merge(ct);
+
+            session.getTransaction().commit();
+            session.close();
+            DatabaseHelper.exit();
+            return "Success";
+        }
+        return "ERROR: CourseTeacher with this id does not exist";
     }
 
 }
