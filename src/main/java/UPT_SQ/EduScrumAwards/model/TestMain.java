@@ -13,7 +13,8 @@ public class TestMain {
                 "Top Performer " + ts,
                 "Awarded for outstanding performance",
                 100,
-                AwardType.AUTOMATIC
+                AwardType.AUTOMATIC,
+                AssignMode.TEAM
         );
 
         Team team = new Team(
@@ -93,13 +94,13 @@ public class TestMain {
         DatabaseHelper.exit();
 
 
-
-//        //test Global
+////        test Global
 //        Global g = new Global();
 ////        g.createAward("Top Performer",
 ////                "Awarded for outstanding performance",
 ////                100,
-////                "AUTOMATIC");
+////                "AUTOMATIC",
+////                 "TEAM");
 //        g.readAllAwardWithJplq();
 //        for(int i = 0; i < g.getAwards().size(); i++)
 //        {
@@ -107,8 +108,7 @@ public class TestMain {
 //        }
 //        System.out.println(g.updateAward(1,"Dragon Rider",
 //                "Awarded for fearlessness and strategy",
-//                100,
-//                "AUTOMATIC"));
+//                100));
 
 
 

@@ -1,6 +1,7 @@
 import UPT_SQ.EduScrumAwards.model.Award;
 import UPT_SQ.EduScrumAwards.model.AwardRule;
 import UPT_SQ.EduScrumAwards.model.AwardType;
+import UPT_SQ.EduScrumAwards.model.AssignMode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AwardTest {
 
@@ -29,7 +29,8 @@ public class AwardTest {
                 "Participation Award",
                 "Awarded for participating in the event",
                 10,
-                AwardType.MANUAL
+                AwardType.MANUAL,
+                AssignMode.INDIVIDUAL
         );
 
         ArrayList<AwardRule> rules = new ArrayList<>();
@@ -41,12 +42,11 @@ public class AwardTest {
                 "Awarded for achieving goals",
                 50,
                 AwardType.AUTOMATIC,
+                AssignMode.TEAM,
                 rules
         );
-
-
-
     }
+
     @Test
     public void testCreateAward() {
         assertNull(a4);
@@ -55,7 +55,6 @@ public class AwardTest {
         assertNotNull(a3);
     }
 
-
     @Test
     public void testAwardFields() {
         assertEquals(2, a3.getAwardID());
@@ -63,6 +62,7 @@ public class AwardTest {
         assertEquals("Awarded for achieving goals", a3.getAwardDescription());
         assertEquals(50, a3.getPointsValue());
         assertEquals(AwardType.AUTOMATIC, a3.getAssignType());
+        assertEquals(AssignMode.TEAM, a3.getAssignMode());
         assertEquals(1, a3.getAwardRules().size());
     }
 
@@ -73,6 +73,7 @@ public class AwardTest {
         a1.setAwardDescription("Awarded for outstanding performance");
         a1.setPointsValue(100);
         a1.setAssignType(AwardType.MANUAL);
+        a1.setAssignMode(AssignMode.TEAM);
         a1.setAwardRules(new ArrayList<>());
 
         assertEquals(1, a1.getAwardID());
@@ -80,6 +81,7 @@ public class AwardTest {
         assertEquals("Awarded for outstanding performance", a1.getAwardDescription());
         assertEquals(100, a1.getPointsValue());
         assertEquals(AwardType.MANUAL, a1.getAssignType());
+        assertEquals(AssignMode.TEAM, a1.getAssignMode());
         assertNotNull(a1.getAwardRules());
         assertEquals(0, a1.getAwardRules().size());
     }

@@ -155,12 +155,17 @@ public class Global {
      * @param assignType       The type of assignment for the award (will be converted to AwardType).
      * @return "Success" if the award was successfully created and saved, or an error message if any validation fails.
      */
-    public String createAward(String awardName, String awardDescription, int pointsValue, String assignType) {
-        if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0 && !assignType.isEmpty()) {
+    public String createAward(String awardName, String awardDescription, int pointsValue, String assignType,
+                              String assignMode) {
+        if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0 && !assignType.isEmpty() && !assignMode.isEmpty()) {
             if(awardName.length() <= 100) {
                 if(awardDescription.length() <= 500) {
                     if(pointsValue <= 1000) {
-                        Award newAward = new Award(awardName,awardDescription,pointsValue, AwardType.valueOf(assignType.toUpperCase()));
+                        Award newAward = new Award(awardName,
+                                awardDescription,
+                                pointsValue,
+                                AwardType.valueOf(assignType.toUpperCase()),
+                                AssignMode.valueOf(assignMode.toUpperCase()));
                         awards.add(newAward);
                         DatabaseHelper DatabaseHelper = new DatabaseHelper();
                         DatabaseHelper.setup();
@@ -226,21 +231,18 @@ public class Global {
      * @param awardName        The new name of the award. Must not be empty and no longer than 100 characters.
      * @param awardDescription The new description of the award. Must not be empty and no longer than 500 characters.
      * @param pointsValue      The new points value for the award. Must be between 0 and 1000.
-     * @param assignType       The new assignment type for the award (will be converted to AwardType).
      * @return "Success" if the award was successfully updated, or an error message if validation fails or the award does not exist.
      */
-    // assignType  ???????
-    public String updateAward(int id,String awardName, String awardDescription, int pointsValue, String assignType) {
+    public String updateAward(int id,String awardName, String awardDescription, int pointsValue) {
         Award award = searchAward(id);
         if(award != null) {
-            if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0 && !assignType.isEmpty()) {
+            if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0) {
                 if(awardName.length() <= 100) {
                     if(awardDescription.length() <= 500) {
                         if(pointsValue <= 1000) {
                             award.setAwardName(awardName);
                             award.setAwardDescription(awardDescription);
                             award.setPointsValue(pointsValue);
-                            award.setAssignType(AwardType.valueOf(assignType.toUpperCase()));
 
                             DatabaseHelper DatabaseHelper = new DatabaseHelper();
                             DatabaseHelper.setup();

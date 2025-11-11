@@ -32,6 +32,9 @@ public class Award {
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private AwardType assignType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mode")
+    private AssignMode assignMode;
     @Transient
     private ArrayList<AwardRule> awardRules;
 
@@ -44,19 +47,22 @@ public class Award {
     /**
      * Full constructor for creating an award with all attributes specified.
      *
-     * @param awardID the unique ID of the award
-     * @param awardName the name of the award
+     *
+     * @param awardID          the unique ID of the award
+     * @param awardName        the name of the award
      * @param awardDescription the description of the award
-     * @param pointsValue the point value of the award
-     * @param assignType the assignment type of the award
-     * @param awardRules a list of rules associated with this award
+     * @param pointsValue      the point value associated with the award
+     * @param assignType       the assignment type (e.g., automatic or manual)
+     * @param assignMode       the mode that defines how the award is applied
+     * @param awardRules       a list of rules that determine eligibility for this award
      */
-    public Award(int awardID, String awardName, String awardDescription, int pointsValue, AwardType assignType, ArrayList<AwardRule> awardRules) {
+    public Award(int awardID, String awardName, String awardDescription, int pointsValue, AwardType assignType,AssignMode assignMode, ArrayList<AwardRule> awardRules) {
         this.awardID = awardID;
         this.awardName = awardName;
         this.awardDescription = awardDescription;
         this.pointsValue = pointsValue;
         this.assignType = assignType;
+        this.assignMode = assignMode;
         this.awardRules = awardRules;
     }
 
@@ -65,16 +71,18 @@ public class Award {
      * Constructor for creating an award without specifying an ID or rules list.
      * Initializes an empty list of award rules.
      *
-     * @param awardName the name of the award
+     * @param awardName        the name of the award
      * @param awardDescription the description of the award
-     * @param pointsValue the point value of the award
-     * @param assignType the assignment type of the award
+     * @param pointsValue      the point value associated with the award
+     * @param assignType       the assignment type (e.g., automatic or manual)
+     * @param assignMode       the mode that defines how the award is applied
      */
-    public Award(String awardName, String awardDescription, int pointsValue, AwardType assignType) {
+    public Award(String awardName, String awardDescription, int pointsValue, AwardType assignType,AssignMode assignMode) {
         this.awardName = awardName;
         this.awardDescription = awardDescription;
         this.pointsValue = pointsValue;
         this.assignType = assignType;
+        this.assignMode = assignMode;
         this.awardRules = new ArrayList<AwardRule>();
     }
 
@@ -138,6 +146,19 @@ public class Award {
         this.awardRules = awardRules;
     }
 
+    /**
+     * @return the assignment mode
+     */
+    public AssignMode getAssignMode() {
+        return assignMode;
+    }
+
+    /**
+     * @param assignMode the assignment mode to set
+     */
+    public void setAssignMode(AssignMode assignMode) {
+        this.assignMode = assignMode;
+    }
 
     /**
      * Searches for an {@link AwardRule} in the list of award rules by its rule ID.
@@ -160,14 +181,6 @@ public class Award {
         return null;
     }
 
-    /**
-     * Returns a string representation of the {@link Award} object.
-     *
-     * The returned string includes key information such as the award ID,
-     * name, description, points value, and assignment type.
-     *
-     * @return a string representation of the {@link Award}
-     */
     @Override
     public String toString() {
         return "Award{" +
@@ -176,6 +189,7 @@ public class Award {
                 ", awardDescription='" + awardDescription + '\'' +
                 ", pointsValue=" + pointsValue +
                 ", assignType=" + assignType +
+                ", assignMode=" + assignMode +
                 '}';
     }
 }
