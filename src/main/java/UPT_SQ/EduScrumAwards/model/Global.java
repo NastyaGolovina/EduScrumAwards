@@ -217,6 +217,28 @@ public class Global {
         DatabaseHelper.exit();
     }
 
+
+    /**
+     * Reads all student awards from the database using JPA and stores them in the
+     * {@code studentsAwards} list.
+     *
+
+     * Note: Ensure that the {@link DatabaseHelper} and {@link StudentAward} classes
+     * are properly configured with JPA/Hibernate mappings before calling this method.
+     */
+    public void readAllStudentAwardWithJplq() {
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+
+        List<StudentAward> studentAwardList = session.createQuery("SELECT sa FROM StudentAward sa", StudentAward.class).getResultList();
+
+        this.studentsAwards = (ArrayList<StudentAward>)studentAwardList;
+
+        session.close();
+        DatabaseHelper.exit();
+    }
+
     /**
      * Searches for an award in the local awards list by its unique ID.
      *
@@ -336,7 +358,7 @@ public class Global {
      * @param awardId the ID of the award
      * @return "Success" if created successfully, or an error message if any field is invalid or missing
      */
-
+    // move to api
     public String createAwardRule(double completionPercent, boolean isAllGoalsCompleted, long teacherId, int projectId,int awardId) {
         User user = searchUser(teacherId);
         Award award = searchAward(awardId);
@@ -369,6 +391,7 @@ public class Global {
      * @param awardId the ID of the award
      * @return "Success" if updated successfully, or an error message if any field is invalid or missing
      */
+    // move to api
     public String updateAwardRule(int ruleId, double completionPercent, boolean isAllGoalsCompleted, int awardId) {
         Award award = searchAward(awardId);
 

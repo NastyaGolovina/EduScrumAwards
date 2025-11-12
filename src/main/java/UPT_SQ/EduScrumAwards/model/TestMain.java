@@ -137,6 +137,10 @@ public class TestMain {
 //        System.out.println(g.updateAward(1,"Dragon Rider",
 //                "Awarded for fearlessness and strategy",
 //                100));
+//        g.readAllStudentAwardWithJplq();
+//        for(StudentAward sa : g.getStudentsAwards()) {
+//            System.out.println(sa);
+//        }
 
 
         // Test create/update award
