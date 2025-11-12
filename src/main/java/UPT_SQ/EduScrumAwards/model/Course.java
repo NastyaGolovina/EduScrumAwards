@@ -48,7 +48,10 @@ public class Course {
     /**
      * No-args constructor required by Hibernate
      */
-    public Course() {}
+    public Course() {
+        courseTeachers = new ArrayList<>();
+        projects = new ArrayList<>();
+    }
 
     /**
      * Constructor of the class Course
@@ -56,6 +59,8 @@ public class Course {
      */
     public Course(String courseName) {
         this.courseName = courseName;
+        courseTeachers = new ArrayList<>();
+        projects = new ArrayList<>();
     }
 
     /**
@@ -74,7 +79,6 @@ public class Course {
      * Setters of the attributes of the class Course
      * The params are the attribute to change
      */
-    public void setCourseID(int courseID) { this.courseID = courseID; }
     public void setCourseName(String courseName) { this.courseName = courseName; }
     public void setTeachers(List<CourseTeacher> teachers) { this.courseTeachers = teachers; }
     public void setProjects(List<Project> projects) { this.projects = projects; }
@@ -212,19 +216,16 @@ public class Course {
     /**
      * Creates a new CourseTeacher and saves it to the database.
      *
-     * @param course the associated Course (must not be null)
      * @param teacher the associated Teacher (must not be null)
      * @param isResponsible whether the teacher is responsible for the course
      * @return "Success" if created and saved; error message otherwise
      */
-    public String createCourseTeacher(Course course, Teacher teacher, boolean isResponsible) {
-        if (course == null) {
-            return "ERROR: Course is null!";
-        }
+    public String createCourseTeacher(Teacher teacher, boolean isResponsible) {
+
         if (teacher == null) {
             return "ERROR: Teacher is null!";
         }
-        CourseTeacher newCt = new CourseTeacher(course, teacher, isResponsible);
+        CourseTeacher newCt = new CourseTeacher(this, teacher, isResponsible);
         courseTeachers.add(newCt);
 
         DatabaseHelper DatabaseHelper = new DatabaseHelper();
@@ -300,5 +301,51 @@ public class Course {
             return "Success";
         }
         return "ERROR: CourseTeacher with this id does not exist";
+    }
+
+    /**
+     * Deletes a CourseTeacher by its ID from the database and local list.
+     *
+     * @param id the CourseTeacher ID to delete
+     * @return "Success" if deleted; error message otherwise
+     */
+    public String deleteCourseTeacher(int id) {
+        // 1. Buscar localmente (como hacen update/search)
+        CourseTeacher ct = searchCourseTeacher(id);
+        if (ct == null) {
+            return "ERROR: CourseTeacher with ID " + id + " does not exist";
+        }
+
+        // 2. Eliminar de la base de datos
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = null;
+        try {
+            session = databaseHelper.getSessionFactory().openSession();
+            session.beginTransaction();
+
+            // 🔥 Opción 1 (recomendada): usa remove() con la entidad gestionada
+            // Primero hay que hacer merge/obtener una instancia gestionada
+            CourseTeacher managedCt = session.merge(ct);
+            session.remove(managedCt);
+
+            session.getTransaction().commit();
+
+            // 3. Eliminar también de la lista local
+            courseTeachers.remove(ct);
+
+            return "Success";
+
+        } catch (Exception e) {
+            if (session != null && session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+            return "ERROR: Failed to delete CourseTeacher: " + e.getMessage();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+            databaseHelper.exit();
+        }
     }
 }

@@ -3,6 +3,7 @@ package UPT_SQ.EduScrumAwards.model;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
+import javax.management.relation.Role;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -209,6 +210,94 @@ public class Award {
         session.close();
         DatabaseHelper.exit();
     }
+
+    /**
+     * Creates and persists a new {@link AwardRule} for a given teacher and project.
+     *
+     * This method validates that the completion percentage is within the valid range (0–100),
+     * verifies that the provided teacher has the {@code TEACHER} role, and ensures the teacher
+     * is associated with the course of the given project. If all validations pass, a new
+     * {@link AwardRule} is created, added to the in-memory list, and persisted in the database.
+     *
+     * @param completionPercent the percentage of project completion required to trigger the award rule (0–100)
+     * @param isAllGoalsCompleted {@code true} if all project goals must be completed to trigger the award; {@code false} otherwise
+     * @param teacher the {@link Teacher} creating the award rule
+     * @param project the {@link Project} for which the award rule is being created
+     * @return a status message:
+
+     */
+    public String createAwardRule(double completionPercent, boolean isAllGoalsCompleted, User teacher, Project project) {
+            if(completionPercent>= 0 && completionPercent <= 100) {
+                if(teacher.getRole() == UserRole.TEACHER) {
+                    if (project.getCourse().isCourseTeacher((Teacher) teacher)) {
+                        AwardRule awardRule = new AwardRule(completionPercent, isAllGoalsCompleted,
+                                (Teacher) teacher, project, this);
+                        awardRules.add(awardRule);
+                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+                        DatabaseHelper.setup();
+                        Session session = DatabaseHelper.getSessionFactory().openSession();
+                        session.beginTransaction();
+
+                        session.persist(awardRule);
+
+                        session.getTransaction().commit();
+                        session.close();
+                        DatabaseHelper.exit();
+                        return "Success";
+                    } else {
+                    return "ERROR: teacher is not related to this course";
+                    }
+                } else  {
+                    return "ERROR: user isn't teacher";
+                }
+            } else {
+                return "ERROR: Completion Percent out of the range";
+            }
+    }
+
+
+
+    /**
+     * Updates an existing {@link AwardRule} with new parameters and persists the changes.
+     *
+     * This method searches for an existing award rule by its ID, then updates
+     * its completion percentage and goal completion requirement. If the rule exists
+     * and the completion percentage is valid (0–100), the updated rule is merged into
+     * the database.
+     *
+     * @param id the unique identifier of the award rule to update
+     * @param completionPercent the new completion percentage required to trigger the award (0–100)
+     * @param isAllGoalsCompleted {@code true} if all project goals must be completed to trigger the award; {@code false} otherwise
+     * @return a status message:
+     */
+    public String updateAwardRule(int id,double completionPercent, boolean isAllGoalsCompleted) {
+        if(completionPercent>= 0 && completionPercent <= 100) {
+            AwardRule rule = searchAwardRule(id);
+            if(rule != null) {
+                rule.setCompletionPercent(completionPercent);
+                rule.setAllGoalsCompleted(isAllGoalsCompleted);
+
+                DatabaseHelper DatabaseHelper = new DatabaseHelper();
+                DatabaseHelper.setup();
+                Session session = DatabaseHelper.getSessionFactory().openSession();
+                session.beginTransaction();
+
+                session.merge(rule);
+
+                session.getTransaction().commit();
+                session.close();
+                DatabaseHelper.exit();
+                return "Success";
+            } else {
+                return "ERROR: Rule does not exist";
+            }
+        } else {
+            return "ERROR: Completion Percent out of the range";
+        }
+    }
+
+
+
 
     @Override
     public String toString() {

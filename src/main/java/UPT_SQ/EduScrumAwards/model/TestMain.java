@@ -2,6 +2,7 @@ package UPT_SQ.EduScrumAwards.model;
 
 import org.hibernate.Session;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class TestMain {
@@ -79,7 +80,6 @@ public class TestMain {
         session.persist(mem);
         session.persist(teacher);
         session.persist(course);
-        session.persist(courseTeacher);
         session.persist(project);
         session.persist(sprint1);
         session.persist(goal1);
@@ -88,13 +88,41 @@ public class TestMain {
         session.persist(studentAward);
 
 
+        session.flush();
         session.getTransaction().commit();
         session.close();
         DatabaseHelper.exit();
 
+        ////        TEST Global
+        Global g = new Global();
+        g.createCourse("###### TEST COURSE 2");
+        g.readAllCourseWithJplq();
+        for (Course courses : g.getCourses()) {
+            System.out.println("###### " + courses.getCourseName());
+        }
+        System.out.println("###### Searched course: " + g.searchCourse(1).getCourseName());
+        g.updateCourse(1, "NEW NAME");
+        System.out.println("###### Searched course: " + g.searchCourse(1).getCourseName());
 
-////        test Global
-//        Global g = new Global();
+
+        course.createCourseTeacher(teacher, false);
+        course.readAllCourseTeacherWithJplq();
+        for (CourseTeacher ct : course.getTeachers()) {
+            System.out.println("###### " + ct.getTeacher().getName());
+        }
+        int teacherId = course.getTeachers().get(0).getCourseTeacherID();
+        System.out.println("###### Searched teacher: " + course.searchCourseTeacher(teacherId).getTeacher().getName() + ". Is responsible Teacher: " + (course.searchCourseTeacher(teacherId).isResponsible() ? "Yes" : "No"));
+        course.updateCourseTeacher(teacherId, true);
+        System.out.println("###### Searched teacher: " + course.searchCourseTeacher(teacherId).getTeacher().getName() + ". Is responsible Teacher: " + (course.searchCourseTeacher(teacherId).isResponsible() ? "Yes" : "No"));
+        course.readAllCourseTeacherWithJplq();
+        System.out.println(("###### Size of ct's: " + course.getTeachers().size()));
+        course.deleteCourseTeacher(teacherId);
+        course.readAllCourseTeacherWithJplq();
+        System.out.println(("###### Size of ct's: " + course.getTeachers().size()));
+
+
+
+
 ////        g.createAward("Top Performer",
 ////                "Awarded for outstanding performance",
 ////                100,
