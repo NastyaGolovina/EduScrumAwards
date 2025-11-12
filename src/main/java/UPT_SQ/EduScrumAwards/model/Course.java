@@ -68,6 +68,10 @@ public class Course {
         this.courseTeachers = courseTeachers;
     }
 
+    public void setCourseID(int courseID) {
+        this.courseID = courseID;
+    }
+
     /**
      * Getters of the attributes of the class Course
      * @return the attribute

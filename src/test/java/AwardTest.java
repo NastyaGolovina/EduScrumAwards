@@ -85,4 +85,41 @@ public class AwardTest {
         assertNotNull(a1.getAwardRules());
         assertEquals(0, a1.getAwardRules().size());
     }
+
+
+    /**
+     * Tests the searchAwardRule method in the Award class.
+     * Ensures that the correct rule is found by ID or null is returned if not found.
+     */
+    @Test
+    public void testSearchAwardRule() {
+        // Create AwardRules with assigned IDs
+        AwardRule rule1 = new AwardRule();
+        rule1.setRuleId(1);
+        AwardRule rule2 = new AwardRule();
+        rule2.setRuleId(2);
+        AwardRule rule3 = new AwardRule();
+        rule3.setRuleId(3);
+
+        // Add them to the Award's list
+        ArrayList<AwardRule> ruleList = new ArrayList<>();
+        ruleList.add(rule1);
+        ruleList.add(rule2);
+        ruleList.add(rule3);
+
+        a1.setAwardRules(ruleList);
+
+        // Case 1: existing rule
+        AwardRule found = a1.searchAwardRule(2);
+        assertNotNull(found, "Rule with ID 2 should be found");
+        assertEquals(2, found.getRuleId());
+
+        // Case 2: first and last rule
+        assertEquals(rule1, a1.searchAwardRule(1));
+        assertEquals(rule3, a1.searchAwardRule(3));
+
+        // Case 3: non-existing rule
+        AwardRule notFound = a1.searchAwardRule(99);
+        assertNull(notFound, "Non-existing rule should return null");
+    }
 }
