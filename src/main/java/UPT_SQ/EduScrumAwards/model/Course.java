@@ -210,7 +210,7 @@ public class Course {
         if (teacher == null) {
             return "ERROR: Teacher is null!";
         }
-        CourseTeacher newCt = new CourseTeacher(0, course, teacher, isResponsible);
+        CourseTeacher newCt = new CourseTeacher(course, teacher, isResponsible);
         courseTeachers.add(newCt);
 
         DatabaseHelper DatabaseHelper = new DatabaseHelper();

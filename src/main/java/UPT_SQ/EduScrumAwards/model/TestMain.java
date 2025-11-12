@@ -36,7 +36,7 @@ public class TestMain {
         teacher.setPassword("pass123");
 
         Course course = new Course("Test Course " + ts);
-        CourseTeacher courseTeacher = new CourseTeacher(0, course, teacher, true);
+        CourseTeacher courseTeacher = new CourseTeacher(course, teacher, true);
 
         Project project = new Project();
         project.setProjectName("AI Development " + ts);

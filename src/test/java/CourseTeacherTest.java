@@ -31,7 +31,7 @@ public class CourseTeacherTest {
         Teacher teacher = new Teacher();
         teacher.setName("John");
 
-        CourseTeacher ct = new CourseTeacher(42, course, teacher, true);
+        CourseTeacher ct = new CourseTeacher(course, teacher, true);
 
         assertEquals(42, ct.getCourseTeacherID());
         assertSame(course, ct.getCourse());
