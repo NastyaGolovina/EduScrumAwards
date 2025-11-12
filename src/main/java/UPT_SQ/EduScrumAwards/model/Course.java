@@ -196,6 +196,20 @@ public class Course {
     }
 
     /**
+     * Check if a teacher is a CT of the course
+     * @param t Teacher
+     * @return true if it is, false otherwise
+     */
+    public boolean isCourseTeacher(Teacher t) {
+        for (CourseTeacher ct : courseTeachers ) {
+            if (ct.getTeacher() == t) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Creates a new CourseTeacher and saves it to the database.
      *
      * @param course the associated Course (must not be null)

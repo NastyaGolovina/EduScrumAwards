@@ -36,16 +36,16 @@ public class CourseTest {
     void findCourseTeacherById_found_and_notFound() {
         Course c = new Course();
         Teacher t = new Teacher();
-        CourseTeacher ct1 = new CourseTeacher(5, c, t, true);
-        CourseTeacher ct2 = new CourseTeacher(6, c, t, false);
+        CourseTeacher ct1 = new CourseTeacher(c, t, true);
+        CourseTeacher ct2 = new CourseTeacher(c, t, false);
         List<CourseTeacher> list = new ArrayList<>();
         list.add(ct1);
         list.add(ct2);
         c.setTeachers(list);
 
-        assertSame(ct1, c.findCourseTeacherById(5));
-        assertSame(ct2, c.findCourseTeacherById(6));
-        assertNull(c.findCourseTeacherById(7));
+        assertSame(ct1, c.findCourseTeacherById(ct1.getCourseTeacherID()));
+        assertSame(ct2, c.findCourseTeacherById(ct2.getCourseTeacherID()));
+        assertNull(c.findCourseTeacherById(0));
     }
 
     @Test
@@ -53,11 +53,11 @@ public class CourseTest {
         Course c = new Course();
         Teacher t1 = new Teacher();
         t1.setName("  John DOE  ");
-        CourseTeacher ct1 = new CourseTeacher(1, c, t1, true);
+        CourseTeacher ct1 = new CourseTeacher(c, t1, true);
 
         Teacher t2 = new Teacher();
         t2.setName("Alice");
-        CourseTeacher ct2 = new CourseTeacher(2, c, t2, false);
+        CourseTeacher ct2 = new CourseTeacher(c, t2, false);
 
         List<CourseTeacher> list = new ArrayList<>();
         list.add(ct1);
@@ -77,8 +77,8 @@ public class CourseTest {
         Teacher t1 = new Teacher(); t1.setName("A");
         Teacher t2 = new Teacher(); t2.setName("B");
 
-        CourseTeacher storedById = new CourseTeacher(7, c, t1, true);
-        CourseTeacher storedByRef = new CourseTeacher(0, c, t2, false); // id <= 0 to force reference path
+        CourseTeacher storedById = new CourseTeacher(c, t1, true);
+        CourseTeacher storedByRef = new CourseTeacher(c, t2, false); // id <= 0 to force reference path
 
         List<CourseTeacher> list = new ArrayList<>();
         list.add(storedById);
@@ -86,14 +86,14 @@ public class CourseTest {
         c.setTeachers(list);
 
         // by ID path (different instance, same id)
-        CourseTeacher probeSameId = new CourseTeacher(7, c, t1, true);
+        CourseTeacher probeSameId = new CourseTeacher(c, t1, true);
         assertSame(storedById, c.findCourseTeacher(probeSameId));
 
         // by reference path
         assertSame(storedByRef, c.findCourseTeacher(storedByRef));
 
         // not found
-        CourseTeacher notPresent = new CourseTeacher(9, c, new Teacher(), false);
+        CourseTeacher notPresent = new CourseTeacher(c, new Teacher(), false);
         assertNull(c.findCourseTeacher(notPresent));
         assertNull(c.findCourseTeacher(null));
     }
