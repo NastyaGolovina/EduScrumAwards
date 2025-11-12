@@ -1,5 +1,6 @@
 package UPT_SQ.EduScrumAwards.model;
 
+//import jakarta.annotation.PostConstruct;
 import org.hibernate.Session;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
  * It is typically used to store and share global application data
  * throughout the program.
  */
-//@Component
+
 public class Global {
     private ArrayList<User> users;
     private  ArrayList <Course> courses;
@@ -34,6 +35,11 @@ public class Global {
         studentsAwards = new ArrayList<>();
         courseTeachers = new ArrayList<>();
     }
+//
+//    @PostConstruct
+//    public void init() {
+//        readAllAwardWithJplq();
+//    }
 
     /**
      * Returns the list of all users.
