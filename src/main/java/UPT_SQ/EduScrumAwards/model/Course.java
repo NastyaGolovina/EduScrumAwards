@@ -74,7 +74,6 @@ public class Course {
      * Setters of the attributes of the class Course
      * The params are the attribute to change
      */
-    public void setCourseID(int courseID) { this.courseID = courseID; }
     public void setCourseName(String courseName) { this.courseName = courseName; }
     public void setTeachers(List<CourseTeacher> teachers) { this.courseTeachers = teachers; }
     public void setProjects(List<Project> projects) { this.projects = projects; }
@@ -212,19 +211,16 @@ public class Course {
     /**
      * Creates a new CourseTeacher and saves it to the database.
      *
-     * @param course the associated Course (must not be null)
      * @param teacher the associated Teacher (must not be null)
      * @param isResponsible whether the teacher is responsible for the course
      * @return "Success" if created and saved; error message otherwise
      */
-    public String createCourseTeacher(Course course, Teacher teacher, boolean isResponsible) {
-        if (course == null) {
-            return "ERROR: Course is null!";
-        }
+    public String createCourseTeacher(Teacher teacher, boolean isResponsible) {
+
         if (teacher == null) {
             return "ERROR: Teacher is null!";
         }
-        CourseTeacher newCt = new CourseTeacher(course, teacher, isResponsible);
+        CourseTeacher newCt = new CourseTeacher(this, teacher, isResponsible);
         courseTeachers.add(newCt);
 
         DatabaseHelper DatabaseHelper = new DatabaseHelper();

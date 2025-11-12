@@ -2,6 +2,7 @@ package UPT_SQ.EduScrumAwards.model;
 
 import org.hibernate.Session;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class TestMain {
@@ -92,9 +93,20 @@ public class TestMain {
         session.close();
         DatabaseHelper.exit();
 
+        ////        TEST Global
+        Global g = new Global();
+        g.createCourse("TEST COURSE 2");
+        g.readAllCourseWithJplq();
+        for (Course courses : g.getCourses()) {
+            System.out.println(courses.getCourseName());
+        }
+        System.out.println("Searched course: " + g.searchCourse(1).getCourseName());
+        g.updateCourse(1, "NEW NAME");
+        System.out.println("Searched course: " + g.searchCourse(1).getCourseName());
 
-////        test Global
-//        Global g = new Global();
+
+
+
 ////        g.createAward("Top Performer",
 ////                "Awarded for outstanding performance",
 ////                100,
