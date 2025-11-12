@@ -35,8 +35,12 @@ public class TestMain {
         teacher.setLogin("prof_smith_" + ts);
         teacher.setPassword("pass123");
 
-        int courseId = (int)((ts % 1000000000L) + 1); // ensure positive, avoids PK clash on reruns
-        Course course = new Course(courseId, "Test Course " + ts);
+//        int courseId = (int)((ts % 1000000000L) + 1); // ensure positive, avoids PK clash on reruns
+//        Course course = new Course(courseId, "Test Course " + ts);
+//        CourseTeacher courseTeacher = new CourseTeacher(0, course, teacher, true);
+
+        Course course = new Course();
+        course.setCourseName("Test Course " + ts);
         CourseTeacher courseTeacher = new CourseTeacher(0, course, teacher, true);
 
         Project project = new Project();
@@ -94,21 +98,24 @@ public class TestMain {
         DatabaseHelper.exit();
 
 
-////        test Global
+//////        test Global
 //        Global g = new Global();
-////        g.createAward("Top Performer",
-////                "Awarded for outstanding performance",
-////                100,
-////                "AUTOMATIC",
-////                 "TEAM");
+//////        g.createAward("Top Performer",
+//////                "Awarded for outstanding performance",
+//////                100,
+//////                "AUTOMATIC",
+//////                 "TEAM");
 //        g.readAllAwardWithJplq();
 //        for(int i = 0; i < g.getAwards().size(); i++)
 //        {
 //            System.out.println("Award ID: " + g.getAwards().get(i));
+//            for(AwardRule ar : g.getAwards().get(i).getAwardRules()) {
+//                System.out.println("Award Rule: " + ar);
+//            }
 //        }
-//        System.out.println(g.updateAward(1,"Dragon Rider",
-//                "Awarded for fearlessness and strategy",
-//                100));
+////        System.out.println(g.updateAward(1,"Dragon Rider",
+////                "Awarded for fearlessness and strategy",
+////                100));
 
 
 

@@ -203,6 +203,10 @@ public class Global {
         List<Award> awardList = session.createQuery("SELECT a FROM Award a", Award.class).getResultList();
 
         awards = (ArrayList<Award>)awardList;
+
+        for (Award award : awards) {
+            award.readAllAwardRuleWithJplq();
+        }
         session.close();
         DatabaseHelper.exit();
     }

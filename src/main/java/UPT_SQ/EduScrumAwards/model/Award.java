@@ -1,6 +1,7 @@
 package UPT_SQ.EduScrumAwards.model;
 
 import jakarta.persistence.*;
+import org.hibernate.Session;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,6 +180,34 @@ public class Award {
             return awardRules.get(i);
         }
         return null;
+    }
+
+
+    /**
+     * Reads all {@link AwardRule} entities from the database that are associated with the current {@code awardID}.
+     *
+     * This method establishes a Hibernate session using {@link DatabaseHelper}, executes an HQL query
+     * to fetch all award rules where the {@code awardId} matches the current instance's {@code awardID},
+     * and stores the resulting list in {@code this.awardRules}.
+     *
+     *
+     * Note: The method opens and closes its own Hibernate session and DatabaseHelper resources.
+     *
+     * @throws org.hibernate.HibernateException if there is an error executing the query
+     * @see DatabaseHelper
+     * @see AwardRule
+     */
+    public void readAllAwardRuleWithJplq() {
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+
+        List<AwardRule> awardRuleList = session.createQuery("SELECT ar FROM AwardRule ar WHERE  ar.award.awardID = :awardId", AwardRule.class)
+                .setParameter("awardId", this.awardID)
+                .getResultList();
+        this.awardRules = (ArrayList<AwardRule>)awardRuleList;
+        session.close();
+        DatabaseHelper.exit();
     }
 
     @Override
