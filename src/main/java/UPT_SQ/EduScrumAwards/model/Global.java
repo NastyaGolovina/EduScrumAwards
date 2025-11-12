@@ -482,4 +482,109 @@ public class Global {
         return "ERROR: Course with this id does not exist";
     }
 
+     /**
+     * Creates a new TEAM object and saves it to the database.
+     * @param teamName    The name of the team. Must not be empty and no longer than 100 characters.
+     * @return "Success" if the team was successfully created and saved, or an error message if any validation fails.
+     */
+     public String createTeam( String teamName) {
+         if (teamName == null || teamName.isEmpty())
+             return "ERROR: Name is empty!";
+         if (teamName.length() > 100)
+             return "ERROR: Name is too long!";
+
+         // prevent duplicate name locally
+         for (Team t : teams) {
+             if (t.getTeamName().equalsIgnoreCase(teamName)) {
+                 return "ERROR: Team name already exists!";
+             }
+         }
+
+         // Create new team
+         Team newTeam = new Team(teamName);
+         teams.add(newTeam);
+
+         // saving team just created into database by using Hibernate
+         DatabaseHelper DatabaseHelper = new DatabaseHelper();
+         DatabaseHelper.setup();
+         Session session = DatabaseHelper.getSessionFactory().openSession();
+         session.beginTransaction();
+
+         session.persist(newTeam);
+
+         session.getTransaction().commit();
+         session.close();
+         DatabaseHelper.exit();
+
+         return "Success";
+     }
+
+    /**
+     * Loads all Team objects from the database and stores them in the local teams list.
+     * Uses JPLQ to query the database.
+     */
+    public void readAllTeamWithJplq() {
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+
+        List<Team> teamList = session.createQuery("SELECT t FROM Team t", Team.class).getResultList();
+        teams = new ArrayList<>(teamList);
+
+        // also load members for each team so the in-memory cache is complete
+        for (Team t : teams) {
+            if (t != null) t.readAllTeamMemberWithJplq();
+        }
+
+        session.close();
+        DatabaseHelper.exit();
+    }
+
+    /**
+     * Searches for a team in the local team list by its unique ID.
+     *
+     * @param teamId The ID of the team to search for.
+     * @return The Team object with the given ID if found; otherwise, returns null.
+     */
+    public Team searchTeam(int teamId) {
+        int i = 0;
+        while (i < teams.size() && teams.get(i).getTeamID() != teamId)
+            i++;
+        if (i != teams.size()) {
+            return teams.get(i);
+        }
+        return null;
+    }
+
+    /**
+     * Updates the name of an existing {@link Team} identified by its unique ID.
+     *
+    * @param id        the unique ID of the {@link Team} to update
+    * @param teamName  the new name for the team; must not be {@code null} or empty, and must be ≤ 100 characters
+    * @return "Success" if the update was completed successfully,
+     */
+
+    public String updateTeam(int id, String teamName) {
+        Team team = searchTeam(id);
+        if (team == null)
+            return "ERROR: Team with this id does not exist";
+        if (teamName == null || teamName.isEmpty())
+            return "ERROR: Name is empty!";
+        if (teamName.length() > 100)
+            return "ERROR: Name is too long!";
+
+        team.setTeamName(teamName);
+
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        session.merge(team);
+
+        session.getTransaction().commit();
+        session.close();
+        DatabaseHelper.exit();
+        return "Success";
+    }
 }
