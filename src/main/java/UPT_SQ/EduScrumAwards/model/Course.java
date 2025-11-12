@@ -63,6 +63,11 @@ public class Course {
         projects = new ArrayList<>();
     }
 
+
+    public void setCourseTeachers(List<CourseTeacher> courseTeachers) {
+        this.courseTeachers = courseTeachers;
+    }
+
     /**
      * Getters of the attributes of the class Course
      * @return the attribute

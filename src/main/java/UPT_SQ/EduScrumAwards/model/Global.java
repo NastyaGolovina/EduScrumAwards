@@ -343,7 +343,9 @@ public class Global {
         }
         if(award != null) {
             if (user != null) {
-               return award.createAwardRule(completionPercent,isAllGoalsCompleted,user,project);
+                if(project != null) {
+                    return award.createAwardRule(completionPercent,isAllGoalsCompleted,user,project);
+                }
             }
         }
 

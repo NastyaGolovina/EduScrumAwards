@@ -80,6 +80,7 @@ public class TestMain {
         session.persist(mem);
         session.persist(teacher);
         session.persist(course);
+        session.persist(courseTeacher);
         session.persist(project);
         session.persist(sprint1);
         session.persist(goal1);
@@ -93,34 +94,34 @@ public class TestMain {
         session.close();
         DatabaseHelper.exit();
 
-        ////        TEST Global
-        Global g = new Global();
-        g.createCourse("###### TEST COURSE 2");
-        g.readAllCourseWithJplq();
-        for (Course courses : g.getCourses()) {
-            System.out.println("###### " + courses.getCourseName());
-        }
-        System.out.println("###### Searched course: " + g.searchCourse(1).getCourseName());
-        g.updateCourse(1, "NEW NAME");
-        System.out.println("###### Searched course: " + g.searchCourse(1).getCourseName());
-
-
-        course.createCourseTeacher(teacher, false);
-        course.readAllCourseTeacherWithJplq();
-        for (CourseTeacher ct : course.getTeachers()) {
-            System.out.println("###### " + ct.getTeacher().getName());
-        }
-        int teacherId = course.getTeachers().get(0).getCourseTeacherID();
-        System.out.println("###### Searched teacher: " + course.searchCourseTeacher(teacherId).getTeacher().getName() + ". Is responsible Teacher: " + (course.searchCourseTeacher(teacherId).isResponsible() ? "Yes" : "No"));
-        course.updateCourseTeacher(teacherId, true);
-        System.out.println("###### Searched teacher: " + course.searchCourseTeacher(teacherId).getTeacher().getName() + ". Is responsible Teacher: " + (course.searchCourseTeacher(teacherId).isResponsible() ? "Yes" : "No"));
-        course.readAllCourseTeacherWithJplq();
-        System.out.println(("###### Size of ct's: " + course.getTeachers().size()));
-        course.deleteCourseTeacher(teacherId);
-        course.readAllCourseTeacherWithJplq();
-        System.out.println(("###### Size of ct's: " + course.getTeachers().size()));
-
-
+//        ////        TEST Global
+//        Global g = new Global();
+//        g.createCourse("###### TEST COURSE 2");
+//        g.readAllCourseWithJplq();
+//        for (Course courses : g.getCourses()) {
+//            System.out.println("###### " + courses.getCourseName());
+//        }
+//        System.out.println("###### Searched course: " + g.searchCourse(1).getCourseName());
+//        g.updateCourse(1, "NEW NAME");
+//        System.out.println("###### Searched course: " + g.searchCourse(1).getCourseName());
+//
+//
+//        course.createCourseTeacher(teacher, false);
+//        course.readAllCourseTeacherWithJplq();
+//        for (CourseTeacher ct : course.getTeachers()) {
+//            System.out.println("###### " + ct.getTeacher().getName());
+//        }
+//        int teacherId = course.getTeachers().get(0).getCourseTeacherID();
+//        System.out.println("###### Searched teacher: " + course.searchCourseTeacher(teacherId).getTeacher().getName() + ". Is responsible Teacher: " + (course.searchCourseTeacher(teacherId).isResponsible() ? "Yes" : "No"));
+//        course.updateCourseTeacher(teacherId, true);
+//        System.out.println("###### Searched teacher: " + course.searchCourseTeacher(teacherId).getTeacher().getName() + ". Is responsible Teacher: " + (course.searchCourseTeacher(teacherId).isResponsible() ? "Yes" : "No"));
+//        course.readAllCourseTeacherWithJplq();
+//        System.out.println(("###### Size of ct's: " + course.getTeachers().size()));
+//        course.deleteCourseTeacher(teacherId);
+//        course.readAllCourseTeacherWithJplq();
+//        System.out.println(("###### Size of ct's: " + course.getTeachers().size()));
+//
+//
 
 
 ////        g.createAward("Top Performer",
@@ -138,6 +139,34 @@ public class TestMain {
 //                100));
 
 
+        // Test create/update award
+//        Global global = new Global();
+//
+//        global.getUsers().add(student);
+//        global.getUsers().add(teacher);
+//        global.getTeams().add(team);
+//        ArrayList<AwardRule> awardRules =new  ArrayList<>();
+//        awardRules.add(awardRule);
+//        award.setAwardRules(awardRules);
+//        global.getAwards().add(award);
+//        global.getStudentsAwards().add(studentAward);
+//        ArrayList<Project> projects = new ArrayList<>();
+//        projects.add(project);
+//        ArrayList<CourseTeacher> courseTeachers = new ArrayList<>();
+//        courseTeachers.add(courseTeacher);
+//        course.setCourseTeachers(courseTeachers);
+//        course.setProjects(projects);
+//        global.getCourses().add(course);
+//        global.getCourseTeachers().add(courseTeacher);
+//
+//
+//        System.out.println(project.getProjectId());
+//
+//        System.out.println(global.createAwardRule(30,true,2,1,1));
+//        System.out.println(global.updateAwardRule(1,25,true,1));
+//
+//
+//
 
 
     }
