@@ -312,7 +312,7 @@ public class Global {
             return "ERROR: Name is too long!";
         }
 
-        Course newCourse = new Course(0, courseName);
+        Course newCourse = new Course(courseName);
         courses.add(newCourse);
 
         DatabaseHelper DatabaseHelper = new DatabaseHelper();

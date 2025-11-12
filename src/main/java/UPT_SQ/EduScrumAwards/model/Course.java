@@ -52,11 +52,9 @@ public class Course {
 
     /**
      * Constructor of the class Course
-     * @param courseID Integer with the ID
      * @param courseName String with the name
      */
-    public Course(int courseID, String courseName) {
-        this.courseID = courseID;
+    public Course(String courseName) {
         this.courseName = courseName;
     }
 
