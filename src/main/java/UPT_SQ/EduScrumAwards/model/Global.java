@@ -288,36 +288,29 @@ public class Global {
      * @param id               The ID of the award to update.
      * @param awardName        The new name of the award. Must not be empty and no longer than 100 characters.
      * @param awardDescription The new description of the award. Must not be empty and no longer than 500 characters.
-     * @param pointsValue      The new points value for the award. Must be between 0 and 1000.
      * @return "Success" if the award was successfully updated, or an error message if validation fails or the award does not exist.
      */
-//    pointsValue
-    public String updateAward(int id,String awardName, String awardDescription, int pointsValue) {
+    public String updateAward(int id,String awardName, String awardDescription) {
         Award award = searchAward(id);
         if(award != null) {
-            if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0) {
+            if(!awardName.isEmpty() && !awardDescription.isEmpty()) {
                 if(awardName.length() <= 100) {
                     if(awardDescription.length() <= 500) {
-                        if(pointsValue <= 1000) {
-                            award.setAwardName(awardName);
-                            award.setAwardDescription(awardDescription);
-                            award.setPointsValue(pointsValue);
+                        award.setAwardName(awardName);
+                        award.setAwardDescription(awardDescription);
 
-                            DatabaseHelper DatabaseHelper = new DatabaseHelper();
-                            DatabaseHelper.setup();
-                            Session session = DatabaseHelper.getSessionFactory().openSession();
-                            session.beginTransaction();
+                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+                        DatabaseHelper.setup();
+                        Session session = DatabaseHelper.getSessionFactory().openSession();
+                        session.beginTransaction();
 
-                            session.merge(award);
+                        session.merge(award);
 
-                            session.getTransaction().commit();
-                            session.close();
-                            DatabaseHelper.exit();
+                        session.getTransaction().commit();
+                        session.close();
+                        DatabaseHelper.exit();
 
-                            return "Success";
-                        } else {
-                            return  "ERROR: Too many points!";
-                        }
+                        return "Success";
                     } else {
                         return "ERROR: Description is too long!";
                     }

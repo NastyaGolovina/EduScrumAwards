@@ -9,123 +9,123 @@ import java.util.Date;
 
 public class TestMain {
     public static void main(String[] args) {
-
-        DatabaseHelper databaseHelper = new DatabaseHelper();
-        databaseHelper.setup();
-
-
-        //just to test
-        // we will remove this class later
-
-        /*
-
-        long ts = System.currentTimeMillis();
-        Award award = new Award(
-                "Top Performer " + ts,
-                "Awarded for outstanding performance",
-                100,
-                AwardType.AUTOMATIC,
-                AssignMode.TEAM
-        );
-
-        Team team = new Team(
-                "IronMan-" + ts
-        );
-
-        Student student = new Student();
-        student.setName("Alice " + ts);
-        student.setLogin("alice_" + ts);
-        student.setPassword("pass123");
-
-        TeamMember mem = new TeamMember("Alice Wonderland", TeamMember.Role.PRODUCT_OWNER);
-        mem.setTeam(team);
-        mem.setStudent(student);
-
-        Teacher teacher = new Teacher();
-        teacher.setName("Prof. Smith " + ts);
-        teacher.setLogin("prof_smith_" + ts);
-        teacher.setPassword("pass123");
-
-        Course course = new Course("Test Course " + ts);
-        CourseTeacher courseTeacher = new CourseTeacher(course, teacher, true);
-
-        Project project = new Project();
-        project.setProjectName("AI Development " + ts);
-        project.setTeam(team);
-        project.setCourse(course);
-
-        Sprint sprint1 = new Sprint();
-        sprint1.setStartDate(new Date()); // today
-        sprint1.setEndDate(new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000)); // +7 days
-        sprint1.setProject(project);
+//
+//        DatabaseHelper databaseHelper = new DatabaseHelper();
+//        databaseHelper.setup();
 
 
-        Goal goal1 = new Goal("Implement login feature", 10, false);
-        goal1.setSprint(sprint1);
-
-        AwardRule awardRule = new AwardRule();
-        awardRule.setAward(award);
-        awardRule.setProject(project);
-        awardRule.setTeacher(teacher);
-        awardRule.setAllGoalsCompleted(false);
-        awardRule.setCompletionPercent(75.0);
-
-        StudentAward studentAward = new StudentAward();
-        studentAward.setAward(award);
-        studentAward.setStudent(student);
-        studentAward.setTeacher(teacher);
-        studentAward.setProject(project);
-        studentAward.setTeam(team);
-        studentAward.setDate(new Date());
-        studentAward.setPoints(100);
-
-        DatabaseHelper databaseHelper = new DatabaseHelper();
-        databaseHelper.setup();
-        Session session = databaseHelper.getSessionFactory().openSession();
-        session.beginTransaction();
-
-        session.persist(award);
-        session.persist(team);
-        session.persist(student);
-        session.persist(mem);
-        session.persist(teacher);
-        session.persist(course);
-        session.persist(courseTeacher);
-        session.persist(project);
-        session.persist(sprint1);
-        session.persist(goal1);
-
-        session.persist(awardRule);
-        session.persist(studentAward);
+//        just to test
+//         we will remove this class later
 
 
-        session.flush();
-        session.getTransaction().commit();
-        session.close();
 
-        */
+//        long ts = System.currentTimeMillis();
+//        Award award = new Award(
+//                "Top Performer " + ts,
+//                "Awarded for outstanding performance",
+//                100,
+//                AwardType.AUTOMATIC,
+//                AssignMode.TEAM
+//        );
+//
+//        Team team = new Team(
+//                "IronMan-" + ts
+//        );
+//
+//        Student student = new Student();
+//        student.setName("Alice " + ts);
+//        student.setLogin("alice_" + ts);
+//        student.setPassword("pass123");
+//
+//        TeamMember mem = new TeamMember("Alice Wonderland", TeamMember.Role.PRODUCT_OWNER);
+//        mem.setTeam(team);
+//        mem.setStudent(student);
+//
+//        Teacher teacher = new Teacher();
+//        teacher.setName("Prof. Smith " + ts);
+//        teacher.setLogin("prof_smith_" + ts);
+//        teacher.setPassword("pass123");
+//
+//        Course course = new Course("Test Course " + ts);
+//        CourseTeacher courseTeacher = new CourseTeacher(course, teacher, true);
+//
+//        Project project = new Project();
+//        project.setProjectName("AI Development " + ts);
+//        project.setTeam(team);
+//        project.setCourse(course);
+//
+//        Sprint sprint1 = new Sprint();
+//        sprint1.setStartDate(new Date()); // today
+//        sprint1.setEndDate(new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000)); // +7 days
+//        sprint1.setProject(project);
+//
+//
+//        Goal goal1 = new Goal("Implement login feature", 10, false);
+//        goal1.setSprint(sprint1);
+//
+//        AwardRule awardRule = new AwardRule();
+//        awardRule.setAward(award);
+//        awardRule.setProject(project);
+//        awardRule.setTeacher(teacher);
+//        awardRule.setAllGoalsCompleted(false);
+//        awardRule.setCompletionPercent(75.0);
+//
+//        StudentAward studentAward = new StudentAward();
+//        studentAward.setAward(award);
+//        studentAward.setStudent(student);
+//        studentAward.setTeacher(teacher);
+//        studentAward.setProject(project);
+//        studentAward.setTeam(team);
+//        studentAward.setDate(new Date());
+//        studentAward.setPoints(100);
+//
+//        DatabaseHelper databaseHelper = new DatabaseHelper();
+//        databaseHelper.setup();
+//        Session session = databaseHelper.getSessionFactory().openSession();
+//        session.beginTransaction();
+//
+//        session.persist(award);
+//        session.persist(team);
+//        session.persist(student);
+//        session.persist(mem);
+//        session.persist(teacher);
+//        session.persist(course);
+//        session.persist(courseTeacher);
+//        session.persist(project);
+//        session.persist(sprint1);
+//        session.persist(goal1);
+//
+//        session.persist(awardRule);
+//        session.persist(studentAward);
+//
+//
+//        session.flush();
+//        session.getTransaction().commit();
+//        session.close();
+//
 
-        // =============================================
-        // NEW TESTS - USER, TEACHER AND STUDENT
-        // =============================================
-        System.out.println("===  STARTING THE TESTS - USER/TEACHER/STUDENT ===");
-
-        try {
-            // Execute new tests using the same DatabaseHelper
-            UserTeacherStudentCRUD(databaseHelper);
-        } catch (Exception e) {
-            System.err.println("Error during new tests: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            databaseHelper.exit();
-        }
-
-        System.out.println("=== ALL TESTS COMPLETED ===");
+//
+//        // =============================================
+//        // NEW TESTS - USER, TEACHER AND STUDENT
+//        // =============================================
+//        System.out.println("===  STARTING THE TESTS - USER/TEACHER/STUDENT ===");
+//
+//        try {
+//            // Execute new tests using the same DatabaseHelper
+//            UserTeacherStudentCRUD(databaseHelper);
+//        } catch (Exception e) {
+//            System.err.println("Error during new tests: " + e.getMessage());
+//            e.printStackTrace();
+//        } finally {
+//            databaseHelper.exit();
+//        }
+//
+//        System.out.println("=== ALL TESTS COMPLETED ===");
 
 
 
 //        ////        TEST Global
-//        Global g = new Global();
+        Global g = new Global();
 //        g.createCourse("###### TEST COURSE 2");
 //        g.readAllCourseWithJplq();
 //        for (Course courses : g.getCourses()) {
@@ -170,6 +170,16 @@ public class TestMain {
 //        g.readAllStudentAwardWithJplq();
 //        for(StudentAward sa : g.getStudentsAwards()) {
 //            System.out.println(sa);
+//        }
+
+//        g.readAllTeamWithJplq();
+//        System.out.println();
+//        for (Team team : g.getTeams()) {
+//
+//            System.out.println(team.getTeamName() + "\n");
+//
+//            System.out.println(team.getTeamMember().get(0).getName() + "\n");
+//
 //        }
 
     }

@@ -18,49 +18,44 @@ public class AwardRuleController {
         this.global = global;
     }
 
-//    @GetMapping("/all")
-//    public List<Award> getAllAwards() {
-//        return global.getAwards();
-//    }
 
+    @PostMapping("/create")
+    public String createAwardRule(
+            @RequestParam double completionPercent,
+            @RequestParam boolean isAllGoalsCompleted,
+            @RequestParam long teacherId,
+            @RequestParam int projectId,
+            @RequestParam int awardId) {
 
-//    @PostMapping("/create")
-//    public String createAwardRule(
-//            @RequestParam double completionPercent,
-//            @RequestParam boolean isAllGoalsCompleted,
-//            @RequestParam long teacherId,
-//            @RequestParam int projectId,
-//            @RequestParam int awardId) {
-//
-//        User user = global.searchUser(teacherId);
-//        Award award = global.searchAward(awardId);
-//        Project project =  global.findProject();
-//        if (award != null) {
-//            if (user != null) {
-//                if (project != null) {
-//                    return award.createAwardRule(completionPercent, isAllGoalsCompleted, user, project);
-//                }
-//            }
-//        }
-//
-//        return "ERROR: One of the field is empty or null";
-//    }
-//
-//    @PostMapping("/update")
-//    public String createAwardRule(
-//            @RequestParam int ruleId,
-//            @RequestParam double completionPercent,
-//            @RequestParam boolean isAllGoalsCompleted,
-//            @RequestParam int awardId) {
-//
-//        Award award = global.searchAward(awardId);
-//
-//        if(award != null) {
-//            return award.updateAwardRule(ruleId,completionPercent,isAllGoalsCompleted);
-//        }
-//
-//        return "ERROR: One of the field is empty or null";
-//    }
+        User user = global.searchUser(teacherId);
+        Award award = global.searchAward(awardId);
+        Project project =  global.findProject(projectId);
+        if (award != null) {
+            if (user != null) {
+                if (project != null) {
+                    return award.createAwardRule(completionPercent, isAllGoalsCompleted, user, project);
+                }
+            }
+        }
+
+        return "ERROR: One of the field is empty or null";
+    }
+
+    @PostMapping("/update")
+    public String createAwardRule(
+            @RequestParam int ruleId,
+            @RequestParam double completionPercent,
+            @RequestParam boolean isAllGoalsCompleted,
+            @RequestParam int awardId) {
+
+        Award award = global.searchAward(awardId);
+
+        if(award != null) {
+            return award.updateAwardRule(ruleId,completionPercent,isAllGoalsCompleted);
+        }
+
+        return "ERROR: One of the field is empty or null";
+    }
 
 
 }

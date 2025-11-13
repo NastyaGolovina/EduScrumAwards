@@ -40,9 +40,8 @@ public class AwardController {
     public String updateAward(
             @RequestParam int id,
             @RequestParam String awardName,
-            @RequestParam String awardDescription,
-            @RequestParam int pointsValue) {
+            @RequestParam String awardDescription) {
 
-        return global.updateAward(id,awardName,awardDescription, pointsValue);
+        return global.updateAward(id,awardName,awardDescription);
     }
 }
