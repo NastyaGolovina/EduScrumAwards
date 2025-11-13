@@ -34,4 +34,15 @@ public class AwardController {
 
         return global.createAward(name, description, points, assignType, assignMode);
     }
+
+
+    @PostMapping("/update")
+    public String updateAward(
+            @RequestParam int id,
+            @RequestParam String awardName,
+            @RequestParam String awardDescription,
+            @RequestParam int pointsValue) {
+
+        return global.updateAward(id,awardName,awardDescription, pointsValue);
+    }
 }
