@@ -1,5 +1,6 @@
 package UPT_SQ.EduScrumAwards.model;
 
+//import jakarta.annotation.PostConstruct;
 import org.hibernate.Session;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
  * It is typically used to store and share global application data
  * throughout the program.
  */
-//@Component
+
 public class Global {
     private ArrayList<User> users;
     private  ArrayList <Course> courses;
@@ -34,6 +35,11 @@ public class Global {
         studentsAwards = new ArrayList<>();
         courseTeachers = new ArrayList<>();
     }
+//
+//    @PostConstruct
+//    public void init() {
+//        readAllAwardWithJplq();
+//    }
 
     /**
      * Returns the list of all users.
@@ -155,12 +161,17 @@ public class Global {
      * @param assignType       The type of assignment for the award (will be converted to AwardType).
      * @return "Success" if the award was successfully created and saved, or an error message if any validation fails.
      */
-    public String createAward(String awardName, String awardDescription, int pointsValue, String assignType) {
-        if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0 && !assignType.isEmpty()) {
+    public String createAward(String awardName, String awardDescription, int pointsValue, String assignType,
+                              String assignMode) {
+        if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0 && !assignType.isEmpty() && !assignMode.isEmpty()) {
             if(awardName.length() <= 100) {
                 if(awardDescription.length() <= 500) {
                     if(pointsValue <= 1000) {
-                        Award newAward = new Award(awardName,awardDescription,pointsValue, AwardType.valueOf(assignType.toUpperCase()));
+                        Award newAward = new Award(awardName,
+                                awardDescription,
+                                pointsValue,
+                                AwardType.valueOf(assignType.toUpperCase()),
+                                AssignMode.valueOf(assignMode.toUpperCase()));
                         awards.add(newAward);
                         DatabaseHelper DatabaseHelper = new DatabaseHelper();
                         DatabaseHelper.setup();
@@ -198,6 +209,32 @@ public class Global {
         List<Award> awardList = session.createQuery("SELECT a FROM Award a", Award.class).getResultList();
 
         awards = (ArrayList<Award>)awardList;
+
+        for (Award award : awards) {
+            award.readAllAwardRuleWithJplq();
+        }
+        session.close();
+        DatabaseHelper.exit();
+    }
+
+
+    /**
+     * Reads all student awards from the database using JPA and stores them in the
+     * {@code studentsAwards} list.
+     *
+
+     * Note: Ensure that the {@link DatabaseHelper} and {@link StudentAward} classes
+     * are properly configured with JPA/Hibernate mappings before calling this method.
+     */
+    public void readAllStudentAwardWithJplq() {
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+
+        List<StudentAward> studentAwardList = session.createQuery("SELECT sa FROM StudentAward sa", StudentAward.class).getResultList();
+
+        this.studentsAwards = (ArrayList<StudentAward>)studentAwardList;
+
         session.close();
         DatabaseHelper.exit();
     }
@@ -219,6 +256,29 @@ public class Global {
         return null;
     }
 
+
+    /**
+     * Searches for a user in the list of users by their unique user ID.
+     *
+     * This method iterates through the list of users until it finds a user
+     * whose {@code userId} matches the specified value. If such a user is found,
+     * the method returns that {@link User} object; otherwise, it returns {@code null}.
+     *
+     * @param userId the unique identifier of the user to search for
+     * @return the {@link User} object with the specified {@code userId},
+     *         or {@code null} if no such user exists in the list
+     */
+    public User searchUser(long userId) {
+        int i = 0;
+        while (i < users.size() && users.get(i).getUserId() != userId) {
+            i++;
+        }
+        if (i != users.size()) {
+            return users.get(i);
+        }
+        return null;
+    }
+
     /**
      * Updates an existing award with the specified ID.
      *
@@ -226,21 +286,18 @@ public class Global {
      * @param awardName        The new name of the award. Must not be empty and no longer than 100 characters.
      * @param awardDescription The new description of the award. Must not be empty and no longer than 500 characters.
      * @param pointsValue      The new points value for the award. Must be between 0 and 1000.
-     * @param assignType       The new assignment type for the award (will be converted to AwardType).
      * @return "Success" if the award was successfully updated, or an error message if validation fails or the award does not exist.
      */
-    // assignType  ???????
-    public String updateAward(int id,String awardName, String awardDescription, int pointsValue, String assignType) {
+    public String updateAward(int id,String awardName, String awardDescription, int pointsValue) {
         Award award = searchAward(id);
         if(award != null) {
-            if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0 && !assignType.isEmpty()) {
+            if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0) {
                 if(awardName.length() <= 100) {
                     if(awardDescription.length() <= 500) {
                         if(pointsValue <= 1000) {
                             award.setAwardName(awardName);
                             award.setAwardDescription(awardDescription);
                             award.setPointsValue(pointsValue);
-                            award.setAssignType(AwardType.valueOf(assignType.toUpperCase()));
 
                             DatabaseHelper DatabaseHelper = new DatabaseHelper();
                             DatabaseHelper.setup();
@@ -290,17 +347,74 @@ public class Global {
         return null;
     }
 
+
+    /**
+     * Creates a new award rule for the specified project and teacher.
+     *
+     * @param completionPercent the completion percentage (0–100)
+     * @param isAllGoalsCompleted whether all goals must be completed
+     * @param teacherId the ID of the teacher
+     * @param projectId the ID of the project
+     * @param awardId the ID of the award
+     * @return "Success" if created successfully, or an error message if any field is invalid or missing
+     */
+    // move to api
+    public String createAwardRule(double completionPercent, boolean isAllGoalsCompleted, long teacherId, int projectId,int awardId) {
+        User user = searchUser(teacherId);
+        Award award = searchAward(awardId);
+        Project project = null;
+        for(Course c : courses) {
+            project =c.findProjectById(projectId);
+            if(project != null) {
+                break;
+            }
+        }
+        if(award != null) {
+            if (user != null) {
+                if(project != null) {
+                    return award.createAwardRule(completionPercent,isAllGoalsCompleted,user,project);
+                }
+            }
+        }
+
+        return "ERROR: One of the field is empty or null";
+
+    }
+
+
+    /**
+     * Updates an existing award rule by its identifier.
+     *
+     * @param ruleId the ID of the award rule
+     * @param completionPercent the new completion percentage (0–100)
+     * @param isAllGoalsCompleted whether all goals must be completed
+     * @param awardId the ID of the award
+     * @return "Success" if updated successfully, or an error message if any field is invalid or missing
+     */
+    // move to api
+    public String updateAwardRule(int ruleId, double completionPercent, boolean isAllGoalsCompleted, int awardId) {
+        Award award = searchAward(awardId);
+
+        if(award != null) {
+            return award.updateAwardRule(ruleId,completionPercent,isAllGoalsCompleted);
+        }
+
+        return "ERROR: One of the field is empty or null";
+
+    }
+
+
+
+
+
     /**
      * Creates a new Course and saves it to the database.
      *
-     * @param courseId   The ID of the course. Must be a positive integer.
      * @param courseName The name of the course. Must not be empty and no longer than 100 characters.
      * @return "Success" if the course was created and saved; otherwise, an error message describing the issue.
      */
-    public String createCourse(int courseId, String courseName) {
-        if (courseId <= 0) {
-            return "ERROR: Invalid course ID!";
-        }
+    public String createCourse(String courseName) {
+        // courseId is auto-generated by the DB; ignore provided id and let JPA assign it
         if (courseName == null || courseName.isEmpty()) {
             return "ERROR: Name is empty!";
         }
@@ -308,7 +422,7 @@ public class Global {
             return "ERROR: Name is too long!";
         }
 
-        Course newCourse = new Course(courseId, courseName);
+        Course newCourse = new Course(courseName);
         courses.add(newCourse);
 
         DatabaseHelper DatabaseHelper = new DatabaseHelper();
@@ -336,6 +450,13 @@ public class Global {
         List<Course> courseList = session.createQuery("SELECT c FROM Course c", Course.class).getResultList();
 
         courses = (ArrayList<Course>) courseList;
+
+        // Populate each course with its CourseTeacher rows
+        for (Course c : courses) {
+            if (c != null) {
+                c.readAllCourseTeacherWithJplq();
+            }
+        }
         session.close();
         DatabaseHelper.exit();
     }
@@ -392,92 +513,109 @@ public class Global {
         return "ERROR: Course with this id does not exist";
     }
 
-    /**
-     * Creates a new CourseTeacher and saves it to the database.
-     *
-     * @param course the associated Course (must not be null)
-     * @param teacher the associated Teacher (must not be null)
-     * @param isResponsible whether the teacher is responsible for the course
-     * @return "Success" if created and saved; error message otherwise
+     /**
+     * Creates a new TEAM object and saves it to the database.
+     * @param teamName    The name of the team. Must not be empty and no longer than 100 characters.
+     * @return "Success" if the team was successfully created and saved, or an error message if any validation fails.
      */
-    public String createCourseTeacher(Course course, Teacher teacher, boolean isResponsible) {
-        if (course == null) {
-            return "ERROR: Course is null!";
+     public String createTeam( String teamName) {
+         if (teamName == null || teamName.isEmpty())
+             return "ERROR: Name is empty!";
+         if (teamName.length() > 100)
+             return "ERROR: Name is too long!";
+
+         // prevent duplicate name locally
+         for (Team t : teams) {
+             if (t.getTeamName().equalsIgnoreCase(teamName)) {
+                 return "ERROR: Team name already exists!";
+             }
+         }
+
+         // Create new team
+         Team newTeam = new Team(teamName);
+         teams.add(newTeam);
+
+         // saving team just created into database by using Hibernate
+         DatabaseHelper DatabaseHelper = new DatabaseHelper();
+         DatabaseHelper.setup();
+         Session session = DatabaseHelper.getSessionFactory().openSession();
+         session.beginTransaction();
+
+         session.persist(newTeam);
+
+         session.getTransaction().commit();
+         session.close();
+         DatabaseHelper.exit();
+
+         return "Success";
+     }
+
+    /**
+     * Loads all Team objects from the database and stores them in the local teams list.
+     * Uses JPLQ to query the database.
+     */
+    public void readAllTeamWithJplq() {
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+
+        List<Team> teamList = session.createQuery("SELECT t FROM Team t", Team.class).getResultList();
+        teams = new ArrayList<>(teamList);
+
+        // also load members for each team so the in-memory cache is complete
+        for (Team t : teams) {
+            if (t != null) t.readAllTeamMemberWithJplq();
         }
-        if (teacher == null) {
-            return "ERROR: Teacher is null!";
+
+        session.close();
+        DatabaseHelper.exit();
+    }
+
+    /**
+     * Searches for a team in the local team list by its unique ID.
+     *
+     * @param teamId The ID of the team to search for.
+     * @return The Team object with the given ID if found; otherwise, returns null.
+     */
+    public Team searchTeam(int teamId) {
+        int i = 0;
+        while (i < teams.size() && teams.get(i).getTeamID() != teamId)
+            i++;
+        if (i != teams.size()) {
+            return teams.get(i);
         }
-        CourseTeacher newCt = new CourseTeacher(0, course, teacher, isResponsible);
-        courseTeachers.add(newCt);
+        return null;
+    }
+
+    /**
+     * Updates the name of an existing {@link Team} identified by its unique ID.
+     *
+    * @param id        the unique ID of the {@link Team} to update
+    * @param teamName  the new name for the team; must not be {@code null} or empty, and must be ≤ 100 characters
+    * @return "Success" if the update was completed successfully,
+     */
+
+    public String updateTeam(int id, String teamName) {
+        Team team = searchTeam(id);
+        if (team == null)
+            return "ERROR: Team with this id does not exist";
+        if (teamName == null || teamName.isEmpty())
+            return "ERROR: Name is empty!";
+        if (teamName.length() > 100)
+            return "ERROR: Name is too long!";
+
+        team.setTeamName(teamName);
 
         DatabaseHelper DatabaseHelper = new DatabaseHelper();
         DatabaseHelper.setup();
         Session session = DatabaseHelper.getSessionFactory().openSession();
         session.beginTransaction();
 
-        session.persist(newCt);
+        session.merge(team);
 
         session.getTransaction().commit();
         session.close();
         DatabaseHelper.exit();
         return "Success";
     }
-
-    /**
-     * Loads all CourseTeacher objects from the database and stores them locally.
-     */
-    public void readAllCourseTeacherWithJplq() {
-        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-        DatabaseHelper.setup();
-        Session session = DatabaseHelper.getSessionFactory().openSession();
-
-        List<CourseTeacher> list = session.createQuery("SELECT ct FROM CourseTeacher ct", CourseTeacher.class).getResultList();
-        courseTeachers = (ArrayList<CourseTeacher>) list;
-
-        session.close();
-        DatabaseHelper.exit();
-    }
-
-    /**
-     * Searches the local list of CourseTeacher by ID.
-     * @param id CourseTeacher ID
-     * @return the CourseTeacher if found, otherwise null
-     */
-    public CourseTeacher searchCourseTeacher(int id) {
-        int i = 0;
-        while (i < courseTeachers.size() && courseTeachers.get(i).getCourseTeacherID() != id) {
-            i++;
-        }
-        if (i != courseTeachers.size()) {
-            return courseTeachers.get(i);
-        }
-        return null;
-    }
-
-    /**
-     * Updates the isResponsible flag of a CourseTeacher and merges it in the database.
-     * @param id the CourseTeacher ID
-     * @param isResponsible new value for responsibility flag
-     * @return "Success" if updated; error message otherwise
-     */
-    public String updateCourseTeacher(int id, boolean isResponsible) {
-        CourseTeacher ct = searchCourseTeacher(id);
-        if (ct != null) {
-            ct.setIsResponsible(isResponsible);
-
-            DatabaseHelper DatabaseHelper = new DatabaseHelper();
-            DatabaseHelper.setup();
-            Session session = DatabaseHelper.getSessionFactory().openSession();
-            session.beginTransaction();
-
-            session.merge(ct);
-
-            session.getTransaction().commit();
-            session.close();
-            DatabaseHelper.exit();
-            return "Success";
-        }
-        return "ERROR: CourseTeacher with this id does not exist";
-    }
-
 }

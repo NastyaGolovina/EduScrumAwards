@@ -10,6 +10,9 @@
 package UPT_SQ.EduScrumAwards.model;
 
 import jakarta.persistence.*;
+import org.hibernate.Session;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +23,7 @@ import java.util.List;
 public class Course {
     @Id
     @Column(name = "course_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int courseID;
 
     @Column(name = "course_name", length = 100, nullable = false)
@@ -30,7 +34,7 @@ public class Course {
      * Mapped by the "course" field in CourseTeacher.
      */
     @OneToMany(mappedBy = "course")
-    private List<CourseTeacher> teachers;
+    private List<CourseTeacher> courseTeachers;
 
     /**
      * The list of projects that belong to this course.
@@ -44,16 +48,28 @@ public class Course {
     /**
      * No-args constructor required by Hibernate
      */
-    public Course() {}
+    public Course() {
+        courseTeachers = new ArrayList<>();
+        projects = new ArrayList<>();
+    }
 
     /**
      * Constructor of the class Course
-     * @param courseID Integer with the ID
      * @param courseName String with the name
      */
-    public Course(int courseID, String courseName) {
-        this.courseID = courseID;
+    public Course(String courseName) {
         this.courseName = courseName;
+        courseTeachers = new ArrayList<>();
+        projects = new ArrayList<>();
+    }
+
+
+    public void setCourseTeachers(List<CourseTeacher> courseTeachers) {
+        this.courseTeachers = courseTeachers;
+    }
+
+    public void setCourseID(int courseID) {
+        this.courseID = courseID;
     }
 
     /**
@@ -62,16 +78,18 @@ public class Course {
      */
     public int getCourseID() { return courseID; }
     public String getCourseName() { return courseName; }
-    public List<CourseTeacher> getTeachers() { return teachers; }
+    public List<CourseTeacher> getTeachers() { 
+        if (courseTeachers == null) courseTeachers = new ArrayList<>();
+        return courseTeachers; 
+    }
     public List<Project> getProjects() { return projects; }
 
     /**
      * Setters of the attributes of the class Course
      * The params are the attribute to change
      */
-    public void setCourseID(int courseID) { this.courseID = courseID; }
     public void setCourseName(String courseName) { this.courseName = courseName; }
-    public void setTeachers(List<CourseTeacher> teachers) { this.teachers = teachers; }
+    public void setTeachers(List<CourseTeacher> teachers) { this.courseTeachers = teachers; }
     public void setProjects(List<Project> projects) { this.projects = projects; }
     
 
@@ -81,8 +99,8 @@ public class Course {
      * @return the found CourseTeacher or null if not present
      */
     public CourseTeacher findCourseTeacherById(int courseTeacherId) {
-        if (teachers == null) return null;
-        for (CourseTeacher ct : teachers) {
+        if (courseTeachers == null) return null;
+        for (CourseTeacher ct : courseTeachers) {
             if (ct != null && ct.getCourseTeacherID() == courseTeacherId) {
                 return ct;
             }
@@ -97,9 +115,9 @@ public class Course {
      * @return the CourseTeacher whose Teacher has that name, or null if not found
      */
     public CourseTeacher findCourseTeacherByName(String name) {
-        if (teachers == null || name == null) return null;
+        if (courseTeachers == null || name == null) return null;
         String target = name.trim();
-        for (CourseTeacher ct : teachers) {
+        for (CourseTeacher ct : courseTeachers) {
             if (ct != null && ct.getTeacher() != null) {
                 String teacherName = ct.getTeacher().getName();
                 if (equalsIgnoreCaseAndTrim(teacherName, target)) {
@@ -117,13 +135,13 @@ public class Course {
      * @return the stored instance or null
      */
     public CourseTeacher findCourseTeacher(CourseTeacher courseTeacher) {
-        if (teachers == null || courseTeacher == null) return null;
+        if (courseTeachers == null || courseTeacher == null) return null;
         int id = courseTeacher.getCourseTeacherID();
         if (id > 0) {
             CourseTeacher byId = findCourseTeacherById(id);
             if (byId != null) return byId;
         }
-        for (CourseTeacher ct : teachers) {
+        for (CourseTeacher ct : courseTeachers) {
             if (ct == courseTeacher || (ct != null && ct.equals(courseTeacher))) {
                 return ct;
             }
@@ -188,5 +206,155 @@ public class Course {
     private static boolean equalsIgnoreCaseAndTrim(String a, String b) {
         if (a == null || b == null) return false;
         return a.trim().equalsIgnoreCase(b.trim());
+    }
+
+    /**
+     * Check if a teacher is a CT of the course
+     * @param t Teacher
+     * @return true if it is, false otherwise
+     */
+    public boolean isCourseTeacher(Teacher t) {
+        for (CourseTeacher ct : courseTeachers ) {
+            if (ct.getTeacher() == t) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a new CourseTeacher and saves it to the database.
+     *
+     * @param teacher the associated Teacher (must not be null)
+     * @param isResponsible whether the teacher is responsible for the course
+     * @return "Success" if created and saved; error message otherwise
+     */
+    public String createCourseTeacher(Teacher teacher, boolean isResponsible) {
+
+        if (teacher == null) {
+            return "ERROR: Teacher is null!";
+        }
+        CourseTeacher newCt = new CourseTeacher(this, teacher, isResponsible);
+        courseTeachers.add(newCt);
+
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        session.persist(newCt);
+
+        session.getTransaction().commit();
+        session.close();
+        DatabaseHelper.exit();
+        return "Success";
+    }
+
+    /**
+     * Loads all CourseTeacher objects from the database and stores them locally.
+     */
+    public void readAllCourseTeacherWithJplq() {
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+        try {
+            List<CourseTeacher> list = session.createQuery(
+                    "SELECT ct FROM CourseTeacher ct WHERE ct.course.courseID = :cid",
+                    CourseTeacher.class)
+                .setParameter("cid", this.courseID)
+                .getResultList();
+            this.courseTeachers = new ArrayList<>(list);
+        } finally {
+            session.close();
+            DatabaseHelper.exit();
+        }
+    }
+
+    /**
+     * Searches the local list of CourseTeacher by ID.
+     * @param id CourseTeacher ID
+     * @return the CourseTeacher if found, otherwise null
+     */
+    public CourseTeacher searchCourseTeacher(int id) {
+        int i = 0;
+        while (i < courseTeachers.size() && courseTeachers.get(i).getCourseTeacherID() != id) {
+            i++;
+        }
+        if (i != courseTeachers.size()) {
+            return courseTeachers.get(i);
+        }
+        return null;
+    }
+
+    /**
+     * Updates the isResponsible flag of a CourseTeacher and merges it in the database.
+     * @param id the CourseTeacher ID
+     * @param isResponsible new value for responsibility flag
+     * @return "Success" if updated; error message otherwise
+     */
+    public String updateCourseTeacher(int id, boolean isResponsible) {
+        CourseTeacher ct = searchCourseTeacher(id);
+        if (ct != null) {
+            ct.setIsResponsible(isResponsible);
+
+            DatabaseHelper DatabaseHelper = new DatabaseHelper();
+            DatabaseHelper.setup();
+            Session session = DatabaseHelper.getSessionFactory().openSession();
+            session.beginTransaction();
+
+            session.merge(ct);
+
+            session.getTransaction().commit();
+            session.close();
+            DatabaseHelper.exit();
+            return "Success";
+        }
+        return "ERROR: CourseTeacher with this id does not exist";
+    }
+
+    /**
+     * Deletes a CourseTeacher by its ID from the database and local list.
+     *
+     * @param id the CourseTeacher ID to delete
+     * @return "Success" if deleted; error message otherwise
+     */
+    public String deleteCourseTeacher(int id) {
+        // 1. Buscar localmente (como hacen update/search)
+        CourseTeacher ct = searchCourseTeacher(id);
+        if (ct == null) {
+            return "ERROR: CourseTeacher with ID " + id + " does not exist";
+        }
+
+        // 2. Eliminar de la base de datos
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = null;
+        try {
+            session = databaseHelper.getSessionFactory().openSession();
+            session.beginTransaction();
+
+            // 🔥 Opción 1 (recomendada): usa remove() con la entidad gestionada
+            // Primero hay que hacer merge/obtener una instancia gestionada
+            CourseTeacher managedCt = session.merge(ct);
+            session.remove(managedCt);
+
+            session.getTransaction().commit();
+
+            // 3. Eliminar también de la lista local
+            courseTeachers.remove(ct);
+
+            return "Success";
+
+        } catch (Exception e) {
+            if (session != null && session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+            return "ERROR: Failed to delete CourseTeacher: " + e.getMessage();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+            databaseHelper.exit();
+        }
     }
 }

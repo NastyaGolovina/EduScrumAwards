@@ -223,10 +223,10 @@ public class StudentAward {
         return "StudentAward{" +
                 "studentAwardId=" + studentAwardId +
                 ", award=" + award +
-                ", student=" + student +
-                ", teacher=" + teacher +
-                ", project=" + project +
-                ", team=" + team +
+//                ", student=" + student +
+//                ", teacher=" + teacher +
+//                ", project=" + project +
+//                ", team=" + team +
                 ", date=" + date +
                 ", points=" + points +
                 '}';

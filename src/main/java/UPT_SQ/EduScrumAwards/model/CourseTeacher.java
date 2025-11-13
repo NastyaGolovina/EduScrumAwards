@@ -40,13 +40,11 @@ public class CourseTeacher {
 
     /**
      * Constructor of the class CourseTeacher
-     * @param courseTeacherID Integer of the ID
      * @param course Course
      * @param teacher Teacher
      * @param isResponsible Boolean that indicates if the teacher is the responsible for the course
      */
-    public CourseTeacher(int courseTeacherID, Course course, Teacher teacher, boolean isResponsible) {
-        this.courseTeacherID = courseTeacherID;
+    public CourseTeacher(Course course, Teacher teacher, boolean isResponsible) {
         this.course = course;
         this.teacher = teacher;
         this.isResponsible = isResponsible;

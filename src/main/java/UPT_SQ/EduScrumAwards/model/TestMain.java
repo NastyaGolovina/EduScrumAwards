@@ -3,6 +3,8 @@ package UPT_SQ.EduScrumAwards.model;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import java.util.List;
+
+import java.util.ArrayList;
 import java.util.Date;
 
 public class TestMain {
@@ -14,7 +16,8 @@ public class TestMain {
                 "Top Performer " + ts,
                 "Awarded for outstanding performance",
                 100,
-                AwardType.AUTOMATIC
+                AwardType.AUTOMATIC,
+                AssignMode.TEAM
         );
 
         Team team = new Team(
@@ -35,9 +38,8 @@ public class TestMain {
         teacher.setLogin("prof_smith_" + ts);
         teacher.setPassword("pass123");
 
-        int courseId = (int)((ts % 1000000000L) + 1); // ensure positive, avoids PK clash on reruns
-        Course course = new Course(courseId, "Test Course " + ts);
-        CourseTeacher courseTeacher = new CourseTeacher(0, course, teacher, true);
+        Course course = new Course("Test Course " + ts);
+        CourseTeacher courseTeacher = new CourseTeacher(course, teacher, true);
 
         Project project = new Project();
         project.setProjectName("AI Development " + ts);
@@ -89,6 +91,7 @@ public class TestMain {
         session.persist(studentAward);
 
 
+        session.flush();
         session.getTransaction().commit();
         session.close();
 
@@ -108,14 +111,41 @@ public class TestMain {
         }
 
         System.out.println("=== ALL TESTS COMPLETED ===");
-
-
-//        //test Global
+//        ////        TEST Global
 //        Global g = new Global();
+//        g.createCourse("###### TEST COURSE 2");
+//        g.readAllCourseWithJplq();
+//        for (Course courses : g.getCourses()) {
+//            System.out.println("###### " + courses.getCourseName());
+//        }
+//        System.out.println("###### Searched course: " + g.searchCourse(1).getCourseName());
+//        g.updateCourse(1, "NEW NAME");
+//        System.out.println("###### Searched course: " + g.searchCourse(1).getCourseName());
+//
+//
+//        course.createCourseTeacher(teacher, false);
+//        course.readAllCourseTeacherWithJplq();
+//        for (CourseTeacher ct : course.getTeachers()) {
+//            System.out.println("###### " + ct.getTeacher().getName());
+//        }
+//        int teacherId = course.getTeachers().get(0).getCourseTeacherID();
+//        System.out.println("###### Searched teacher: " + course.searchCourseTeacher(teacherId).getTeacher().getName() + ". Is responsible Teacher: " + (course.searchCourseTeacher(teacherId).isResponsible() ? "Yes" : "No"));
+//        course.updateCourseTeacher(teacherId, true);
+//        System.out.println("###### Searched teacher: " + course.searchCourseTeacher(teacherId).getTeacher().getName() + ". Is responsible Teacher: " + (course.searchCourseTeacher(teacherId).isResponsible() ? "Yes" : "No"));
+//        course.readAllCourseTeacherWithJplq();
+//        System.out.println(("###### Size of ct's: " + course.getTeachers().size()));
+//        course.deleteCourseTeacher(teacherId);
+//        course.readAllCourseTeacherWithJplq();
+//        System.out.println(("###### Size of ct's: " + course.getTeachers().size()));
+//
+//
+
+
 ////        g.createAward("Top Performer",
 ////                "Awarded for outstanding performance",
 ////                100,
-////                "AUTOMATIC");
+////                "AUTOMATIC",
+////                 "TEAM");
 //        g.readAllAwardWithJplq();
 //        for(int i = 0; i < g.getAwards().size(); i++)
 //        {
@@ -123,8 +153,11 @@ public class TestMain {
 //        }
 //        System.out.println(g.updateAward(1,"Dragon Rider",
 //                "Awarded for fearlessness and strategy",
-//                100,
-//                "AUTOMATIC"));
+//                100));
+//        g.readAllStudentAwardWithJplq();
+//        for(StudentAward sa : g.getStudentsAwards()) {
+//            System.out.println(sa);
+//        }
 
     }
 
@@ -342,6 +375,34 @@ public class TestMain {
             // Final statistics
             List<Student> remainingStudents = session.createQuery("FROM Student", Student.class).list();
             List<Teacher> remainingTeachers = session.createQuery("FROM Teacher", Teacher.class).list();
+        // Test create/update award
+//        Global global = new Global();
+//
+//        global.getUsers().add(student);
+//        global.getUsers().add(teacher);
+//        global.getTeams().add(team);
+//        ArrayList<AwardRule> awardRules =new  ArrayList<>();
+//        awardRules.add(awardRule);
+//        award.setAwardRules(awardRules);
+//        global.getAwards().add(award);
+//        global.getStudentsAwards().add(studentAward);
+//        ArrayList<Project> projects = new ArrayList<>();
+//        projects.add(project);
+//        ArrayList<CourseTeacher> courseTeachers = new ArrayList<>();
+//        courseTeachers.add(courseTeacher);
+//        course.setCourseTeachers(courseTeachers);
+//        course.setProjects(projects);
+//        global.getCourses().add(course);
+//        global.getCourseTeachers().add(courseTeacher);
+//
+//
+//        System.out.println(project.getProjectId());
+//
+//        System.out.println(global.createAwardRule(30,true,2,1,1));
+//        System.out.println(global.updateAwardRule(1,25,true,1));
+//
+//
+//
 
             System.out.println("\n FINAL STATISTICS: ");
             System.out.println();

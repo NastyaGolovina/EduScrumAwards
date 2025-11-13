@@ -1,6 +1,7 @@
 import UPT_SQ.EduScrumAwards.model.Award;
 import UPT_SQ.EduScrumAwards.model.AwardRule;
 import UPT_SQ.EduScrumAwards.model.AwardType;
+import UPT_SQ.EduScrumAwards.model.AssignMode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AwardTest {
 
@@ -29,7 +29,8 @@ public class AwardTest {
                 "Participation Award",
                 "Awarded for participating in the event",
                 10,
-                AwardType.MANUAL
+                AwardType.MANUAL,
+                AssignMode.INDIVIDUAL
         );
 
         ArrayList<AwardRule> rules = new ArrayList<>();
@@ -41,12 +42,11 @@ public class AwardTest {
                 "Awarded for achieving goals",
                 50,
                 AwardType.AUTOMATIC,
+                AssignMode.TEAM,
                 rules
         );
-
-
-
     }
+
     @Test
     public void testCreateAward() {
         assertNull(a4);
@@ -55,7 +55,6 @@ public class AwardTest {
         assertNotNull(a3);
     }
 
-
     @Test
     public void testAwardFields() {
         assertEquals(2, a3.getAwardID());
@@ -63,6 +62,7 @@ public class AwardTest {
         assertEquals("Awarded for achieving goals", a3.getAwardDescription());
         assertEquals(50, a3.getPointsValue());
         assertEquals(AwardType.AUTOMATIC, a3.getAssignType());
+        assertEquals(AssignMode.TEAM, a3.getAssignMode());
         assertEquals(1, a3.getAwardRules().size());
     }
 
@@ -73,6 +73,7 @@ public class AwardTest {
         a1.setAwardDescription("Awarded for outstanding performance");
         a1.setPointsValue(100);
         a1.setAssignType(AwardType.MANUAL);
+        a1.setAssignMode(AssignMode.TEAM);
         a1.setAwardRules(new ArrayList<>());
 
         assertEquals(1, a1.getAwardID());
@@ -80,7 +81,45 @@ public class AwardTest {
         assertEquals("Awarded for outstanding performance", a1.getAwardDescription());
         assertEquals(100, a1.getPointsValue());
         assertEquals(AwardType.MANUAL, a1.getAssignType());
+        assertEquals(AssignMode.TEAM, a1.getAssignMode());
         assertNotNull(a1.getAwardRules());
         assertEquals(0, a1.getAwardRules().size());
+    }
+
+
+    /**
+     * Tests the searchAwardRule method in the Award class.
+     * Ensures that the correct rule is found by ID or null is returned if not found.
+     */
+    @Test
+    public void testSearchAwardRule() {
+        // Create AwardRules with assigned IDs
+        AwardRule rule1 = new AwardRule();
+        rule1.setRuleId(1);
+        AwardRule rule2 = new AwardRule();
+        rule2.setRuleId(2);
+        AwardRule rule3 = new AwardRule();
+        rule3.setRuleId(3);
+
+        // Add them to the Award's list
+        ArrayList<AwardRule> ruleList = new ArrayList<>();
+        ruleList.add(rule1);
+        ruleList.add(rule2);
+        ruleList.add(rule3);
+
+        a1.setAwardRules(ruleList);
+
+        // Case 1: existing rule
+        AwardRule found = a1.searchAwardRule(2);
+        assertNotNull(found, "Rule with ID 2 should be found");
+        assertEquals(2, found.getRuleId());
+
+        // Case 2: first and last rule
+        assertEquals(rule1, a1.searchAwardRule(1));
+        assertEquals(rule3, a1.searchAwardRule(3));
+
+        // Case 3: non-existing rule
+        AwardRule notFound = a1.searchAwardRule(99);
+        assertNull(notFound, "Non-existing rule should return null");
     }
 }

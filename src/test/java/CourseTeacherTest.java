@@ -9,7 +9,7 @@ public class CourseTeacherTest {
     @Test
     void defaultConstructor_and_setters_getters() {
         CourseTeacher ct = new CourseTeacher();
-        Course course = new Course(1, "QA");
+        Course course = new Course("QA");
         Teacher teacher = new Teacher();
         teacher.setName("Jane");
 
@@ -27,13 +27,13 @@ public class CourseTeacherTest {
 
     @Test
     void allArgsConstructor_setsFields() {
-        Course course = new Course(2, "SE");
+        Course course = new Course("SE");
         Teacher teacher = new Teacher();
         teacher.setName("John");
 
-        CourseTeacher ct = new CourseTeacher(42, course, teacher, true);
+        CourseTeacher ct = new CourseTeacher(course, teacher, true);
 
-        assertEquals(42, ct.getCourseTeacherID());
+        assertEquals(0, ct.getCourseTeacherID());
         assertSame(course, ct.getCourse());
         assertSame(teacher, ct.getTeacher());
         assertTrue(ct.isResponsible());

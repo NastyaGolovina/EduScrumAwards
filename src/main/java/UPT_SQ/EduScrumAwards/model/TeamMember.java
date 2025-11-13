@@ -45,7 +45,7 @@ public class TeamMember {
      * The "student_id" foreign key column stores the reference to the Student entity.
      */
     @ManyToOne
-    @JoinColumn(name = "Student_ID", nullable = false)
+    @JoinColumn(name = "User_ID", nullable = false)
     private Student student;
 
     /**

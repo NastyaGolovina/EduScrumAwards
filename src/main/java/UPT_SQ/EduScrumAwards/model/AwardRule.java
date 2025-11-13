@@ -178,8 +178,8 @@ public class AwardRule {
         return "AwardRule{" +
                 "ruleId=" + ruleId +
                 ", award=" + award +
-                ", project=" + project +
-                ", teacher=" + teacher +
+//                ", project=" + project +
+//                ", teacher=" + teacher +
                 ", isAllGoalsCompleted=" + isAllGoalsCompleted +
                 ", completionPercent=" + completionPercent +
                 '}';
