@@ -4,6 +4,7 @@ package UPT_SQ.EduScrumAwards.model;
 import org.hibernate.Session;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 /**
  * The {@code Global} class serves as a centralized data container for managing
@@ -402,6 +403,68 @@ public class Global {
         return "ERROR: One of the field is empty or null";
 
     }
+//    assignAwardStudent    METHOD IN PROGRESS
+//
+//
+//    public Project findProject(int projectId) {
+//        Project project = null;
+//        for(Course c : courses) {
+//            project =c.findProjectById(projectId);
+//            if(project != null) {
+//                return project;
+//            }
+//        }
+//        return project;
+//    }
+//
+//    public String assignAwardStudent(int awardId, long studentId, long teacherId, int projectId, int points) {
+//        if(points >= 0) {
+//            Award award = searchAward(awardId);
+//            if(award != null) {
+//                User student = searchUser(studentId);
+//                if (student != null && student.getRole() == UserRole.STUDENT) {
+//                    User teacher = searchUser(teacherId);
+//                    if (teacher != null && teacher.getRole() == UserRole.TEACHER) {
+//                        Project project = findProject(projectId);
+//                        if (project != null) {
+//
+//                        }
+//                    }
+//                }
+//            }
+////            if(awardName.length() <= 100) {
+////                if(awardDescription.length() <= 500) {
+////                    if(pointsValue <= 1000) {
+////                        Award newAward = new Award(awardName,
+////                                awardDescription,
+////                                pointsValue,
+////                                AwardType.valueOf(assignType.toUpperCase()),
+////                                AssignMode.valueOf(assignMode.toUpperCase()));
+////                        awards.add(newAward);
+////                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+////                        DatabaseHelper.setup();
+////                        Session session = DatabaseHelper.getSessionFactory().openSession();
+////                        session.beginTransaction();
+////
+////                        session.persist(newAward);
+////
+////                        session.getTransaction().commit();
+////                        session.close();
+////                        DatabaseHelper.exit();
+////                        return "Success";
+////                    } else {
+////                        return  "ERROR: Too many points!";
+////                    }
+////                } else {
+////                    return "ERROR: Description is too long!";
+////                }
+////            } else {
+////                return "ERROR: Name is too long!";
+////            }
+//        }
+//        return "ERROR: Points must be more then 0";
+//    }
+
 
 
 

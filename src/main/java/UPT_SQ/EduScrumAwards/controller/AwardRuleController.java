@@ -1,0 +1,72 @@
+package UPT_SQ.EduScrumAwards.controller;
+
+import UPT_SQ.EduScrumAwards.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/awards-rule")
+public class AwardRuleController {
+
+    private final Global global;
+
+    @Autowired
+    public AwardRuleController(Global global) {
+        this.global = global;
+    }
+
+//    @GetMapping("/all")
+//    public List<Award> getAllAwards() {
+//        return global.getAwards();
+//    }
+
+
+//    @PostMapping("/create")
+//    public String createAwardRule(
+//            @RequestParam double completionPercent,
+//            @RequestParam boolean isAllGoalsCompleted,
+//            @RequestParam long teacherId,
+//            @RequestParam int projectId,
+//            @RequestParam int awardId) {
+//
+//        User user = global.searchUser(teacherId);
+//        Award award = global.searchAward(awardId);
+//        Project project = null;
+//        for (Course c : global.getCourses()) {
+//            project = c.findProjectById(projectId);
+//            if (project != null) {
+//                break;
+//            }
+//        }
+//        if (award != null) {
+//            if (user != null) {
+//                if (project != null) {
+//                    return award.createAwardRule(completionPercent, isAllGoalsCompleted, user, project);
+//                }
+//            }
+//        }
+//
+//        return "ERROR: One of the field is empty or null";
+//    }
+//
+//    @PostMapping("/update")
+//    public String createAwardRule(
+//            @RequestParam int ruleId,
+//            @RequestParam double completionPercent,
+//            @RequestParam boolean isAllGoalsCompleted,
+//            @RequestParam int awardId) {
+//
+//        Award award = global.searchAward(awardId);
+//
+//        if(award != null) {
+//            return award.updateAwardRule(ruleId,completionPercent,isAllGoalsCompleted);
+//        }
+//
+//        return "ERROR: One of the field is empty or null";
+//    }
+
+
+}
