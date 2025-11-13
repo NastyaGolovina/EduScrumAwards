@@ -3,6 +3,8 @@ package UPT_SQ.EduScrumAwards.model;
 //import jakarta.annotation.PostConstruct;
 import org.hibernate.Session;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -403,67 +405,203 @@ public class Global {
         return "ERROR: One of the field is empty or null";
 
     }
-//    assignAwardStudent    METHOD IN PROGRESS
-//
-//
-//    public Project findProject(int projectId) {
-//        Project project = null;
-//        for(Course c : courses) {
-//            project =c.findProjectById(projectId);
-//            if(project != null) {
-//                return project;
-//            }
-//        }
-//        return project;
-//    }
-//
-//    public String assignAwardStudent(int awardId, long studentId, long teacherId, int projectId, int points) {
-//        if(points >= 0) {
-//            Award award = searchAward(awardId);
-//            if(award != null) {
-//                User student = searchUser(studentId);
-//                if (student != null && student.getRole() == UserRole.STUDENT) {
-//                    User teacher = searchUser(teacherId);
-//                    if (teacher != null && teacher.getRole() == UserRole.TEACHER) {
-//                        Project project = findProject(projectId);
-//                        if (project != null) {
-//
-//                        }
-//                    }
-//                }
-//            }
-////            if(awardName.length() <= 100) {
-////                if(awardDescription.length() <= 500) {
-////                    if(pointsValue <= 1000) {
-////                        Award newAward = new Award(awardName,
-////                                awardDescription,
-////                                pointsValue,
-////                                AwardType.valueOf(assignType.toUpperCase()),
-////                                AssignMode.valueOf(assignMode.toUpperCase()));
-////                        awards.add(newAward);
-////                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-////                        DatabaseHelper.setup();
-////                        Session session = DatabaseHelper.getSessionFactory().openSession();
-////                        session.beginTransaction();
-////
-////                        session.persist(newAward);
-////
-////                        session.getTransaction().commit();
-////                        session.close();
-////                        DatabaseHelper.exit();
-////                        return "Success";
-////                    } else {
-////                        return  "ERROR: Too many points!";
-////                    }
-////                } else {
-////                    return "ERROR: Description is too long!";
-////                }
-////            } else {
-////                return "ERROR: Name is too long!";
-////            }
-//        }
-//        return "ERROR: Points must be more then 0";
-//    }
+
+
+
+    /**
+     * Finds a project by its ID across all courses.
+     *
+     * @param projectId The ID of the project to search for.
+     * @return The Project object if found, otherwise null.
+     */
+    public Project findProject(int projectId) {
+        Project project = null;
+        for(Course c : courses) {
+            project =c.findProjectById(projectId);
+            if(project != null) {
+                return project;
+            }
+        }
+        return project;
+    }
+
+    /**
+     * Searches for a project by its team ID.
+     *
+     * @param teamId The ID of the team to search for.
+     * @return The Project object containing the team, or null if not found.
+     */
+    public Project findProjectByTeamId(int teamId) {
+        for (Course course : courses) {
+            for (Project project : course.getProjects()) {
+                if (project.getTeam() != null && project.getTeam().getTeamID() == teamId) {
+                    return project; // нашли проект с нужной командой
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * Assigns an award to a student for a specific project.
+     * Performs multiple validations before assignment:
+     * - Award exists
+     * - Award is MANUAL and INDIVIDUAL
+     * - Student exists and has STUDENT role
+     * - Teacher exists and has TEACHER role
+     * - Project exists
+     * - Teacher is assigned to the course of the project
+     * - Student is a member of the project's team
+     *
+     * If all validations pass, creates a StudentAward and persists it to the database.
+     *
+     * @param awardId    The ID of the award to assign.
+     * @param studentId  The ID of the student who will receive the award.
+     * @param teacherId  The ID of the teacher assigning the award.
+     * @param projectId  The ID of the project associated with the award.
+     * @return A string indicating success or the specific validation error encountered.
+     */
+    public String assignAwardStudent(int awardId, long studentId, long teacherId, int projectId) {
+        Award award = searchAward(awardId);
+        if(award != null) {
+            if(award.getAssignType() == AwardType.MANUAL) {
+                if(award.getAssignMode() == AssignMode.INDIVIDUAL) {
+                    User student = searchUser(studentId);
+                    if (student != null && student.getRole() == UserRole.STUDENT) {
+                        User teacher = searchUser(teacherId);
+                        if (teacher != null && teacher.getRole() == UserRole.TEACHER) {
+                            Project project = findProject(projectId);
+                            if (project != null) {
+                                if (project.getCourse().isCourseTeacher((Teacher) teacher)) {
+                                    if (project.getTeam().isTeamMember(studentId) != null) {
+                                        return persistStudentAward(award,
+                                                (Student) student,
+                                                (Teacher) teacher,
+                                                project);
+                                    } else {
+                                        return "ERROR: The student is not a member of the project team.";
+                                    }
+                                } else {
+                                    return "ERROR: The teacher is not assigned to this course.";
+                                }
+                            } else {
+                                return "ERROR: Project not found.";
+                            }
+                        } else {
+                            return "ERROR: Invalid teacher or role mismatch.";
+                        }
+                    } else {
+                        return "ERROR: Invalid student or role mismatch";
+                    }
+                } else {
+                    return "ERROR: Award ia not INDIVIDUAL";
+                }
+            } else {
+                return "ERROR: Award is not MANUAL";
+            }
+        } else {
+            return "ERROR: Award not found";
+        }
+    }
+
+
+    /**
+     * Persists a StudentAward object into the database.
+     *
+     * @param award   The Award to assign.
+     * @param student The Student receiving the award.
+     * @param teacher The Teacher assigning the award.
+     * @param project The Project associated with the award.
+     * @return "Success" if persisted successfully, otherwise an error message.
+     */
+    private String persistStudentAward(Award award, Student student, Teacher teacher, Project project) {
+        try {
+            // Создаем объект StudentAward
+            StudentAward studentAward = new StudentAward(
+                    award,
+                    student,
+                    teacher,
+                    project,
+                    project.getTeam(),
+                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                    award.getPointsValue()
+            );
+
+            DatabaseHelper databaseHelper = new DatabaseHelper();
+            databaseHelper.setup();
+            Session session = databaseHelper.getSessionFactory().openSession();
+            session.beginTransaction();
+
+            session.persist(studentAward);
+
+            session.getTransaction().commit();
+            session.close();
+            databaseHelper.exit();
+
+            return "Success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR: Failed to persist StudentAward - " + e.getMessage();
+        }
+    }
+
+    /**
+     * Assigns a team award to all members of a given team.
+     *
+     * Validations performed:
+     * - Award exists
+     * - Award type is MANUAL
+     * - Award assign mode is TEAM
+     * - Teacher exists and has TEACHER role
+     * - Team exists
+     * - Project containing the team exists
+     *
+     * If all validations pass, a StudentAward is persisted for each student in the team.
+     *
+     * @param awardId   The ID of the award to assign.
+     * @param teacherId The ID of the teacher assigning the award.
+     * @param teamId    The ID of the team receiving the award.
+     * @return "Success" if all awards were assigned successfully, otherwise a descriptive error message.
+     */
+    public String assignTeamAward(int awardId, long teacherId, int teamId) {
+        Award award = searchAward(awardId);
+        if(award != null) {
+            if(award.getAssignType() == AwardType.MANUAL) {
+                if(award.getAssignMode() == AssignMode.TEAM) {
+                    User teacher = searchUser(teacherId);
+                    if (teacher != null && teacher.getRole() == UserRole.TEACHER) {
+                        Team team = searchTeam(teamId);
+                        if (team != null) {
+                            Project project = findProjectByTeamId(teamId);
+                            if(project != null) {
+                                for(TeamMember member : team.getTeamMember()) {
+                                    persistStudentAward(award,
+                                            member.getStudent(),
+                                            (Teacher) teacher,
+                                            project);
+                                }
+                                return "Success";
+                            } else {
+                                return "ERROR: Project not found for the given team";
+                            }
+                        } else {
+                            return "ERROR: Team not found";
+                        }
+                    } else {
+                        return "ERROR: Invalid teacher or role mismatch.";
+                    }
+                } else {
+                    return "ERROR: Award is not TEAM";
+                }
+            } else {
+                return "ERROR: Award is not MANUAL";
+            }
+        } else {
+            return "ERROR: Award not found";
+        }
+
+    }
 
 
 

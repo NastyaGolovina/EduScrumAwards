@@ -334,4 +334,22 @@ public class Team {
     }
 
 
+    /**
+     * Checks if a student with the given ID is a member of the team.
+     *
+     * @param studentMemberId The unique ID of the student to check.
+     * @return The TeamMember object if the student is found in the team, otherwise null.
+     */
+    public TeamMember isTeamMember(long studentMemberId) {
+        int i = 0;
+        while (i < teamMembers.size() && teamMembers.get(i).getStudent().getUserId() != studentMemberId)
+            i++;
+        if (i != teamMembers.size()) {
+            return teamMembers.get(i);
+        }
+        return null;
+    }
+
+
+
 }

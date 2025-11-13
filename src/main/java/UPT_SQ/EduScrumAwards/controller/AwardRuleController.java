@@ -34,13 +34,7 @@ public class AwardRuleController {
 //
 //        User user = global.searchUser(teacherId);
 //        Award award = global.searchAward(awardId);
-//        Project project = null;
-//        for (Course c : global.getCourses()) {
-//            project = c.findProjectById(projectId);
-//            if (project != null) {
-//                break;
-//            }
-//        }
+//        Project project =  global.findProject();
 //        if (award != null) {
 //            if (user != null) {
 //                if (project != null) {
