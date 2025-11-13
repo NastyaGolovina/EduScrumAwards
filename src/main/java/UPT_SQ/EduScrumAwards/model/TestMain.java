@@ -9,8 +9,16 @@ import java.util.Date;
 
 public class TestMain {
     public static void main(String[] args) {
+
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+
+
         //just to test
         // we will remove this class later
+
+        /*
+
         long ts = System.currentTimeMillis();
         Award award = new Award(
                 "Top Performer " + ts,
@@ -71,9 +79,9 @@ public class TestMain {
         studentAward.setDate(new Date());
         studentAward.setPoints(100);
 
-        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-        DatabaseHelper.setup();
-        Session session = DatabaseHelper.getSessionFactory().openSession();
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
         session.beginTransaction();
 
         session.persist(award);
@@ -95,6 +103,8 @@ public class TestMain {
         session.getTransaction().commit();
         session.close();
 
+        */
+
         // =============================================
         // NEW TESTS - USER, TEACHER AND STUDENT
         // =============================================
@@ -111,6 +121,9 @@ public class TestMain {
         }
 
         System.out.println("=== ALL TESTS COMPLETED ===");
+
+
+
 //        ////        TEST Global
 //        Global g = new Global();
 //        g.createCourse("###### TEST COURSE 2");
@@ -141,11 +154,11 @@ public class TestMain {
 //
 
 
-////        g.createAward("Top Performer",
-////                "Awarded for outstanding performance",
-////                100,
-////                "AUTOMATIC",
-////                 "TEAM");
+//       g.createAward("Top Performer",
+//                "Awarded for outstanding performance",
+//                100,
+//                "AUTOMATIC",
+//                 "TEAM");
 //        g.readAllAwardWithJplq();
 //        for(int i = 0; i < g.getAwards().size(); i++)
 //        {
@@ -178,7 +191,7 @@ public class TestMain {
             //DeleteUsersOperations(databaseHelper);
 
             // Teste 4: Listar dados restantes
-            System.out.println("\n TEST 4 - VERIFY REMAINING DATA");
+            //System.out.println("\n TEST 4 - VERIFY REMAINING DATA");
             ListRemainingUsersData(databaseHelper);
 
             System.out.println("\n ALL CRUD TESTS SUCCESSFULLY COMPLETED!");
@@ -188,7 +201,6 @@ public class TestMain {
             throw e;
         }
     }
-
     private static void CreateAndInsertUsers(DatabaseHelper databaseHelper) {
         Session session = databaseHelper.getSessionFactory().openSession();
         Transaction transaction = null;
@@ -375,7 +387,22 @@ public class TestMain {
             // Final statistics
             List<Student> remainingStudents = session.createQuery("FROM Student", Student.class).list();
             List<Teacher> remainingTeachers = session.createQuery("FROM Teacher", Teacher.class).list();
-        // Test create/update award
+
+            System.out.println("\n FINAL STATISTICS: ");
+            System.out.println();
+            System.out.println("    Remaining Students: " + remainingStudents.size());
+            System.out.println();
+            System.out.println("    Remaining Teachers: " + remainingTeachers.size());
+            System.out.println();
+            System.out.println("    Total Users overall: " + remainingUsers.size());
+
+        } finally {
+            session.close();
+        }
+    }
+
+
+    // Test create/update award
 //        Global global = new Global();
 //
 //        global.getUsers().add(student);
@@ -404,16 +431,5 @@ public class TestMain {
 //
 //
 
-            System.out.println("\n FINAL STATISTICS: ");
-            System.out.println();
-            System.out.println("    Remaining Students: " + remainingStudents.size());
-            System.out.println();
-            System.out.println("    Remaining Teachers: " + remainingTeachers.size());
-            System.out.println();
-            System.out.println("    Total Users overall: " + remainingUsers.size());
 
-        } finally {
-            session.close();
-        }
-    }
 }
