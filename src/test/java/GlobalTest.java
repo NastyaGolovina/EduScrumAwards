@@ -1,9 +1,8 @@
-import UPT_SQ.EduScrumAwards.model.Award;
-import UPT_SQ.EduScrumAwards.model.Global;
-import UPT_SQ.EduScrumAwards.model.StudentAward;
-import UPT_SQ.EduScrumAwards.model.User;
+import UPT_SQ.EduScrumAwards.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -87,6 +86,50 @@ public class GlobalTest {
         global.getStudentsAwards().add(sa);
 
         StudentAward result = global.searchStudentAward(99);
+        assertNull(result);
+    }
+
+    @Test
+    void testSearchTeamFound() {
+        Global global = new Global();
+        global.setTeams(new ArrayList<>());
+
+        Team team1 = new Team(1, "Alpha", new ArrayList<>());
+        Team team2 = new Team(2, "Beta", new ArrayList<>());
+        Team team3 = new Team(3, "Gamma", new ArrayList<>());
+
+        global.getTeams().add(team1);
+        global.getTeams().add(team2);
+        global.getTeams().add(team3);
+
+        Team result = global.searchTeam(2);
+
+        assertNotNull(result);
+        assertEquals("Beta", result.getTeamName());
+        assertEquals(2, result.getTeamID());
+    }
+
+    @Test
+    void testSearchTeamNotFound() {
+        Global global = new Global();
+        global.setTeams(new ArrayList<>());
+
+        Team team1 = new Team(1, "Alpha", new ArrayList<>());
+        Team team2 = new Team(2, "Beta", new ArrayList<>());
+
+        global.getTeams().add(team1);
+        global.getTeams().add(team2);
+
+        Team result = global.searchTeam(99);
+        assertNull(result);
+    }
+
+    @Test
+    void testSearchTeamEmptyList() {
+        Global global = new Global();
+        global.setTeams(new ArrayList<>());
+
+        Team result = global.searchTeam(1);
         assertNull(result);
     }
 }
