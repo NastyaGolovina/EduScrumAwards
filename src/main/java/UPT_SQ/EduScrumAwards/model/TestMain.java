@@ -6,9 +6,10 @@ import java.util.List;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 public class TestMain {
-    public static void main(String[] args) {
+    //public static void main(String[] args) {
 //
 //        DatabaseHelper databaseHelper = new DatabaseHelper();
 //        databaseHelper.setup();
@@ -125,7 +126,7 @@ public class TestMain {
 
 
 //        ////        TEST Global
-        Global g = new Global();
+       // Global g = new Global();
 //        g.createCourse("###### TEST COURSE 2");
 //        g.readAllCourseWithJplq();
 //        for (Course courses : g.getCourses()) {
@@ -182,233 +183,389 @@ public class TestMain {
 //
 //        }
 
-    }
+    //}
 
-    private static void UserTeacherStudentCRUD(DatabaseHelper databaseHelper) {
-        System.out.println("\n🔧 STARTING CRUD TESTS FOR USER/TEACHER/STUDENT ");
 
-        try {
-            // Teste 1: Criar e inserir dados
-            System.out.println("\n TEST 1 - INSERT DATA");
-            //CreateAndInsertUsers(databaseHelper);
+        private static Global global = new Global();
+        private static Scanner scanner = new Scanner(System.in);
 
-            // Teste 2: Editar dados
-            System.out.println("\n TEST 2 - EDIT DATA");
-            //UpdateUsersOperations(databaseHelper);
+        public static void main(String[] args) {
+            System.out.println("🎯 ===========================================");
+            System.out.println("🎯 TESTE CRUD - USER, TEACHER E STUDENT");
+            System.out.println("🎯 Classe Global Atualizada");
+            System.out.println("🎯 ===========================================");
 
-            // Teste 3: Deletar dados
-            System.out.println("\n TEST 3 - DELETE DATA");
-            //DeleteUsersOperations(databaseHelper);
+            boolean continuar = true;
 
-            // Teste 4: Listar dados restantes
-            //System.out.println("\n TEST 4 - VERIFY REMAINING DATA");
-            ListRemainingUsersData(databaseHelper);
+            while (continuar) {
+                System.out.println("\n📋 MENU DE TESTES CRUD:");
+                System.out.println("1️⃣  - CREATE (Criar Teachers e Students)");
+                System.out.println("2️⃣  - READ (Ler todos os Users)");
+                System.out.println("3️⃣  - READ TEACHERS (Ler apenas Teachers)");
+                System.out.println("4️⃣  - READ STUDENTS (Ler apenas Students)");
+                System.out.println("5️⃣  - UPDATE (Atualizar Users)");
+                System.out.println("6️⃣  - DELETE (Deletar Users)");
+                System.out.println("7️⃣  - TESTAR VALIDAÇÕES");
+                System.out.println("8️⃣  - EXECUTAR TODOS OS TESTES");
+                System.out.println("0️⃣  - SAIR");
+                System.out.print("\nEscolha uma opção: ");
 
-            System.out.println("\n ALL CRUD TESTS SUCCESSFULLY COMPLETED!");
+                int opcao = scanner.nextInt();
+                scanner.nextLine(); // Limpar buffer
 
-        } catch (Exception e) {
-            System.err.println(" Error in CRUD tests: " + e.getMessage());
-            throw e;
-        }
-    }
-    private static void CreateAndInsertUsers(DatabaseHelper databaseHelper) {
-        Session session = databaseHelper.getSessionFactory().openSession();
-        Transaction transaction = null;
+                switch (opcao) {
+                    case 1:
+                        testarCreate();
+                        break;
+                    case 2:
+                        testarReadAllUsers();
+                        break;
+                    case 3:
+                        testarReadTeachers();
+                        break;
+                    case 4:
+                        testarReadStudents();
+                        break;
+                    case 5:
+                        testarUpdate();
+                        break;
+                    case 6:
+                        testarDelete();
+                        break;
+                    case 7:
+                        testarValidacoes();
+                        break;
+                    case 8:
+                        executarTodosTestes();
+                        break;
+                    case 0:
+                        continuar = false;
+                        System.out.println("👋 Saindo do programa...");
+                        break;
+                    default:
+                        System.out.println("❌ Opção inválida!");
+                }
 
-        try {
-            transaction = session.beginTransaction();
-
-            // Insert Students
-            Student student1 = new Student("Ana Silva", "ana.silva", "password123", "2023001", 2);
-            session.persist(student1);
-            System.out.println("✓ Student inserido: " + student1.getName() + " (Nº: " + student1.getStudentNumber() + ")");
-
-            Student student2 = new Student("João Pereira", "joao.pereira", "pass456", "2023002", 3);
-            session.persist(student2);
-            System.out.println("✓ Student inserido: " + student2.getName() + " (Nº: " + student2.getStudentNumber() + ")");
-
-            // Insert Teachers
-            Teacher teacher1 = new Teacher("Dr. Carlos Santos", "carlos.santos", "teacher123");
-            session.persist(teacher1);
-            System.out.println("✓ Teacher inserido: " + teacher1.getName());
-
-            Teacher teacher2 = new Teacher("Prof. Maria Oliveira", "maria.oliveira", "teach456");
-            session.persist(teacher2);
-            System.out.println("✓ Teacher inserido: " + teacher2.getName());
-
-            transaction.commit();
-            System.out.println("✓ Transação commitada com sucesso");
-
-            // Verify inserted data
-            verifyInsertedData(session);
-
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-                System.err.println("✗ Erro - Rollback realizado");
+                if (continuar && opcao != 8) {
+                    System.out.print("\n⏸️  Pressione ENTER para continuar...");
+                    scanner.nextLine();
+                }
             }
-            throw e;
-        } finally {
-            session.close();
-        }
-    }
 
-    private static void verifyInsertedData(Session session) {
-        System.out.println("\n VERIFICANDO DADOS INSERIDOS COM QUERY DA BASE DE DADOS:");
-
-        // List all Users
-        List<User> users = session.createQuery("FROM User", User.class).list();
-        System.out.println();
-        System.out.println(" Total Users on dataBase: " + users.size());
-        for (User user : users) {
-            System.out.println("   User: " + user.getName() +
-                    " (" + user.getRole() + ") - ID: " + user.getUserId() +
-                    " - Login: " + user.getLogin());
+            scanner.close();
         }
 
-        // List Students specifically
-        List<Student> students = session.createQuery("FROM Student", Student.class).list();
-        System.out.println();
-        System.out.println(" Total Students: " + students.size());
-        for (Student student : students) {
-            System.out.println("    Student: " + student.getName() +
-                    " - Número: " + student.getStudentNumber() +
-                    " - Semestre: " + student.getCurrentSemester());
+        private static void testarCreate() {
+            System.out.println("\n🎯 ===========================================");
+            System.out.println("🎯 TESTANDO CREATE (CRIAÇÃO)");
+            System.out.println("🎯 ===========================================");
+
+            // Criar Teachers
+            System.out.println("\n📝 CRIANDO TEACHERS:");
+            System.out.println("-------------------");
+
+            String result1 = global.createTeacher("Dr. Carlos Santos", "carlos.santos", "teacher123");
+            System.out.println("✅ createTeacher 1: " + result1);
+
+            String result2 = global.createTeacher("Prof. Maria Oliveira", "maria.oliveira", "teach456");
+            System.out.println("✅ createTeacher 2: " + result2);
+
+            // Criar Students
+            System.out.println("\n📝 CRIANDO STUDENTS:");
+            System.out.println("-------------------");
+
+            String result3 = global.createStudent("Ana Silva", "ana.silva", "password123", "2023001", 2);
+            System.out.println("✅ createStudent 1: " + result3);
+
+            String result4 = global.createStudent("João Pereira", "joao.pereira", "pass456", "2023002", 3);
+            System.out.println("✅ createStudent 2: " + result4);
+
+            String result5 = global.createStudent("Maria Costa", "maria.costa", "student789", "2023003", 1);
+            System.out.println("✅ createStudent 3: " + result5);
+
+            System.out.println("\n🎉 CREATE TESTADO COM SUCESSO!");
         }
 
-        // List Teachers specifically
-        List<Teacher> teachers = session.createQuery("FROM Teacher", Teacher.class).list();
-        System.out.println();
-        System.out.println(" Total Teachers: " + teachers.size());
-        for (Teacher teacher : teachers) {
-            System.out.println("   Teacher: " + teacher.getName());
+        private static void testarReadAllUsers() {
+            System.out.println("\n🎯 ===========================================");
+            System.out.println("🎯 TESTANDO READ ALL USERS");
+            System.out.println("🎯 ===========================================");
+
+            System.out.println("\n👥 CARREGANDO TODOS OS USERS DO BANCO:");
+            System.out.println("-------------------------------------");
+            global.readAllUserWithJplq();
+
+            if (global.getUsers().isEmpty()) {
+                System.out.println("❌ Nenhum user encontrado no banco!");
+                return;
+            }
+
+            System.out.println("✅ Total de users carregados: " + global.getUsers().size());
+            exibirUsersDetalhados(global.getUsers());
         }
-    }
 
-    private static void UpdateUsersOperations(DatabaseHelper databaseHelper) {
-        Session session = databaseHelper.getSessionFactory().openSession();
-        Transaction transaction = null;
+        private static void testarReadTeachers() {
+            System.out.println("\n🎯 ===========================================");
+            System.out.println("🎯 TESTANDO READ TEACHERS");
+            System.out.println("🎯 ===========================================");
 
-        try {
-            transaction = session.beginTransaction();
+            System.out.println("\n👨‍🏫 CARREGANDO APENAS TEACHERS DO BANCO:");
+            System.out.println("--------------------------------------");
+            global.readAllTeacherWithJplq();
 
-            // Find and edit Student
-            Student studentToUpdate = session.createQuery("FROM Student WHERE studentNumber = '2023001'", Student.class)
-                    .uniqueResult();
-            if (studentToUpdate != null) {
-                String oldName = studentToUpdate.getName();
-                Integer oldSemester = studentToUpdate.getCurrentSemester();
-                studentToUpdate.setName("Ana Silva Costa (Atualizado)");
-                studentToUpdate.setCurrentSemester(6);
-                session.merge(studentToUpdate);
-                System.out.println("✓ Student editado: '" + oldName + "' -> '" + studentToUpdate.getName() + "'");
-                System.out.println("✓ Semestre atualizado: " + oldSemester + " -> " + studentToUpdate.getCurrentSemester());
+            long teacherCount = global.getUsers().stream().filter(u -> u instanceof Teacher).count();
+            System.out.println("✅ Total de Teachers carregados: " + teacherCount);
+
+            // Mostrar apenas teachers
+            List<User> teachers = global.getUsers().stream()
+                    .filter(u -> u instanceof Teacher)
+                    .toList();
+            exibirUsersDetalhados(teachers);
+        }
+
+        private static void testarReadStudents() {
+            System.out.println("\n🎯 ===========================================");
+            System.out.println("🎯 TESTANDO READ STUDENTS");
+            System.out.println("🎯 ===========================================");
+
+            System.out.println("\n👨‍🎓 CARREGANDO APENAS STUDENTS DO BANCO:");
+            System.out.println("--------------------------------------");
+            global.readAllStudentWithJplq();
+
+            long studentCount = global.getUsers().stream().filter(u -> u instanceof Student).count();
+            System.out.println("✅ Total de Students carregados: " + studentCount);
+
+            // Mostrar apenas students
+            List<User> students = global.getUsers().stream()
+                    .filter(u -> u instanceof Student)
+                    .toList();
+            exibirUsersDetalhados(students);
+        }
+
+        private static void testarUpdate() {
+            System.out.println("\n🎯 ===========================================");
+            System.out.println("🎯 TESTANDO UPDATE (ATUALIZAÇÃO)");
+            System.out.println("🎯 ===========================================");
+
+            // Primeiro carrega os users
+            global.readAllUserWithJplq();
+
+            if (global.getUsers().isEmpty()) {
+                System.out.println("❌ Nenhum user encontrado para atualizar!");
+                return;
+            }
+
+            // Atualizar um Student
+            Student studentParaAtualizar = null;
+            for (User user : global.getUsers()) {
+                if (user instanceof Student) {
+                    studentParaAtualizar = (Student) user;
+                    break;
+                }
+            }
+
+            if (studentParaAtualizar != null) {
+                System.out.println("\n📝 ATUALIZANDO STUDENT:");
+                System.out.println("----------------------");
+                System.out.println("📋 Antes da atualização:");
+                System.out.println("   Nome: " + studentParaAtualizar.getName());
+                System.out.println("   Login: " + studentParaAtualizar.getLogin());
+                System.out.println("   Student Number: " + studentParaAtualizar.getStudentNumber());
+                System.out.println("   Semestre: " + studentParaAtualizar.getCurrentSemester());
+
+                String result = global.updateStudent(
+                        studentParaAtualizar.getUserId(),
+                        studentParaAtualizar.getName() + " [ATUALIZADO]",
+                        studentParaAtualizar.getLogin() + ".atualizado",
+                        "novasenha123",
+                        studentParaAtualizar.getStudentNumber(),
+                        studentParaAtualizar.getCurrentSemester() + 1
+                );
+                System.out.println("✅ updateStudent: " + result);
             } else {
-                System.out.println("✗ Student não encontrado para edição");
+                System.out.println("❌ Nenhum Student encontrado para atualizar!");
             }
 
-            // Find and edit Teacher
-            Teacher teacherToUpdate = session.createQuery("FROM Teacher WHERE login = 'carlos.santos'", Teacher.class)
-                    .uniqueResult();
-            if (teacherToUpdate != null) {
-                String oldName = teacherToUpdate.getName();
-                teacherToUpdate.setName("Dr. Carlos Santos Silva (Atualizado)");
-                session.merge(teacherToUpdate);
-                System.out.println("✓ Teacher editado: '" + oldName + "' -> '" + teacherToUpdate.getName() + "'");
+            // Atualizar um Teacher
+            Teacher teacherParaAtualizar = null;
+            for (User user : global.getUsers()) {
+                if (user instanceof Teacher) {
+                    teacherParaAtualizar = (Teacher) user;
+                    break;
+                }
+            }
+
+            if (teacherParaAtualizar != null) {
+                System.out.println("\n📝 ATUALIZANDO TEACHER:");
+                System.out.println("----------------------");
+                System.out.println("📋 Antes da atualização:");
+                System.out.println("   Nome: " + teacherParaAtualizar.getName());
+                System.out.println("   Login: " + teacherParaAtualizar.getLogin());
+
+                String result = global.updateTeacher(
+                        teacherParaAtualizar.getUserId(),
+                        teacherParaAtualizar.getName() + " [ATUALIZADO]",
+                        teacherParaAtualizar.getLogin() + ".atualizado",
+                        "novasenha456"
+                );
+                System.out.println("✅ updateTeacher: " + result);
             } else {
-                System.out.println("✗ Teacher não encontrado para edição");
+                System.out.println("❌ Nenhum Teacher encontrado para atualizar!");
             }
 
-            transaction.commit();
-            System.out.println("✓ Todas as edições foram commitadas com sucesso");
-
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-                System.err.println("✗ Erro - Rollback realizado");
-            }
-            throw e;
-        } finally {
-            session.close();
+            // Mostrar resultado das atualizações
+            System.out.println("\n📊 APÓS AS ATUALIZAÇÕES:");
+            global.readAllUserWithJplq();
+            System.out.println("✅ Total de users: " + global.getUsers().size());
+            exibirUsersResumido(global.getUsers());
         }
-    }
 
-    private static void DeleteUsersOperations(DatabaseHelper databaseHelper) {
-        Session session = databaseHelper.getSessionFactory().openSession();
-        Transaction transaction = null;
+        private static void testarDelete() {
+            System.out.println("\n🎯 ===========================================");
+            System.out.println("🎯 TESTANDO DELETE (EXCLUSÃO)");
+            System.out.println("🎯 ===========================================");
 
-        try {
-            transaction = session.beginTransaction();
+            global.readAllUserWithJplq();
 
-            // Delete Student
-            Student studentToDelete = session.createQuery("FROM Student WHERE studentNumber = '2023001'", Student.class)
-                    .uniqueResult();
-            if (studentToDelete != null) {
-                System.out.println("✓ Student encontrado para deleção: " + studentToDelete.getName());
-                session.remove(studentToDelete);
-                System.out.println("✓ Student deletado: " + studentToDelete.getName());
-            } else {
-                System.out.println("✗ Student não encontrado para deleção");
+            if (global.getUsers().isEmpty()) {
+                System.out.println("❌ Nenhum user encontrado para deletar!");
+                return;
             }
 
-            // Delete Teacher
-            Teacher teacherToDelete = session.createQuery("FROM Teacher WHERE login = 'carlos.santos'", Teacher.class)
-                    .uniqueResult();
-            if (teacherToDelete != null) {
-                System.out.println("✓ Teacher encontrado para deleção: " + teacherToDelete.getName());
-                session.remove(teacherToDelete);
-                System.out.println("✓ Teacher deletado: " + teacherToDelete.getName());
-            } else {
-                System.out.println("✗ Teacher não encontrado para deleção");
-            }
+            System.out.println("\n📊 ANTES DA EXCLUSÃO:");
+            System.out.println("Total de users: " + global.getUsers().size());
+            exibirUsersResumido(global.getUsers());
 
-            transaction.commit();
-            System.out.println("✓ Todas as deleções foram commitadas com sucesso");
+            // Deletar o último user
+            User userParaDeletar = global.getUsers().get(global.getUsers().size() - 1);
+            System.out.println("\n🗑️  EXCLUINDO USER:");
+            System.out.println("-----------------");
+            System.out.println("User a ser excluído: " + userParaDeletar.getName() +
+                    " (ID: " + userParaDeletar.getUserId() + ", Tipo: " +
+                    (userParaDeletar instanceof Teacher ? "TEACHER" : "STUDENT") + ")");
 
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-                System.err.println("✗ Erro - Rollback realizado");
-            }
-            throw e;
-        } finally {
-            session.close();
+            String result = global.deleteUser(userParaDeletar.getUserId());
+            System.out.println("✅ deleteUser: " + result);
+
+            System.out.println("\n📊 APÓS A EXCLUSÃO:");
+            global.readAllUserWithJplq();
+            System.out.println("Total de users: " + global.getUsers().size());
+            exibirUsersResumido(global.getUsers());
         }
-    }
 
-    private static void ListRemainingUsersData(DatabaseHelper databaseHelper) {
-        Session session = databaseHelper.getSessionFactory().openSession();
+        private static void testarValidacoes() {
+            System.out.println("\n🎯 ===========================================");
+            System.out.println("🎯 TESTANDO VALIDAÇÕES (ERROS ESPERADOS)");
+            System.out.println("🎯 ===========================================");
 
-        try {
-            // List remaining Users
-            List<User> remainingUsers = session.createQuery("FROM User", User.class).list();
-            System.out.println(" FINAL REPORT - REMAINING DATA IN DATABASE:");
-            System.out.println();
-            System.out.println("   Total remaining Users: " + remainingUsers.size());
+            System.out.println("\n❌ TESTANDO VALIDAÇÕES DE ERRO:");
+            System.out.println("------------------------------");
 
-            for (User user : remainingUsers) {
+            // Tentar criar com dados vazios
+            System.out.println("\n1. Dados vazios:");
+            String erro1 = global.createStudent("", "", "", "", -1);
+            System.out.println("   Resultado: " + erro1);
 
-                System.out.println("   " + user.getName() +
-                        " (" + user.getRole() + ")" +
-                        " - ID: " + user.getUserId() +
-                        " - Login: " + user.getLogin());
+            // Tentar criar com login duplicado
+            System.out.println("\n2. Login duplicado:");
+            String erro2 = global.createStudent("Novo Student", "ana.silva", "pass123", "2023099", 1);
+            System.out.println("   Resultado: " + erro2);
+
+            // Tentar criar com student number duplicado
+            System.out.println("\n3. Student number duplicado:");
+            String erro3 = global.createStudent("Novo Student", "novo.login", "pass123", "2023001", 1);
+            System.out.println("   Resultado: " + erro3);
+
+            // Tentar criar teacher com login duplicado
+            System.out.println("\n4. Teacher com login duplicado:");
+            String erro4 = global.createTeacher("Novo Teacher", "carlos.santos", "pass123");
+            System.out.println("   Resultado: " + erro4);
+
+            // Tentar atualizar user que não existe
+            System.out.println("\n5. Atualizar user inexistente:");
+            String erro5 = global.updateTeacher(999999L, "Nome", "login", "senha");
+            System.out.println("   Resultado: " + erro5);
+
+            // Tentar deletar user que não existe
+            System.out.println("\n6. Deletar user inexistente:");
+            String erro6 = global.deleteUser(999999L);
+            System.out.println("   Resultado: " + erro6);
+        }
+
+        private static void executarTodosTestes() {
+            System.out.println("\n🎯 ===========================================");
+            System.out.println("🎯 EXECUTANDO TODOS OS TESTES EM SEQUÊNCIA");
+            System.out.println("🎯 ===========================================");
+
+            testarCreate();
+            pausa();
+
+            testarReadAllUsers();
+            pausa();
+
+            testarReadTeachers();
+            pausa();
+
+            testarReadStudents();
+            pausa();
+
+            testarUpdate();
+            pausa();
+
+            testarDelete();
+            pausa();
+
+            testarValidacoes();
+
+            System.out.println("\n🎉 ===========================================");
+            System.out.println("🎯 TODOS OS TESTES FORAM CONCLUÍDOS!");
+            System.out.println("🎉 ===========================================");
+        }
+
+        private static void exibirUsersDetalhados(List<User> users) {
+            if (users.isEmpty()) {
+                System.out.println("❌ Nenhum user encontrado!");
+                return;
             }
 
-            // Final statistics
-            List<Student> remainingStudents = session.createQuery("FROM Student", Student.class).list();
-            List<Teacher> remainingTeachers = session.createQuery("FROM Teacher", Teacher.class).list();
+            for (User user : users) {
+                String tipo = user instanceof Teacher ? "TEACHER" : "STUDENT";
+                System.out.println("\n   👤 " + user.getName() + " (" + tipo + ")");
+                System.out.println("      ID: " + user.getUserId());
+                System.out.println("      Login: " + user.getLogin());
 
-            System.out.println("\n FINAL STATISTICS: ");
-            System.out.println();
-            System.out.println("    Remaining Students: " + remainingStudents.size());
-            System.out.println();
-            System.out.println("    Remaining Teachers: " + remainingTeachers.size());
-            System.out.println();
-            System.out.println("    Total Users overall: " + remainingUsers.size());
-
-        } finally {
-            session.close();
+                if (user instanceof Student) {
+                    Student student = (Student) user;
+                    System.out.println("      Student Number: " + student.getStudentNumber());
+                    System.out.println("      Semestre: " + student.getCurrentSemester());
+                }
+            }
         }
+
+        private static void exibirUsersResumido(List<User> users) {
+            if (users.isEmpty()) {
+                System.out.println("❌ Nenhum user encontrado!");
+                return;
+            }
+
+            for (User user : users) {
+                String tipo = user instanceof Teacher ? "TEACHER" : "STUDENT";
+                String infoExtra = "";
+
+                if (user instanceof Student) {
+                    Student student = (Student) user;
+                    infoExtra = " | Nº: " + student.getStudentNumber() + " | Semestre: " + student.getCurrentSemester();
+                }
+
+                System.out.println("   👉 " + user.getName() + " (" + tipo + ")" + infoExtra);
+            }
+        }
+
+        private static void pausa() {
+            System.out.print("\n⏸️  Pressione ENTER para continuar...");
+            scanner.nextLine();
+        }
+
     }
 
 
@@ -442,4 +599,5 @@ public class TestMain {
 //
 
 
-}
+
+
