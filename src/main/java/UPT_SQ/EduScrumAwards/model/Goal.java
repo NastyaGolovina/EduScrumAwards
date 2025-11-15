@@ -7,6 +7,9 @@ import jakarta.persistence.*;
  *
  * A Goal has a description, a score value, and a completion status.
  * Each Goal belongs to a specific Sprint.
+ *  * @author Sania Fatima
+ *  * @version 1.0
+ *  * @since 2025-10-31
  */
 @Entity
 @Table(name = "goals")
@@ -68,6 +71,14 @@ public class Goal {
         this.isCompleted = isCompleted;
     }
 
+    public Goal(int goalId, String description, int score, boolean isCompleted) {
+        this.goalId = goalId;
+        this.description = description;
+        this.score = score;
+        this.isCompleted = isCompleted;
+    }
+
+
     // Getters and setters
 
     public int getGoalId() {
@@ -108,6 +119,10 @@ public class Goal {
 
     public void setSprint(Sprint sprint) {
         this.sprint = sprint;
+    }
+
+    public void completeGoal(){
+        this.isCompleted = true;
     }
 
     @Override

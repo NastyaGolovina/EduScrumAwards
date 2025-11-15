@@ -1,13 +1,18 @@
 package UPT_SQ.EduScrumAwards.model;
 
 import jakarta.persistence.*;
+import org.hibernate.Session;
+
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Represents a Project entity in the EduScrum Awards system.
  *
- * A Project belongs to a specific Team and Course, and may contain multiple Sprints.
- * This entity is mapped to the "projects" table in the database.
+ * @author Sania Fatima
+ * @version 1.0
+ * @since 2025-10-31
  */
 @Entity
 @Table(name = "projects")
@@ -21,28 +26,11 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_id")
     private int projectId;
-
-    /**
-     * The name of the project.
-     * Cannot be null and has a maximum length of 50 characters.
-     */
     @Column(name = "project_name", length = 50, nullable = false)
     private String projectName;
-
-    /**
-     * The team that owns this project.
-     * Creates a foreign key column "Team_ID" in the projects table.
-     * Many projects can belong to one team.
-     */
     @ManyToOne
     @JoinColumn(name = "Team_ID", nullable = false)
     private Team team;
-
-    /**
-     * The course this project belongs to.
-     * Creates a foreign key column "course_id" in the projects table.
-     * Many projects can belong to one course.
-     */
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
@@ -50,7 +38,7 @@ public class Project {
     /**
      * A list of sprints associated with this project.
      */
-    @Transient
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sprint> sprints;
 
     /** Default no-argument constructor required by JPA. */
@@ -121,6 +109,113 @@ public class Project {
     /** Sets the list of sprints for this project (transient). */
     public void setSprints(List<Sprint> sprints) {
         this.sprints = sprints;
+    }
+
+
+    public Sprint searchSprint(int sprintId){
+        if (sprints == null){
+            return null;
+        }
+
+        for(Sprint sprint : sprints){
+            if(sprint.getSprintId() == sprintId){
+                return sprint;
+            }
+        }
+        return null;
+    }
+
+    public void retrieveSprints() {
+
+        DatabaseHelper db = new DatabaseHelper();
+        db.setup();
+        Session session = db.getSessionFactory().openSession();
+
+        session.beginTransaction();
+
+        List<Sprint> sprintList = session.createQuery(
+                        "SELECT s FROM Sprint s WHERE s.project.projectId = :pid",
+                        Sprint.class
+                )
+                .setParameter("pid", this.projectId)
+                .getResultList();
+
+        this.sprints = new ArrayList<>(sprintList);
+
+        session.getTransaction().commit();
+        session.close();
+        db.exit();
+    }
+
+    public String createSprint(Date startDate, Date endDate, List<Goal> goals){
+
+        if(sprints == null){
+            sprints = new ArrayList<>();
+        }
+
+        Sprint sprint = new Sprint(startDate, endDate, goals, this);
+
+        for (Goal g : goals) {
+            g.setSprint(sprint);
+        }
+
+        sprints.add(sprint);
+
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = dbHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.persist(sprint); // now Hibernate will also save goals
+        session.getTransaction().commit();
+        session.close();
+        dbHelper.exit();
+
+        return "Sprint added Successfully!";
+    }
+
+    public String updateSprint(int sprintId, Date startDate, Date endDate) {
+        if(sprints == null || sprints.isEmpty()){
+            return "No sprints found for this project.";
+        }
+
+        Sprint sprint = searchSprint(sprintId);
+        if(sprint == null){
+            return "Sprint with ID " + sprintId + " not found!";
+        }
+
+        sprint.setStartDate(startDate);
+        sprint.setEndDate(endDate);
+
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = dbHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        session.merge(sprint);
+
+        session.getTransaction().commit();
+        session.close();
+        dbHelper.exit();
+
+        return "Sprint updated Successfully!";
+    }
+
+    public ArrayList<StudentAward> studentsAwards() {
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = dbHelper.getSessionFactory().openSession();
+
+        List<StudentAward> list = session.createQuery(
+                        "SELECT sa FROM StudentAward sa WHERE sa.project.projectId = :projectId",
+                        StudentAward.class
+                )
+                .setParameter("projectId", this.projectId)
+                .getResultList();
+
+        session.close();
+        dbHelper.exit();
+
+        return new ArrayList<>(list != null ? list : new ArrayList<>());
     }
 
     /**

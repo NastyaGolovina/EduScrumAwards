@@ -1,6 +1,9 @@
 package UPT_SQ.EduScrumAwards.model;
 
 import jakarta.persistence.*;
+import org.hibernate.Session;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +12,9 @@ import java.util.List;
  *
  * A Sprint belongs to a specific Project and can have multiple Goals.
  * This entity is mapped to the "sprints" table in the database.
+ *  * @author Sania Fatima
+ *  * @version 1.0
+ *  * @since 2025-10-31
  */
 @Entity
 @Table(name = "sprints")
@@ -41,10 +47,9 @@ public class Sprint {
 
     /**
      * List of Goals associated with this Sprint.
-     * Marked as @Transient because it is not persisted directly by Hibernate.
      * Useful for displaying or grouping goals in memory.
      */
-    @Transient
+    @OneToMany(mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Goal> goals;
 
     /**
@@ -77,6 +82,14 @@ public class Sprint {
         this.goals = goals;
         this.project = project;
     }
+
+    public Sprint(Date startDate, Date endDate, List<Goal> goals, Project project) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.goals = goals;
+        this.project = project;
+    }
+
 
     // Getters and Setters
 
@@ -120,6 +133,76 @@ public class Sprint {
         this.project = project;
     }
 
+    // ADD GOAL
+    public String addGoal(Goal goal) {
+        if (goals == null) goals = new ArrayList<>();
+        goal.setSprint(this);
+        goals.add(goal);
+
+        DatabaseHelper db = new DatabaseHelper();
+        db.setup();
+        Session session = db.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.persist(goal);
+        session.getTransaction().commit();
+        session.close();
+        db.exit();
+
+        return "Goal added successfully!";
+    }
+
+    //UPDATE GOAL
+    public String updateGoal(int goalId, String description, int score, boolean completed) {
+        if (goals == null) return "No goals found!";
+        Goal goal = goals.stream().filter(g -> g.getGoalId() == goalId).findFirst().orElse(null);
+        if (goal == null) return "Goal not found!";
+
+        goal.setDescription(description);
+        goal.setScore(score);
+        goal.setCompleted(completed);
+
+        DatabaseHelper db = new DatabaseHelper();
+        db.setup();
+        Session session = db.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.merge(goal);
+        session.getTransaction().commit();
+        session.close();
+        db.exit();
+
+        return "Goal updated successfully!";
+    }
+
+    //RETRIEVE GOAL
+    public List<Goal> getAllGoals() {
+        return goals;
+    }
+
+    // Method to calculate the total score
+    public double calcTotalScore(){
+        if (goals == null || goals.isEmpty()){
+            return 0;
+        }
+        int totalscore = 0;
+        for(Goal goal : goals){
+            totalscore += goal.getScore();
+        }
+        return totalscore;
+    }
+
+    public double calcCompletionByScore() {
+        double totalScore = calcTotalScore();
+        if (totalScore == 0) {
+            return 0;
+        }
+        double completedScore = 0;
+        for (Goal goal : goals) {
+            if (goal.isCompleted()) {
+                completedScore += goal.getScore();
+            }
+        }
+        return (completedScore / totalScore) * 100;
+    }
     /**
      * Returns a string representation of the Sprint object.
      * Includes sprintId, start and end dates, and transient goals list.
