@@ -306,33 +306,31 @@ public class Team {
     }
 
     /**
-     * Calculates the total points earned by this {@link Team} across all {@link StudentAward} records.
+     * Calculates the total points earned by this {@link Team}
+     * by summing the points of all {@link StudentAward} records
+     * that belong to the team’s members.
      *
-     * <p>Uses a JPQL aggregate query (SUM) on the {@code StudentAward.points} field
-     * where {@code sa.team.teamID = this.teamID}. Returns 0 if no awards exist.</p>
+     * <p>This method retrieves all {@code StudentAward} objects linked
+     * to this team (via {@link #studentsAwards()}) and sums their
+     * {@code points} values. Returns 0 if there are no awards.</p>
      *
-     * @return the sum of points earned by all team members (never negative)
+     * @return total points earned by all team members
      */
     public int earnAward() {
-        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-        DatabaseHelper.setup();
-        Session session = DatabaseHelper.getSessionFactory().openSession();
 
-        try {
-            // SUM query; returns null when there are no rows → coalesce to 0
-            Integer sum = session.createQuery(
-                            "SELECT SUM(sa.points) FROM StudentAward sa WHERE sa.team.teamID = :teamId",
-                            Integer.class)
-                    .setParameter("teamId", this.teamID)
-                    .getSingleResult();
+        // get all student awards linked to this team
+        ArrayList<StudentAward> awards = this.studentsAwards();
 
-            return (sum != null) ? sum : 0;
-        } finally {
-            session.close();
-            DatabaseHelper.exit();
+        int total = 0;
+        for (StudentAward sa : awards) {
+            if (sa != null && sa.getTeam() != null
+                    && sa.getTeam().getTeamID() == this.teamID) {
+                total += sa.getPoints();
+            }
         }
-    }
 
+        return total;
+    }
 
     /**
      * Checks if a student with the given ID is a member of the team.
