@@ -2,6 +2,7 @@ package UPT_SQ.EduScrumAwards.model;
 
 //import jakarta.annotation.PostConstruct;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -813,4 +814,379 @@ public class Global {
         DatabaseHelper.exit();
         return "Success";
     }
+
+    // =============================================
+    // BGN CRUD METHODS - USER, TEACHER AND STUDENT
+    // =============================================
+
+    /**
+     * Creates a new Teacher and saves it to the database.
+     *
+     * @param name The name of the teacher. Must not be empty and no longer than 100 characters.
+     * @param login The login of the teacher. Must be unique and no longer than 50 characters.
+     * @param password The password of the teacher. Must not be empty and no longer than 255 characters.
+     * @return "Success" if the teacher was successfully created and saved, or an error message if any validation fails.
+     */
+    public String createTeacher(String name, String login, String password) {
+        if (name == null || name.isEmpty()) return "ERROR: Name is empty!";
+        if (login == null || login.isEmpty()) return "ERROR: Login is empty!";
+        if (password == null || password.isEmpty()) return "ERROR: Password is empty!";
+        if (name.length() > 100) return "ERROR: Name is too long!";
+        if (login.length() > 50) return "ERROR: Login is too long!";
+        if (password.length() > 255) return "ERROR: Password is too long!";
+
+        // Check if login already exists
+        if (findUserByLogin(login) != null) {
+            return "ERROR: Login already exists!";
+        }
+
+        Teacher newTeacher = new Teacher(name, login, password);
+        users.add(newTeacher);
+
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            session.persist(newTeacher);
+            transaction.commit();
+            return "Success";
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            return "ERROR: Database error - " + e.getMessage();
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    /**
+     * Creates a new Student and saves it to the database.
+     *
+     * @param name The name of the student. Must not be empty and no longer than 100 characters.
+     * @param login The login of the student. Must be unique and no longer than 50 characters.
+     * @param password The password of the student. Must not be empty and no longer than 255 characters.
+     * @param studentNumber The student number. Must be unique and no longer than 20 characters.
+     * @param currentSemester The current semester of the student. Must be at least 1.
+     * @return "Success" if the student was successfully created and saved, or an error message if any validation fails.
+     */
+    public String createStudent(String name, String login, String password, String studentNumber, Integer currentSemester) {
+        if (name == null || name.isEmpty()) return "ERROR: Name is empty!";
+        if (login == null || login.isEmpty()) return "ERROR: Login is empty!";
+        if (password == null || password.isEmpty()) return "ERROR: Password is empty!";
+        if (studentNumber == null || studentNumber.isEmpty()) return "ERROR: Student number is empty!";
+        if (currentSemester == null || currentSemester < 1) return "ERROR: Current semester must be at least 1!";
+        if (name.length() > 100) return "ERROR: Name is too long!";
+        if (login.length() > 50) return "ERROR: Login is too long!";
+        if (password.length() > 255) return "ERROR: Password is too long!";
+        if (studentNumber.length() > 20) return "ERROR: Student number is too long!";
+
+        // Check if login already exists
+        if (findUserByLogin(login) != null) {
+            return "ERROR: Login already exists!";
+        }
+
+        // Check if student number already exists
+        if (findStudentByNumber(studentNumber) != null) {
+            return "ERROR: Student number already exists!";
+        }
+
+        Student newStudent = new Student(name, login, password, studentNumber, currentSemester);
+        users.add(newStudent);
+
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            session.persist(newStudent);
+            transaction.commit();
+            return "Success";
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            return "ERROR: Database error - " + e.getMessage();
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    /**
+     * Loads all User objects from the database and stores them in the local users list.
+     * Uses JPQL to query the database.
+     */
+    public void readAllUserWithJplq() {
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+
+        try {
+            List<User> userList = session.createQuery("FROM User", User.class).getResultList();
+            users = new ArrayList<>(userList);
+            System.out.println("✓ Loaded " + users.size() + " users from database");
+        } catch (Exception e) {
+            System.err.println("ERROR loading users: " + e.getMessage());
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    /**
+     * Loads all Teacher objects from the database and stores them in the local users list.
+     * Uses JPQL to query the database.
+     */
+    public void readAllTeacherWithJplq() {
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+
+        try {
+            List<Teacher> teacherList = session.createQuery("FROM Teacher", Teacher.class).getResultList();
+            // Add teachers to users list (if not already present)
+            for (Teacher teacher : teacherList) {
+                if (!users.contains(teacher)) {
+                    users.add(teacher);
+                }
+            }
+            System.out.println("✓ Loaded " + teacherList.size() + " teachers from database");
+        } catch (Exception e) {
+            System.err.println("ERROR loading teachers: " + e.getMessage());
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    /**
+     * Loads all Student objects from the database and stores them in the local users list.
+     * Uses JPQL to query the database.
+     */
+    public void readAllStudentWithJplq() {
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+
+        try {
+            List<Student> studentList = session.createQuery("FROM Student", Student.class).getResultList();
+            // Add students to users list (if not already present)
+            for (Student student : studentList) {
+                if (!users.contains(student)) {
+                    users.add(student);
+                }
+            }
+            System.out.println("✓ Loaded " + studentList.size() + " students from database");
+        } catch (Exception e) {
+            System.err.println("ERROR loading students: " + e.getMessage());
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    /**
+     * Updates an existing Teacher with the specified ID.
+     *
+     * @param userId The ID of the teacher to update.
+     * @param name The new name of the teacher. Must not be empty and no longer than 100 characters.
+     * @param login The new login of the teacher. Must be unique and no longer than 50 characters.
+     * @param password The new password of the teacher. Must not be empty and no longer than 255 characters.
+     * @return "Success" if the teacher was successfully updated, or an error message if validation fails or the teacher does not exist.
+     */
+    public String updateTeacher(long userId, String name, String login, String password) {
+        User user = searchUser(userId);
+        if (user == null || !(user instanceof Teacher)) {
+            return "ERROR: Teacher with this id does not exist";
+        }
+
+        Teacher teacher = (Teacher) user;
+
+        if (name == null || name.isEmpty()) return "ERROR: Name is empty!";
+        if (login == null || login.isEmpty()) return "ERROR: Login is empty!";
+        if (password == null || password.isEmpty()) return "ERROR: Password is empty!";
+        if (name.length() > 100) return "ERROR: Name is too long!";
+        if (login.length() > 50) return "ERROR: Login is too long!";
+        if (password.length() > 255) return "ERROR: Password is too long!";
+
+        // Check if login already exists for another user
+        User existingUser = findUserByLogin(login);
+        if (existingUser != null && existingUser.getUserId() != userId) {
+            return "ERROR: Login already exists for another user!";
+        }
+
+        teacher.setName(name);
+        teacher.setLogin(login);
+        teacher.setPassword(password);
+
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            session.merge(teacher);
+            transaction.commit();
+            return "Success";
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            return "ERROR: Database error - " + e.getMessage();
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    /**
+     * Updates an existing Student with the specified ID.
+     *
+     * @param userId The ID of the student to update.
+     * @param name The new name of the student. Must not be empty and no longer than 100 characters.
+     * @param login The new login of the student. Must be unique and no longer than 50 characters.
+     * @param password The new password of the student. Must not be empty and no longer than 255 characters.
+     * @param studentNumber The new student number. Must be unique and no longer than 20 characters.
+     * @param currentSemester The new current semester of the student. Must be at least 1.
+     * @return "Success" if the student was successfully updated, or an error message if validation fails or the student does not exist.
+     */
+    public String updateStudent(long userId, String name, String login, String password, String studentNumber, Integer currentSemester) {
+        User user = searchUser(userId);
+        if (user == null || !(user instanceof Student)) {
+            return "ERROR: Student with this id does not exist";
+        }
+
+        Student student = (Student) user;
+
+        if (name == null || name.isEmpty()) return "ERROR: Name is empty!";
+        if (login == null || login.isEmpty()) return "ERROR: Login is empty!";
+        if (password == null || password.isEmpty()) return "ERROR: Password is empty!";
+        if (studentNumber == null || studentNumber.isEmpty()) return "ERROR: Student number is empty!";
+        if (currentSemester == null || currentSemester < 1) return "ERROR: Current semester must be at least 1!";
+        if (name.length() > 100) return "ERROR: Name is too long!";
+        if (login.length() > 50) return "ERROR: Login is too long!";
+        if (password.length() > 255) return "ERROR: Password is too long!";
+        if (studentNumber.length() > 20) return "ERROR: Student number is too long!";
+
+        // Check if login already exists for another user
+        User existingUser = findUserByLogin(login);
+        if (existingUser != null && existingUser.getUserId() != userId) {
+            return "ERROR: Login already exists for another user!";
+        }
+
+        // Check if student number already exists for another student
+        Student existingStudent = findStudentByNumber(studentNumber);
+        if (existingStudent != null && existingStudent.getUserId() != userId) {
+            return "ERROR: Student number already exists for another student!";
+        }
+
+        student.setName(name);
+        student.setLogin(login);
+        student.setPassword(password);
+        student.setStudentNumber(studentNumber);
+        student.setCurrentSemester(currentSemester);
+
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            session.merge(student);
+            transaction.commit();
+            return "Success";
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            return "ERROR: Database error - " + e.getMessage();
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    /**
+     * Deletes a User (Teacher or Student) with the specified ID.
+     *
+     * @param userId The ID of the user to delete.
+     * @return "Success" if the user was successfully deleted, or an error message if the user does not exist or deletion fails.
+     */
+    public String deleteUser(long userId) {
+        User user = searchUser(userId);
+        if (user == null) {
+            return "ERROR: User with this id does not exist";
+        }
+
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            session.remove(user);
+            transaction.commit();
+            users.remove(user);
+            return "Success";
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            return "ERROR: Cannot delete user - " + e.getMessage() +
+                    ". User might be referenced by other entities.";
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    // =============================================
+    // HELPER METHODS
+    // =============================================
+
+    /**
+     * Finds a user by login.
+     *
+     * @param login The login to search for.
+     * @return The User object if found, null otherwise.
+     */
+    private User findUserByLogin(String login) {
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+
+        try {
+            return session.createQuery("FROM User WHERE login = :login", User.class)
+                    .setParameter("login", login)
+                    .uniqueResult();
+        } catch (Exception e) {
+            return null;
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    /**
+     * Finds a student by student number.
+     *
+     * @param studentNumber The student number to search for.
+     * @return The Student object if found, null otherwise.
+     */
+    private Student findStudentByNumber(String studentNumber) {
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+
+        try {
+            return session.createQuery("FROM Student WHERE studentNumber = :number", Student.class)
+                    .setParameter("number", studentNumber)
+                    .uniqueResult();
+        } catch (Exception e) {
+            return null;
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+
+    // =============================================
+    // END OF CRUD METHODS - USER, TEACHER AND STUDENT
+    // =============================================
 }
