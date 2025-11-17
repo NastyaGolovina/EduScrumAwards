@@ -25,7 +25,6 @@ public class Global {
     private  ArrayList<Team> teams;
     private ArrayList<Award> awards;
     private ArrayList<StudentAward> studentsAwards;
-    private ArrayList<CourseTeacher> courseTeachers;
 
     /**
      * Constructs a new {@code Global} instance and initializes all lists
@@ -37,12 +36,15 @@ public class Global {
         teams = new ArrayList<>();
         awards = new ArrayList<>();
         studentsAwards = new ArrayList<>();
-        courseTeachers = new ArrayList<>();
     }
 //
 //    @PostConstruct
 //    public void init() {
+//        readAllTeamWithJplq();
+//        readAllUserWithJplq();
 //        readAllAwardWithJplq();
+//        readAllCourseWithJplq();
+//        readAllStudentAwardWithJplq();
 //    }
 
     /**
@@ -133,22 +135,6 @@ public class Global {
      */
     public void setStudentsAwards(ArrayList<StudentAward> studentsAwards) {
         this.studentsAwards = studentsAwards;
-    }
-
-    /**
-     * Returns the list of all CourseTeacher entries.
-     * @return list of CourseTeacher
-     */
-    public ArrayList<CourseTeacher> getCourseTeachers() {
-        return courseTeachers;
-    }
-
-    /**
-     * Sets the list of CourseTeacher entries.
-     * @param courseTeachers list to set
-     */
-    public void setCourseTeachers(ArrayList<CourseTeacher> courseTeachers) {
-        this.courseTeachers = courseTeachers;
     }
 
 //    public void readFromDB() {

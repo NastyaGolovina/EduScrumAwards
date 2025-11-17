@@ -223,10 +223,10 @@ public class StudentAward {
         return "StudentAward{" +
                 "studentAwardId=" + studentAwardId +
                 ", award=" + award +
-//                ", student=" + student +
-//                ", teacher=" + teacher +
-//                ", project=" + project +
-//                ", team=" + team +
+                ", student=" + student.getUserId() +
+                ", teacher=" + teacher.getUserId() +
+                ", project=" + project.getProjectName() +
+                ", team=" + team.getTeamName() +
                 ", date=" + date +
                 ", points=" + points +
                 '}';

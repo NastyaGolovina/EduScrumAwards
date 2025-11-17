@@ -1,5 +1,6 @@
 package UPT_SQ.EduScrumAwards.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
@@ -37,6 +38,7 @@ public class Award {
     @Enumerated(EnumType.STRING)
     @Column(name = "mode")
     private AssignMode assignMode;
+//    @JsonIgnore
     @Transient
     private ArrayList<AwardRule> awardRules;
 
