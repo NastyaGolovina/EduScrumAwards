@@ -357,4 +357,84 @@ public class Course {
             databaseHelper.exit();
         }
     }
+
+    //Project CRUD
+
+    /** Search for a project by its ID */
+    public Project searchProject(int projectId) {
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = dbHelper.getSessionFactory().openSession();
+
+        Project project = session.get(Project.class, projectId);
+
+        session.close();
+        dbHelper.exit();
+
+        return project;
+    }
+
+    /** Retrieves all projects for this course and stores them locally */
+    public void retrieveProjects() {
+        DatabaseHelper db = new DatabaseHelper();
+        db.setup();
+        Session session = db.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        List<Project> projectList = session.createQuery(
+                        "SELECT p FROM Project p WHERE p.course.courseID = :cid", Project.class
+                ).setParameter("cid", this.courseID)
+                .getResultList();
+
+        this.projects = new ArrayList<>(projectList);
+
+        session.getTransaction().commit();
+        session.close();
+        db.exit();
+    }
+
+    /** Create a new Project */
+    public String createProject(String projectName, Team team, Course course) {
+        if (projectName == null || projectName.isEmpty()) return "Project name cannot be empty!";
+        if (team == null) return "Team cannot be null!";
+        if (course == null) return "Course cannot be null!";
+
+        Project project = new Project();
+        project.setProjectName(projectName);
+        project.setTeam(team);
+        project.setCourse(course);
+
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = dbHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.persist(project);
+        session.getTransaction().commit();
+        session.close();
+        dbHelper.exit();
+
+        return "Project added Successfully!";
+    }
+
+    /** Update an existing Project */
+    public String updateProject(int projectId, String projectName, Team team, Course course) {
+        Project project = searchProject(projectId);
+        if (project == null) return "Project with ID " + projectId + " not found!";
+
+        if (projectName != null && !projectName.isEmpty()) project.setProjectName(projectName);
+        if (team != null) project.setTeam(team);
+        if (course != null) project.setCourse(course);
+
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = dbHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.merge(project);
+        session.getTransaction().commit();
+        session.close();
+        dbHelper.exit();
+
+        return "Project updated Successfully!";
+    }
+
 }
