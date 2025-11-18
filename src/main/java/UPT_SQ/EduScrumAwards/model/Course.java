@@ -11,6 +11,7 @@ package UPT_SQ.EduScrumAwards.model;
 
 import jakarta.persistence.*;
 import org.hibernate.Session;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -312,51 +313,51 @@ public class Course {
         return "ERROR: CourseTeacher with this id does not exist";
     }
 
-    /**
-     * Deletes a CourseTeacher by its ID from the database and local list.
-     *
-     * @param id the CourseTeacher ID to delete
-     * @return "Success" if deleted; error message otherwise
-     */
-    public String deleteCourseTeacher(int id) {
-        // 1. Buscar localmente (como hacen update/search)
-        CourseTeacher ct = searchCourseTeacher(id);
-        if (ct == null) {
-            return "ERROR: CourseTeacher with ID " + id + " does not exist";
-        }
-
-        // 2. Eliminar de la base de datos
-        DatabaseHelper databaseHelper = new DatabaseHelper();
-        databaseHelper.setup();
-        Session session = null;
-        try {
-            session = databaseHelper.getSessionFactory().openSession();
-            session.beginTransaction();
-
-            // 🔥 Opción 1 (recomendada): usa remove() con la entidad gestionada
-            // Primero hay que hacer merge/obtener una instancia gestionada
-            CourseTeacher managedCt = session.merge(ct);
-            session.remove(managedCt);
-
-            session.getTransaction().commit();
-
-            // 3. Eliminar también de la lista local
-            courseTeachers.remove(ct);
-
-            return "Success";
-
-        } catch (Exception e) {
-            if (session != null && session.getTransaction().isActive()) {
-                session.getTransaction().rollback();
-            }
-            return "ERROR: Failed to delete CourseTeacher: " + e.getMessage();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-            databaseHelper.exit();
-        }
-    }
+//    /**
+//     * Deletes a CourseTeacher by its ID from the database and local list.
+//     *
+//     * @param id the CourseTeacher ID to delete
+//     * @return "Success" if deleted; error message otherwise
+//     */
+//    public String deleteCourseTeacher(int id) {
+//        // 1. Buscar localmente (como hacen update/search)
+//        CourseTeacher ct = searchCourseTeacher(id);
+//        if (ct == null) {
+//            return "ERROR: CourseTeacher with ID " + id + " does not exist";
+//        }
+//
+//        // 2. Eliminar de la base de datos
+//        DatabaseHelper databaseHelper = new DatabaseHelper();
+//        databaseHelper.setup();
+//        Session session = null;
+//        try {
+//            session = databaseHelper.getSessionFactory().openSession();
+//            session.beginTransaction();
+//
+//            // 🔥 Opción 1 (recomendada): usa remove() con la entidad gestionada
+//            // Primero hay que hacer merge/obtener una instancia gestionada
+//            CourseTeacher managedCt = session.merge(ct);
+//            session.remove(managedCt);
+//
+//            session.getTransaction().commit();
+//
+//            // 3. Eliminar también de la lista local
+//            courseTeachers.remove(ct);
+//
+//            return "Success";
+//
+//        } catch (Exception e) {
+//            if (session != null && session.getTransaction().isActive()) {
+//                session.getTransaction().rollback();
+//            }
+//            return "ERROR: Failed to delete CourseTeacher: " + e.getMessage();
+//        } finally {
+//            if (session != null) {
+//                session.close();
+//            }
+//            databaseHelper.exit();
+//        }
+//    }
 
     //Project CRUD
 
