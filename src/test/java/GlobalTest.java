@@ -132,4 +132,75 @@ public class GlobalTest {
         Team result = global.searchTeam(1);
         assertNull(result);
     }
+
+    @Test
+    void testFindProject_Found() {
+        Course course = new Course();
+        Project project1 = new Project();
+        project1.setProjectId(101);
+        Project project2 = new Project();
+        project2.setProjectId(102);
+
+        course.setProjects(new ArrayList<>());
+        course.getProjects().add(project1);
+        course.getProjects().add(project2);
+
+        global.getCourses().add(course);
+
+        Project found = global.findProject(102);
+        assertNotNull(found);
+        assertEquals(102, found.getProjectId());
+    }
+
+    @Test
+    void testFindProject_NotFound() {
+        Course course = new Course();
+        Project project = new Project();
+        project.setProjectId(201);
+
+        course.setProjects(new ArrayList<>());
+        course.getProjects().add(project);
+
+        global.getCourses().add(course);
+
+        Project result = global.findProject(999);
+        assertNull(result);
+    }
+
+    @Test
+    void testFindProjectByTeamId_Found() {
+        Team team = new Team();
+        team.setTeamID(301);
+
+        Project project = new Project();
+        project.setTeam(team);
+
+        Course course = new Course();
+        course.setProjects(new ArrayList<>());
+        course.getProjects().add(project);
+
+        global.getCourses().add(course);
+
+        Project found = global.findProjectByTeamId(301);
+        assertNotNull(found);
+        assertEquals(301, found.getTeam().getTeamID());
+    }
+
+    @Test
+    void testFindProjectByTeamId_NotFound() {
+        Team team = new Team();
+        team.setTeamID(401);
+
+        Project project = new Project();
+        project.setTeam(team);
+
+        Course course = new Course();
+        course.setProjects(new ArrayList<>());
+        course.getProjects().add(project);
+
+        global.getCourses().add(course);
+
+        Project result = global.findProjectByTeamId(999);
+        assertNull(result);
+    }
 }

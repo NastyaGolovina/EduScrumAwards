@@ -33,6 +33,9 @@ public class StudentAward {
     @JoinColumn(name = "project_id")
     private Project project;
     @ManyToOne
+    @JoinColumn(name = "sprint_id")
+    private Sprint sprint;
+    @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
     @Column(name = "date")
@@ -64,7 +67,32 @@ public class StudentAward {
         this.team = team;
         this.date = date;
         this.points = points;
+        this.sprint = null;
     }
+
+    /**
+     * Constructs a new {@code StudentAward} instance with the specified parameters.
+     *
+     * @param award the award associated with this record
+     * @param student the student who received the award
+     * @param teacher the teacher who assigned or approved the award
+     * @param project the project linked to this award
+     * @param team the team the student belonged to
+     * @param date the date when the award was granted
+     * @param points the number of points associated with the award
+     * @param sprint the sprint linked to this award
+     */
+    public StudentAward(Award award, Student student, Teacher teacher, Project project, Team team, Date date, int points,Sprint sprint) {
+        this.award = award;
+        this.student = student;
+        this.teacher = teacher;
+        this.project = project;
+        this.team = team;
+        this.date = date;
+        this.points = points;
+        this.sprint = sprint;
+    }
+
 
     /**
      * Returns the unique identifier of this student award.
@@ -208,6 +236,24 @@ public class StudentAward {
      */
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    /**
+     * Returns the current Sprint object.
+     *
+     * @return the current sprint
+     */
+    public Sprint getSprint() {
+        return sprint;
+    }
+
+    /**
+     * Sets the Sprint object.
+     *
+     * @param sprint the sprint to set
+     */
+    public void setSprint(Sprint sprint) {
+        this.sprint = sprint;
     }
 
     /**

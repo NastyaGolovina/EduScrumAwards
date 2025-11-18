@@ -8,6 +8,14 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
+import UPT_SQ.EduScrumAwards.model.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StudentAwardTest {
 
@@ -40,7 +48,6 @@ public class StudentAwardTest {
                 date,
                 50
         );
-
     }
 
     @Test
@@ -87,5 +94,30 @@ public class StudentAwardTest {
         assertEquals(team, sa1.getTeam());
         assertEquals(date, sa1.getDate());
         assertEquals(75, sa1.getPoints());
+    }
+
+
+    @Test
+    public void testStudentAwardSprint() {
+        Sprint sprint = new Sprint();
+
+
+        StudentAward saWithSprint = new StudentAward(
+                new Award(),
+                new Student(),
+                new Teacher(),
+                new Project(),
+                new Team(),
+                new Date(),
+                100,
+                sprint
+        );
+
+        assertNotNull(saWithSprint.getSprint());
+        assertEquals(sprint, saWithSprint.getSprint());
+
+
+        sa1.setSprint(sprint);
+        assertEquals(sprint, sa1.getSprint());
     }
 }
