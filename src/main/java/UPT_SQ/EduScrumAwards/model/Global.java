@@ -646,6 +646,83 @@ public class Global {
     }
 
 
+    /**
+     * Checks if an award is associated with any student awards.
+     *
+     * @param awardId the ID of the award to check
+     * @return true if the award exists in any StudentAward record, false otherwise
+     */
+    public boolean isAwardInStudentAwards(int awardId) {
+        for(StudentAward studentAward : studentsAwards) {
+            if(studentAward.getAward().getAwardID() == awardId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Deletes an award from the database.
+     *
+     * The method performs the following steps:
+     * 1. Checks if the award exists.
+     * 2. Checks if the award is referenced in any StudentAward records.
+     * 3. Deletes all related award rules (if any).
+     * 4. Removes the award from the database and the in-memory list.
+     *
+     *
+     * @param awardId the ID of the award to delete
+     * @return a message indicating success or the reason for failure
+     */
+    public String deleteAward(int awardId) {
+        Award award = searchAward(awardId);
+        if(award != null) {
+            if(isAwardInStudentAwards(awardId)) {
+                Boolean result = true;
+                if(award.getAwardRules().size() >0) {
+                    result = award.deleteAllAwardRules();
+                }
+                if(result) {
+                    DatabaseHelper databaseHelper = new DatabaseHelper();
+                    Session session = null;
+
+                    try {
+                        databaseHelper.setup();
+                        session = databaseHelper.getSessionFactory().openSession();
+                        session.beginTransaction();
+
+                        session.remove(award);
+
+                        session.getTransaction().commit();
+
+                        awards.remove(award);
+                        return "Record successfully deleted.";
+
+                    } catch (Exception e) {
+                        if (session != null && session.getTransaction().isActive()) {
+                            session.getTransaction().rollback();
+                        }
+                        return "ERROR: Failed to delete the record. Reason: " + e.getMessage();
+
+                    } finally {
+                        if (session != null) {
+                            session.close();
+                        }
+                        databaseHelper.exit();
+                    }
+                } else {
+                    return "ERROR: Failed to delete awardRules";
+                }
+            } else {
+                return "ERROR: Award cannot be deleted because there are existing records in the StudentAward table";
+            }
+        } else {
+            return "ERROR: Award not found";
+        }
+    }
+
+
 
 
 

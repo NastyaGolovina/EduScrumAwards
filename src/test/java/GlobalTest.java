@@ -203,4 +203,62 @@ public class GlobalTest {
         Project result = global.findProjectByTeamId(999);
         assertNull(result);
     }
+
+    @Test
+    void testFindProjectByTeamId_CourseWithNoProjects() {
+        Course course = new Course();
+        course.setProjects(new ArrayList<>());
+        global.getCourses().add(course);
+
+        Project result = global.findProjectByTeamId(1);
+        assertNull(result);
+    }
+
+    @Test
+    void testFindProjectByTeamId_ProjectWithNullTeam() {
+        Project project = new Project();
+        project.setTeam(null);
+
+        Course course = new Course();
+        course.setProjects(new ArrayList<>());
+        course.getProjects().add(project);
+
+        global.getCourses().add(course);
+
+        Project result = global.findProjectByTeamId(1);
+        assertNull(result);
+    }
+
+
+    @Test
+    void testIsAwardInStudentAwards_Found() {
+        Award award = new Award();
+        award.setAwardID(1);
+
+        StudentAward sa = new StudentAward();
+        sa.setAward(award);
+
+        global.getStudentsAwards().add(sa);
+
+        assertTrue(global.isAwardInStudentAwards(1));
+    }
+
+    @Test
+    void testIsAwardInStudentAwards_NotFound() {
+        Award award = new Award();
+        award.setAwardID(2);
+
+        StudentAward sa = new StudentAward();
+        sa.setAward(award);
+
+        global.getStudentsAwards().add(sa);
+
+        assertFalse(global.isAwardInStudentAwards(1));
+    }
+
+    @Test
+    void testIsAwardInStudentAwards_EmptyList() {
+        assertFalse(global.isAwardInStudentAwards(1));
+    }
+
 }

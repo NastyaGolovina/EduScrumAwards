@@ -299,6 +299,79 @@ public class Award {
     }
 
 
+    /**
+     * Deletes a single award rule from the database.
+     *
+     * The method performs the following steps:
+     * 1. Checks if the award rule exists.
+     * 2. Removes the award rule from the database using a Hibernate session.
+     * 3. Updates the in-memory awardRules list.
+     *
+     *
+     * @param ruleId the ID of the award rule to delete
+     * @return a message indicating success or the reason for failure
+     */
+    public String deleteAwardRule(int ruleId) {
+        AwardRule awardRule = searchAwardRule(ruleId);
+        if(awardRule != null) {
+
+            DatabaseHelper databaseHelper = new DatabaseHelper();
+            Session session = null;
+
+            try {
+                databaseHelper.setup();
+                session = databaseHelper.getSessionFactory().openSession();
+                session.beginTransaction();
+
+                session.remove(awardRule);
+
+                session.getTransaction().commit();
+
+                awardRules.remove(awardRule);
+                return "Record successfully deleted.";
+
+            } catch (Exception e) {
+                if (session != null && session.getTransaction().isActive()) {
+                    session.getTransaction().rollback();
+                }
+                return "ERROR: Failed to delete the record. Reason: " + e.getMessage();
+
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
+                databaseHelper.exit();
+            }
+
+        } else {
+            return "ERROR: Award Rule not found";
+        }
+    }
+
+
+    /**
+     * Deletes all award rules associated with the current award.
+     *
+     * The method iterates over a copy of the awardRules list to avoid
+     * ConcurrentModificationException, deletes each rule using {@link #deleteAwardRule(int)},
+     * and returns false immediately if any deletion fails.
+     *
+     *
+     * @return true if all award rules were deleted successfully, false otherwise
+     */
+    public boolean deleteAllAwardRules() {
+        List<AwardRule> copy = new ArrayList<>(awardRules);
+
+        for (AwardRule awardRule : copy) {
+            String result = deleteAwardRule(awardRule.getRuleId());
+
+            if (!result.equals("Record successfully deleted.")) {
+                return  false;
+            }
+        }
+        return true;
+    }
+
 
 
     @Override

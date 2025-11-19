@@ -2,6 +2,8 @@ package UPT_SQ.EduScrumAwards.controller;
 
 import UPT_SQ.EduScrumAwards.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -66,6 +68,24 @@ public class AwardRuleController {
         }
 
         return "ERROR: One of the field is empty or null";
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteStudentAward(
+            @RequestParam int ruleId,
+            @RequestParam int awardId) {
+        String result = "ERROR: One of the field is empty or null";
+        Award award = global.searchAward(awardId);
+
+        if(award != null) {
+            result = award.deleteAwardRule(ruleId);
+        }
+
+        if (result.startsWith("Record successfully")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        }
     }
 
 

@@ -3,6 +3,8 @@ package UPT_SQ.EduScrumAwards.controller;
 import UPT_SQ.EduScrumAwards.model.Award;
 import UPT_SQ.EduScrumAwards.model.Global;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,5 +45,19 @@ public class AwardController {
             @RequestParam String awardDescription) {
 
         return global.updateAward(id,awardName,awardDescription);
+    }
+
+
+    @DeleteMapping("/delete/{awardId}")
+    public ResponseEntity<String> deleteAward(
+            @PathVariable int awardId) {
+
+        String result = global.deleteAward(awardId);
+
+        if (result.startsWith("Record successfully")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        }
     }
 }
