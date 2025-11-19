@@ -18,10 +18,10 @@ public class AwardController {
         this.global = global;
     }
 
-//    @GetMapping("/all")
-//    public List<Award> getAllAwards() {
-//        return global.getAwards();
-//    }
+    @GetMapping("/all")
+    public List<Award> getAllAwards() {
+        return global.getAwards();
+    }
 
 
     @PostMapping("/create")

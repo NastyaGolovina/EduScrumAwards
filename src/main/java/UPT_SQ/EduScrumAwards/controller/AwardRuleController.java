@@ -2,10 +2,10 @@ package UPT_SQ.EduScrumAwards.controller;
 
 import UPT_SQ.EduScrumAwards.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/awards-rule")
@@ -16,6 +16,17 @@ public class AwardRuleController {
     @Autowired
     public AwardRuleController(Global global) {
         this.global = global;
+    }
+
+    @GetMapping("/all/{awardId}")
+    public List<AwardRule> getAllAwardRules(
+            @PathVariable int awardId)
+    {
+        Award award = global.searchAward(awardId);
+        if(award != null) {
+            return award.getAwardRules();
+        }
+        return new ArrayList<AwardRule>();
     }
 
 

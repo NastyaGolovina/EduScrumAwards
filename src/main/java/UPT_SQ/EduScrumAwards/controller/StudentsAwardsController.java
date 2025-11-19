@@ -3,6 +3,8 @@ package UPT_SQ.EduScrumAwards.controller;
 import UPT_SQ.EduScrumAwards.model.Global;
 import UPT_SQ.EduScrumAwards.model.StudentAward;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +18,8 @@ public class StudentsAwardsController {
     public StudentsAwardsController(Global global) {
         this.global = global;
     }
+
+
 //
 //    @GetMapping("/all")
 //    public List<StudentAward> getAllStudentAwards() {
@@ -41,5 +45,18 @@ public class StudentsAwardsController {
             @RequestParam int teamId) {
 
         return global.assignTeamAward(awardId, teacherId, teamId);
+    }
+
+    @DeleteMapping("/delete/{studentAwardId}")
+    public ResponseEntity<String> deleteStudentAward(
+            @PathVariable int studentAwardId) {
+
+        String result = global.deleteStudentAward(studentAwardId);
+
+        if (result.startsWith("Record successfully")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        }
     }
 }

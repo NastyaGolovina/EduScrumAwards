@@ -1,6 +1,7 @@
 package UPT_SQ.EduScrumAwards.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 /**
  * Represents the rules associated with an award in the system.
@@ -19,9 +20,11 @@ public class AwardRule {
     @Column(name = "rule_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ruleId;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "award_id")
     private Award award;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;

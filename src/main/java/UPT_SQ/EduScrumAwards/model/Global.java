@@ -1,6 +1,6 @@
 package UPT_SQ.EduScrumAwards.model;
 
-//import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -582,6 +582,67 @@ public class Global {
             return "ERROR: Award not found";
         }
 
+    }
+
+
+    /**
+     * Deletes a StudentAward record from the database and removes it from the local list.
+     *
+     * This method first searches for the StudentAward by its ID. If found, it opens a Hibernate
+     * session and begins a transaction to remove the record. After successful deletion, the record
+     * is also removed from the local {@code studentsAwards} list.
+     *
+     * If any exception occurs during the deletion process, the transaction is rolled back and
+     * an error message is returned. If the StudentAward is not found, a corresponding error message
+     * is returned.
+     *
+     * @param studentAwardId the ID of the StudentAward to delete
+     * @return a {@code String} message indicating success or the reason for failure
+     */
+    public String deleteStudentAward(int studentAwardId) {
+        StudentAward studentAward = searchStudentAward(studentAwardId);
+        if(studentAward != null) {
+//            DatabaseHelper databaseHelper = new DatabaseHelper();
+//            databaseHelper.setup();
+//            Session session = databaseHelper.getSessionFactory().openSession();
+//            session.beginTransaction();
+//
+//            session.remove(studentAward);
+//
+//            session.getTransaction().commit();
+//            session.close();
+//            databaseHelper.exit();
+            DatabaseHelper databaseHelper = new DatabaseHelper();
+            Session session = null;
+
+            try {
+                databaseHelper.setup();
+                session = databaseHelper.getSessionFactory().openSession();
+                session.beginTransaction();
+
+                session.remove(studentAward);
+
+                session.getTransaction().commit();
+
+                studentsAwards.remove(studentAward);
+                return "Record successfully deleted.";
+
+            } catch (Exception e) {
+                if (session != null && session.getTransaction().isActive()) {
+                    session.getTransaction().rollback();
+                }
+                return "ERROR: Failed to delete the record. Reason: " + e.getMessage();
+
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
+                databaseHelper.exit();
+            }
+
+        } else {
+            return "ERROR: Student Award not found";
+        }
     }
 
 
