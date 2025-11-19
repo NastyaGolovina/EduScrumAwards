@@ -207,6 +207,8 @@ public class TestMain {
             System.out.println("6️⃣  - DELETE (Deletar Users)");
             System.out.println("7️⃣  - TESTAR VALIDAÇÕES");
             System.out.println("8️⃣  - EXECUTAR TODOS OS TESTES");
+            System.out.println("9   - TEST CREATE COURSE-TEACHER");
+            System.out.println("10   - TEST DELETE COURSE-TEACHER");
             System.out.println("0️⃣  - SAIR");
             System.out.print("\nEscolha uma opção: ");
 
@@ -237,6 +239,12 @@ public class TestMain {
                     break;
                 case 8:
                     executarTodosTestes();
+                    break;
+                case 9:
+                    createCourseTeacher();
+                    break;
+                case 10:
+                    testDeleteCourseTeacher();
                     break;
                 case 0:
                     continuar = false;
@@ -564,6 +572,35 @@ public class TestMain {
     private static void pausa() {
         System.out.print("\n⏸️  Pressione ENTER para continuar...");
         scanner.nextLine();
+    }
+
+    private static void createCourseTeacher() {
+        global.readAllCourseWithJplq();
+        if (global.getCourses().isEmpty()) {
+            global.createCourse("COURSE_EXAMPLE");
+        }
+        Course course = global.searchCourse(1);
+        global.readAllTeacherWithJplq();
+        if (global.getUsers().isEmpty()) {
+            global.createTeacher("TEST_TEACHER", "TEST_LOGIN_TEACHER", "TEST_TEACHER_PASSWORD");
+        }
+        Teacher teacher = (Teacher) global.searchUser(1);
+        course.createCourseTeacher(teacher, true);
+    }
+
+    private static void testDeleteCourseTeacher() {
+        global.readAllCourseWithJplq();
+        Course course = global.searchCourse(1);
+        if (course != null) {
+            try {
+                course.readAllCourseTeacherWithJplq();
+                course.deleteCourseTeacher(1);
+            } catch (Exception e) {
+                System.out.print("\nCould not delete the CT!");
+            }
+        } else {
+            System.out.print("\nCourse not found!");
+        }
     }
 
 }

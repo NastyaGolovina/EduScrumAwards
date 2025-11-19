@@ -10,7 +10,7 @@
         <!-- Set the username -->
         <property name="connection.username">root</property>
         <!-- Set the password (use your MySQL password) -->
-        <property name="connection.password">Projetos2024</property>
+        <property name="connection.password"></property>
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">true</property>
 
