@@ -209,6 +209,8 @@ public class TestMain {
             System.out.println("8️⃣  - EXECUTAR TODOS OS TESTES");
             System.out.println("9   - TEST CREATE COURSE-TEACHER");
             System.out.println("10   - TEST DELETE COURSE-TEACHER");
+            System.out.println("11   - TEST CREATE COURSE");
+            System.out.println("12   - TEST DELETE COURSE");
             System.out.println("0️⃣  - SAIR");
             System.out.print("\nEscolha uma opção: ");
 
@@ -245,6 +247,12 @@ public class TestMain {
                     break;
                 case 10:
                     testDeleteCourseTeacher();
+                    break;
+                case 11:
+                    testCreateCourse();
+                    break;
+                case 12:
+                    testDeleteCourse();
                     break;
                 case 0:
                     continuar = false;
@@ -579,7 +587,7 @@ public class TestMain {
         if (global.getCourses().isEmpty()) {
             global.createCourse("COURSE_EXAMPLE");
         }
-        Course course = global.searchCourse(1);
+        Course course = global.searchCourse(global.getCourses().get(0).getCourseID());
         global.readAllTeacherWithJplq();
         if (global.getUsers().isEmpty()) {
             global.createTeacher("TEST_TEACHER", "TEST_LOGIN_TEACHER", "TEST_TEACHER_PASSWORD");
@@ -590,16 +598,41 @@ public class TestMain {
 
     private static void testDeleteCourseTeacher() {
         global.readAllCourseWithJplq();
-        Course course = global.searchCourse(1);
+        Course course = global.searchCourse(global.getCourses().get(0).getCourseID());
         if (course != null) {
             try {
                 course.readAllCourseTeacherWithJplq();
-                course.deleteCourseTeacher(1);
+                course.deleteCourseTeacher(course.getTeachers().get(0).getCourseTeacherID());
             } catch (Exception e) {
                 System.out.print("\nCould not delete the CT!");
             }
         } else {
             System.out.print("\nCourse not found!");
+        }
+    }
+
+    private static void testCreateCourse() {
+        global.readAllCourseWithJplq();
+        Course course = global.searchCourse(global.getCourses().get(0).getCourseID());
+        global.createTeam("TEST_TEAM");
+        Team team = (Team) global.searchTeam(global.getTeams().get(0).getTeamID());
+        course.createProject("TEST_PROJECT", team, course);
+    }
+
+    private static void testDeleteCourse() {
+        global.readAllCourseWithJplq();
+        Course course = global.searchCourse(global.getCourses().get(0).getCourseID());
+        if (course != null) {
+            try {
+                course.readAllCourseTeacherWithJplq();
+                course.retrieveProjects();
+                global.deleteCourse(global.getCourses().get(0).getCourseID());
+                System.out.println(global.deleteCourse(global.getCourses().get(0).getCourseID()));
+            } catch (Exception e) {
+                System.out.print("\nCould not delete the Course!");
+            }
+        } else {
+            System.out.print("Course not found!");
         }
     }
 

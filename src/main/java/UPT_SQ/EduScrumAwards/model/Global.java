@@ -833,6 +833,43 @@ public class Global {
         return "ERROR: Course with this id does not exist";
     }
 
+    public String deleteCourse(int id) {
+        Course course = searchCourse(id);
+        if (course == null) {
+            return "ERROR: Course with id " + id + " does not exist";
+        } else if (!course.getProjects().isEmpty()) {
+            return "ERROR: Course with id " + id + " still has projects";
+        } else {
+            while (!course.getTeachers().isEmpty()) {
+                course.deleteCourseTeacher(course.getTeachers().get(0).getCourseTeacherID());
+            }
+            DatabaseHelper databaseHelper = new DatabaseHelper();
+            databaseHelper.setup();
+            Session session = null;
+            try {
+                session = databaseHelper.getSessionFactory().openSession();
+                session.beginTransaction();
+
+                Course managedCourse = session.merge(course);
+                session.remove(managedCourse);
+
+                session.getTransaction().commit();
+                session.remove(course);
+                return "Success";
+            } catch (Exception e) {
+                if (session != null && session.getTransaction().isActive()) {
+                    session.getTransaction().rollback();
+                }
+                return "ERROR: Failed to delete Course: " + e.getMessage();
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
+                databaseHelper.exit();
+            }
+        }
+    }
+
      /**
      * Creates a new TEAM object and saves it to the database.
      * @param teamName    The name of the team. Must not be empty and no longer than 100 characters.

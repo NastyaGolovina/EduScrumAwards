@@ -332,7 +332,6 @@ public class Course {
             session = databaseHelper.getSessionFactory().openSession();
             session.beginTransaction();
 
-
             CourseTeacher managedCt = session.merge(ct);
             session.remove(managedCt);
 
