@@ -37,15 +37,15 @@ public class Global {
         awards = new ArrayList<>();
         studentsAwards = new ArrayList<>();
     }
-//
-//    @PostConstruct
-//    public void init() {
-//        readAllTeamWithJplq();
-//        readAllUserWithJplq();
-//        readAllAwardWithJplq();
-//        readAllCourseWithJplq();
-//        readAllStudentAwardWithJplq();
-//    }
+
+    @PostConstruct
+    public void init() {
+        readAllTeamWithJplq();
+        readAllUserWithJplq();
+        readAllAwardWithJplq();
+        readAllCourseWithJplq();
+        readAllStudentAwardWithJplq();
+    }
 
     /**
      * Returns the list of all users.
@@ -157,23 +157,54 @@ public class Global {
             if(awardName.length() <= 100) {
                 if(awardDescription.length() <= 500) {
                     if(pointsValue <= 1000) {
-                        Award newAward = new Award(awardName,
-                                awardDescription,
-                                pointsValue,
-                                AwardType.valueOf(assignType.toUpperCase()),
-                                AssignMode.valueOf(assignMode.toUpperCase()));
-                        awards.add(newAward);
-                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-                        DatabaseHelper.setup();
-                        Session session = DatabaseHelper.getSessionFactory().openSession();
-                        session.beginTransaction();
+                        if(!assignType.equalsIgnoreCase("AUTOMATIC") || !assignMode.equalsIgnoreCase("INDIVIDUAL")) {
+//                            Award newAward = new Award(awardName,
+//                                awardDescription,
+//                                pointsValue,
+//                                AwardType.valueOf(assignType.toUpperCase()),
+//                                AssignMode.valueOf(assignMode.toUpperCase()));
+//                        awards.add(newAward);
+//                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+//                        DatabaseHelper.setup();
+//                        Session session = DatabaseHelper.getSessionFactory().openSession();
+//                        session.beginTransaction();
+//
+//                        session.persist(newAward);
+//
+//                        session.getTransaction().commit();
+//                        session.close();
+//                        DatabaseHelper.exit();
+//                        return "Success";
 
-                        session.persist(newAward);
+                            try {
+                                Award newAward = new Award(
+                                        awardName,
+                                        awardDescription,
+                                        pointsValue,
+                                        AwardType.valueOf(assignType.toUpperCase()),
+                                        AssignMode.valueOf(assignMode.toUpperCase())
+                                );
 
-                        session.getTransaction().commit();
-                        session.close();
-                        DatabaseHelper.exit();
-                        return "Success";
+                                awards.add(newAward);
+
+                                DatabaseHelper databaseHelper = new DatabaseHelper();
+                                databaseHelper.setup();
+                                Session session = databaseHelper.getSessionFactory().openSession();
+                                session.beginTransaction();
+                                session.persist(newAward);
+                                session.getTransaction().commit();
+                                session.close();
+                                databaseHelper.exit();
+
+                                return "Success";
+                            } catch (IllegalArgumentException e) {
+                                return "Error: Invalid award type or assign mode - " + e.getMessage();
+                            } catch (Exception e) {
+                                return "Error creating award: " + e.getMessage();
+                            }
+                        } else {
+                            return  "ERROR: AUTOMATIC awards can be assign only for TEAM";
+                        }
                     } else {
                         return  "ERROR: Too many points!";
                     }
@@ -283,21 +314,41 @@ public class Global {
             if(!awardName.isEmpty() && !awardDescription.isEmpty()) {
                 if(awardName.length() <= 100) {
                     if(awardDescription.length() <= 500) {
-                        award.setAwardName(awardName);
-                        award.setAwardDescription(awardDescription);
+//                        award.setAwardName(awardName);
+//                        award.setAwardDescription(awardDescription);
+//
+//                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+//                        DatabaseHelper.setup();
+//                        Session session = DatabaseHelper.getSessionFactory().openSession();
+//                        session.beginTransaction();
+//
+//                        session.merge(award);
+//
+//                        session.getTransaction().commit();
+//                        session.close();
+//                        DatabaseHelper.exit();
+//
+//                        return "Success";
+                        try {
+                            award.setAwardName(awardName);
+                            award.setAwardDescription(awardDescription);
 
-                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-                        DatabaseHelper.setup();
-                        Session session = DatabaseHelper.getSessionFactory().openSession();
-                        session.beginTransaction();
+                            DatabaseHelper databaseHelper = new DatabaseHelper();
+                            databaseHelper.setup();
+                            Session session = databaseHelper.getSessionFactory().openSession();
+                            session.beginTransaction();
 
-                        session.merge(award);
+                            session.merge(award);
 
-                        session.getTransaction().commit();
-                        session.close();
-                        DatabaseHelper.exit();
+                            session.getTransaction().commit();
+                            session.close();
+                            databaseHelper.exit();
 
-                        return "Success";
+                            return "Success";
+
+                        } catch (Exception e) {
+                            return "ERROR: " + e.getMessage();
+                        }
                     } else {
                         return "ERROR: Description is too long!";
                     }
@@ -678,7 +729,7 @@ public class Global {
     public String deleteAward(int awardId) {
         Award award = searchAward(awardId);
         if(award != null) {
-            if(isAwardInStudentAwards(awardId)) {
+            if(!isAwardInStudentAwards(awardId)) {
                 Boolean result = true;
                 if(award.getAwardRules().size() >0) {
                     result = award.deleteAllAwardRules();
