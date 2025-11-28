@@ -1033,6 +1033,108 @@ public class Global {
         return "Success";
     }
 
+    /**
+     * Checks if a team is associated with any student awards.
+     *
+     * @param teamId the ID of the team to check
+     * @return true if the team exists in any StudentAward record, false otherwise
+     */
+    private boolean isTeamInStudentAwards(int teamId) {
+        for (StudentAward studentAward : studentsAwards) {
+            if (studentAward.getTeam() != null &&
+                    studentAward.getTeam().getTeamID() == teamId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a team is associated with any projects.
+     *
+     * @param teamId the ID of the team to check
+     * @return true if the team exists in any Project record, false otherwise
+     */
+
+    private boolean isTeamInProject(int teamId) {
+        DatabaseHelper db = new DatabaseHelper();
+        db.setup();
+        Session session = db.getSessionFactory().openSession();
+
+        Long count = session.createQuery(
+                        "SELECT COUNT(p) FROM Project p WHERE p.team.teamID = :tid",
+                        Long.class
+                ).setParameter("tid", teamId)
+                .getSingleResult();
+
+        session.close();
+        db.exit();
+
+        return count > 0;
+    }
+
+    /**
+     * Deletes a team from the database if it is not associated with any projects
+     * or student awards.
+     *
+     * The method performs the following steps:
+     * 1. Checks if the team exists.
+     * 2. Checks if the team is referenced in any Project records.
+     * 3. Checks if the team is referenced in any StudentAward records.
+     * 4. Removes the team from the database (cascading deletes all TeamMembers).
+     * 5. Updates the in-memory teams list.
+     *
+     * @param teamId the ID of the team to delete
+     * @return a message indicating success or the reason for failure
+     */
+    public String deleteTeam(int teamId) {
+        Team team = searchTeam(teamId);
+        if (team != null) {
+
+            // Team must not be used in Project or StudentAward
+            if (!isTeamInProject(teamId) && !isTeamInStudentAwards(teamId)) {
+
+                DatabaseHelper databaseHelper = new DatabaseHelper();
+                Session session = null;
+
+                try {
+                    databaseHelper.setup();
+                    session = databaseHelper.getSessionFactory().openSession();
+                    session.beginTransaction();
+
+                    // Because of cascade = ALL and orphanRemoval = true on Team.teamMembers,
+                    // this will also delete all associated TeamMember entities.
+                    session.remove(team);
+
+                    session.getTransaction().commit();
+
+                    teams.remove(team);
+                    return "Record successfully deleted.";
+
+                } catch (Exception e) {
+                    if (session != null && session.getTransaction().isActive()) {
+                        session.getTransaction().rollback();
+                    }
+                    return "ERROR: Failed to delete the record. Reason: " + e.getMessage();
+
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                    databaseHelper.exit();
+                }
+
+            } else {
+                return "ERROR: Team cannot be deleted because there are existing records in the Project or StudentAward table";
+            }
+
+        } else {
+            return "ERROR: Team not found";
+        }
+    }
+
+
+
     // =============================================
     // BGN CRUD METHODS - USER, TEACHER AND STUDENT
     // =============================================
