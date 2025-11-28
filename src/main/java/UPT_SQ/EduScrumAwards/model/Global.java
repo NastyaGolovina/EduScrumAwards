@@ -896,7 +896,10 @@ public class Global {
         readAllCourseWithJplq();
         if (course == null) {
             return "ERROR: Course with id " + id + " does not exist";
-        } else {
+        } else if (!course.getProjects().isEmpty()) {
+            return "ERROR: Course still has projects";
+        }
+        else {
             while (!course.getTeachers().isEmpty()) {
                 course.deleteCourseTeacher(course.getTeachers().get(0).getCourseTeacherID());
             }
