@@ -1,11 +1,11 @@
 package UPT_SQ.EduScrumAwards.model;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+// import org.hibernate.Session;
+// import org.hibernate.Transaction;
 import java.util.List;
 
-import java.util.ArrayList;
-import java.util.Date;
+// import java.util.ArrayList;
+//import java.util.Date;
 import java.util.Scanner;
 
 public class TestMain {

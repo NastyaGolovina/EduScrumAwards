@@ -304,6 +304,57 @@ public class Team {
         DatabaseHelper.exit();
         return new ArrayList<>(list);
     }
+    /**
+     * Deletes a single team member from the database.
+     *
+     * The method performs the following steps:
+     * 1. Checks if the team member exists in this team.
+     * 2. Removes the team member from the database using a Hibernate session.
+     * 3. Updates the in-memory teamMembers list.
+     *
+     *
+     * @param memberId the ID of the team member to delete
+     * @return a message indicating success or the reason for failure
+     */
+    public String deleteTeamMember(int memberId) {
+
+        TeamMember teamMember = searchTeamMember(memberId);
+        if (teamMember != null) {
+
+            DatabaseHelper databaseHelper = new DatabaseHelper();
+            Session session = null;
+
+            try {
+                databaseHelper.setup();
+                session = databaseHelper.getSessionFactory().openSession();
+                session.beginTransaction();
+                session.remove(teamMember);
+                session.getTransaction().commit();
+
+                // Update in-memory list
+                teamMembers.remove(teamMember);
+
+                return "Team Member successfully deleted.";
+
+            } catch (Exception e) {
+
+                if (session != null && session.getTransaction().isActive()) {
+                    session.getTransaction().rollback();
+                }
+
+                return "ERROR: Failed to delete the team member. Reason: " + e.getMessage();
+
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
+                databaseHelper.exit();
+            }
+
+        } else {
+            return "ERROR: TeamMember not found";
+        }
+    }
 
     /**
      * Calculates the total points earned by this {@link Team}
