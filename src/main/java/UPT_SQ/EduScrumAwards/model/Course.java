@@ -9,6 +9,7 @@
  */
 package UPT_SQ.EduScrumAwards.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
@@ -16,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class Course which represents a Course with all it's attributes, identification, participants and projects
+ * Class Course which represents a Course with all it's attributes,
+ * identification, participants and projects
  */
 @Entity
 @Table(name = "Courses")
@@ -34,6 +36,7 @@ public class Course {
      * Mapped by the "course" field in CourseTeacher.
      */
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     private List<CourseTeacher> courseTeachers;
 
     /**
@@ -41,8 +44,9 @@ public class Course {
      * Mapped by the "course" field in Project.
      */
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     private List<Project> projects;
-    
+
     // Students list (association) could be added here in the future
 
     /**
@@ -55,6 +59,7 @@ public class Course {
 
     /**
      * Constructor of the class Course
+     * 
      * @param courseName String with the name
      */
     public Course(String courseName) {
@@ -64,7 +69,6 @@ public class Course {
         readAllCourseTeacherWithJplq();
         retrieveProjects();
     }
-
 
     public void setCourseTeachers(List<CourseTeacher> courseTeachers) {
         this.courseTeachers = courseTeachers;
@@ -76,32 +80,52 @@ public class Course {
 
     /**
      * Getters of the attributes of the class Course
+     * 
      * @return the attribute
      */
-    public int getCourseID() { return courseID; }
-    public String getCourseName() { return courseName; }
-    public List<CourseTeacher> getTeachers() { 
-        if (courseTeachers == null) courseTeachers = new ArrayList<>();
-        return courseTeachers; 
+    public int getCourseID() {
+        return courseID;
     }
-    public List<Project> getProjects() { return projects; }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public List<CourseTeacher> getTeachers() {
+        if (courseTeachers == null)
+            courseTeachers = new ArrayList<>();
+        return courseTeachers;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
 
     /**
      * Setters of the attributes of the class Course
      * The params are the attribute to change
      */
-    public void setCourseName(String courseName) { this.courseName = courseName; }
-    public void setTeachers(List<CourseTeacher> teachers) { this.courseTeachers = teachers; }
-    public void setProjects(List<Project> projects) { this.projects = projects; }
-    
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public void setTeachers(List<CourseTeacher> teachers) {
+        this.courseTeachers = teachers;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
 
     /**
      * Finds a CourseTeacher by ID within this course.
+     * 
      * @param courseTeacherId CourseTeacher ID
      * @return the found CourseTeacher or null if not present
      */
     public CourseTeacher findCourseTeacherById(int courseTeacherId) {
-        if (courseTeachers == null) return null;
+        if (courseTeachers == null)
+            return null;
         for (CourseTeacher ct : courseTeachers) {
             if (ct != null && ct.getCourseTeacherID() == courseTeacherId) {
                 return ct;
@@ -113,11 +137,13 @@ public class Course {
     /**
      * Finds a CourseTeacher by the associated Teacher's name within this course.
      * Comparison is case-insensitive and trims surrounding whitespace.
+     * 
      * @param name Teacher's name
      * @return the CourseTeacher whose Teacher has that name, or null if not found
      */
     public CourseTeacher findCourseTeacherByName(String name) {
-        if (courseTeachers == null || name == null) return null;
+        if (courseTeachers == null || name == null)
+            return null;
         String target = name.trim();
         for (CourseTeacher ct : courseTeachers) {
             if (ct != null && ct.getTeacher() != null) {
@@ -131,17 +157,21 @@ public class Course {
     }
 
     /**
-     * Finds and returns the same instance of CourseTeacher if it exists in this course's collection.
+     * Finds and returns the same instance of CourseTeacher if it exists in this
+     * course's collection.
      * First attempts by ID (>0); if not found, compares by reference/equals.
+     * 
      * @param courseTeacher the object to search for
      * @return the stored instance or null
      */
     public CourseTeacher findCourseTeacher(CourseTeacher courseTeacher) {
-        if (courseTeachers == null || courseTeacher == null) return null;
+        if (courseTeachers == null || courseTeacher == null)
+            return null;
         int id = courseTeacher.getCourseTeacherID();
         if (id > 0) {
             CourseTeacher byId = findCourseTeacherById(id);
-            if (byId != null) return byId;
+            if (byId != null)
+                return byId;
         }
         for (CourseTeacher ct : courseTeachers) {
             if (ct == courseTeacher || (ct != null && ct.equals(courseTeacher))) {
@@ -153,11 +183,13 @@ public class Course {
 
     /**
      * Finds a Project by ID within this course.
+     * 
      * @param projectId project ID
      * @return the found Project or null if not present
      */
     public Project findProjectById(int projectId) {
-        if (projects == null) return null;
+        if (projects == null)
+            return null;
         for (Project p : projects) {
             if (p != null && p.getProjectId() == projectId) {
                 return p;
@@ -169,11 +201,13 @@ public class Course {
     /**
      * Finds a Project by name within this course.
      * Comparison is case-insensitive and trims surrounding whitespace.
+     * 
      * @param name project name
      * @return the found Project or null if not present
      */
     public Project findProjectByName(String name) {
-        if (projects == null || name == null) return null;
+        if (projects == null || name == null)
+            return null;
         String target = name.trim();
         for (Project p : projects) {
             if (p != null && equalsIgnoreCaseAndTrim(p.getProjectName(), target)) {
@@ -184,17 +218,21 @@ public class Course {
     }
 
     /**
-     * Finds and returns the same instance of Project if it exists in this course's collection.
+     * Finds and returns the same instance of Project if it exists in this course's
+     * collection.
      * First attempts by ID (>0); if not found, compares by reference/equals.
+     * 
      * @param project the object to search for
      * @return the stored instance or null
      */
     public Project findProject(Project project) {
-        if (projects == null || project == null) return null;
+        if (projects == null || project == null)
+            return null;
         int id = project.getProjectId();
         if (id > 0) {
             Project byId = findProjectById(id);
-            if (byId != null) return byId;
+            if (byId != null)
+                return byId;
         }
         for (Project p : projects) {
             if (p == project || (p != null && p.equals(project))) {
@@ -206,17 +244,19 @@ public class Course {
 
     // Utility method to compare strings ignoring case and trimming whitespace.
     private static boolean equalsIgnoreCaseAndTrim(String a, String b) {
-        if (a == null || b == null) return false;
+        if (a == null || b == null)
+            return false;
         return a.trim().equalsIgnoreCase(b.trim());
     }
 
     /**
      * Check if a teacher is a CT of the course
+     * 
      * @param t Teacher
      * @return true if it is, false otherwise
      */
     public boolean isCourseTeacher(Teacher t) {
-        for (CourseTeacher ct : courseTeachers ) {
+        for (CourseTeacher ct : courseTeachers) {
             if (ct.getTeacher() == t) {
                 return true;
             }
@@ -227,7 +267,7 @@ public class Course {
     /**
      * Creates a new CourseTeacher and saves it to the database.
      *
-     * @param teacher the associated Teacher (must not be null)
+     * @param teacher       the associated Teacher (must not be null)
      * @param isResponsible whether the teacher is responsible for the course
      * @return "Success" if created and saved; error message otherwise
      */
@@ -263,8 +303,8 @@ public class Course {
             List<CourseTeacher> list = session.createQuery(
                     "SELECT ct FROM CourseTeacher ct WHERE ct.course.courseID = :cid",
                     CourseTeacher.class)
-                .setParameter("cid", this.courseID)
-                .getResultList();
+                    .setParameter("cid", this.courseID)
+                    .getResultList();
             this.courseTeachers = new ArrayList<>(list);
         } finally {
             session.close();
@@ -274,6 +314,7 @@ public class Course {
 
     /**
      * Searches the local list of CourseTeacher by ID.
+     * 
      * @param id CourseTeacher ID
      * @return the CourseTeacher if found, otherwise null
      */
@@ -289,8 +330,10 @@ public class Course {
     }
 
     /**
-     * Updates the isResponsible flag of a CourseTeacher and merges it in the database.
-     * @param id the CourseTeacher ID
+     * Updates the isResponsible flag of a CourseTeacher and merges it in the
+     * database.
+     * 
+     * @param id            the CourseTeacher ID
      * @param isResponsible new value for responsibility flag
      * @return "Success" if updated; error message otherwise
      */
@@ -355,7 +398,7 @@ public class Course {
         }
     }
 
-    //Project CRUD
+    // Project CRUD
 
     /** Search for a project by its ID */
     public Project searchProject(int projectId) {
@@ -379,8 +422,8 @@ public class Course {
         session.beginTransaction();
 
         List<Project> projectList = session.createQuery(
-                        "SELECT p FROM Project p WHERE p.course.courseID = :cid", Project.class
-                ).setParameter("cid", this.courseID)
+                "SELECT p FROM Project p WHERE p.course.courseID = :cid", Project.class)
+                .setParameter("cid", this.courseID)
                 .getResultList();
 
         this.projects = new ArrayList<>(projectList);
@@ -392,9 +435,12 @@ public class Course {
 
     /** Create a new Project */
     public String createProject(String projectName, Team team, Course course) {
-        if (projectName == null || projectName.isEmpty()) return "Project name cannot be empty!";
-        if (team == null) return "Team cannot be null!";
-        if (course == null) return "Course cannot be null!";
+        if (projectName == null || projectName.isEmpty())
+            return "Project name cannot be empty!";
+        if (team == null)
+            return "Team cannot be null!";
+        if (course == null)
+            return "Course cannot be null!";
 
         Project project = new Project();
         project.setProjectName(projectName);
@@ -416,11 +462,15 @@ public class Course {
     /** Update an existing Project */
     public String updateProject(int projectId, String projectName, Team team, Course course) {
         Project project = searchProject(projectId);
-        if (project == null) return "Project with ID " + projectId + " not found!";
+        if (project == null)
+            return "Project with ID " + projectId + " not found!";
 
-        if (projectName != null && !projectName.isEmpty()) project.setProjectName(projectName);
-        if (team != null) project.setTeam(team);
-        if (course != null) project.setCourse(course);
+        if (projectName != null && !projectName.isEmpty())
+            project.setProjectName(projectName);
+        if (team != null)
+            project.setTeam(team);
+        if (course != null)
+            project.setCourse(course);
 
         DatabaseHelper dbHelper = new DatabaseHelper();
         dbHelper.setup();

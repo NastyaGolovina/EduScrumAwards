@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 /**
  * The {@code Global} class serves as a centralized data container for managing
  * users, courses, teams, awards, and student awards across the system.
@@ -21,14 +22,15 @@ import java.util.List;
 
 public class Global {
     private ArrayList<User> users;
-    private  ArrayList <Course> courses;
-    private  ArrayList<Team> teams;
+    private ArrayList<Course> courses;
+    private ArrayList<Team> teams;
     private ArrayList<Award> awards;
     private ArrayList<StudentAward> studentsAwards;
 
     /**
      * Constructs a new {@code Global} instance and initializes all lists
-     * (users, courses, teams, awards, and student awards) as empty {@link ArrayList}s.
+     * (users, courses, teams, awards, and student awards) as empty
+     * {@link ArrayList}s.
      */
     public Global() {
         users = new ArrayList<>();
@@ -137,44 +139,49 @@ public class Global {
         this.studentsAwards = studentsAwards;
     }
 
-//    public void readFromDB() {
+    // public void readFromDB() {
 
-//    }
-
+    // }
 
     /**
      * Creates a new Award object and saves it to the database.
      *
-     * @param awardName        The name of the award. Must not be empty and no longer than 100 characters.
-     * @param awardDescription The description of the award. Must not be empty and no longer than 500 characters.
-     * @param pointsValue      The number of points for the award. Must be between 0 and 1000.
-     * @param assignType       The type of assignment for the award (will be converted to AwardType).
-     * @return "Success" if the award was successfully created and saved, or an error message if any validation fails.
+     * @param awardName        The name of the award. Must not be empty and no
+     *                         longer than 100 characters.
+     * @param awardDescription The description of the award. Must not be empty and
+     *                         no longer than 500 characters.
+     * @param pointsValue      The number of points for the award. Must be between 0
+     *                         and 1000.
+     * @param assignType       The type of assignment for the award (will be
+     *                         converted to AwardType).
+     * @return "Success" if the award was successfully created and saved, or an
+     *         error message if any validation fails.
      */
     public String createAward(String awardName, String awardDescription, int pointsValue, String assignType,
-                              String assignMode) {
-        if(!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0 && !assignType.isEmpty() && !assignMode.isEmpty()) {
-            if(awardName.length() <= 100) {
-                if(awardDescription.length() <= 500) {
-                    if(pointsValue <= 1000) {
-                        if(!assignType.equalsIgnoreCase("AUTOMATIC") || !assignMode.equalsIgnoreCase("INDIVIDUAL")) {
-//                            Award newAward = new Award(awardName,
-//                                awardDescription,
-//                                pointsValue,
-//                                AwardType.valueOf(assignType.toUpperCase()),
-//                                AssignMode.valueOf(assignMode.toUpperCase()));
-//                        awards.add(newAward);
-//                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-//                        DatabaseHelper.setup();
-//                        Session session = DatabaseHelper.getSessionFactory().openSession();
-//                        session.beginTransaction();
-//
-//                        session.persist(newAward);
-//
-//                        session.getTransaction().commit();
-//                        session.close();
-//                        DatabaseHelper.exit();
-//                        return "Success";
+            String assignMode) {
+        if (!awardName.isEmpty() && !awardDescription.isEmpty() && pointsValue >= 0 && !assignType.isEmpty()
+                && !assignMode.isEmpty()) {
+            if (awardName.length() <= 100) {
+                if (awardDescription.length() <= 500) {
+                    if (pointsValue <= 1000) {
+                        if (!assignType.equalsIgnoreCase("AUTOMATIC") || !assignMode.equalsIgnoreCase("INDIVIDUAL")) {
+                            // Award newAward = new Award(awardName,
+                            // awardDescription,
+                            // pointsValue,
+                            // AwardType.valueOf(assignType.toUpperCase()),
+                            // AssignMode.valueOf(assignMode.toUpperCase()));
+                            // awards.add(newAward);
+                            // DatabaseHelper DatabaseHelper = new DatabaseHelper();
+                            // DatabaseHelper.setup();
+                            // Session session = DatabaseHelper.getSessionFactory().openSession();
+                            // session.beginTransaction();
+                            //
+                            // session.persist(newAward);
+                            //
+                            // session.getTransaction().commit();
+                            // session.close();
+                            // DatabaseHelper.exit();
+                            // return "Success";
 
                             try {
                                 Award newAward = new Award(
@@ -182,8 +189,7 @@ public class Global {
                                         awardDescription,
                                         pointsValue,
                                         AwardType.valueOf(assignType.toUpperCase()),
-                                        AssignMode.valueOf(assignMode.toUpperCase())
-                                );
+                                        AssignMode.valueOf(assignMode.toUpperCase()));
 
                                 awards.add(newAward);
 
@@ -203,10 +209,10 @@ public class Global {
                                 return "Error creating award: " + e.getMessage();
                             }
                         } else {
-                            return  "ERROR: AUTOMATIC awards can be assign only for TEAM";
+                            return "ERROR: AUTOMATIC awards can be assign only for TEAM";
                         }
                     } else {
-                        return  "ERROR: Too many points!";
+                        return "ERROR: Too many points!";
                     }
                 } else {
                     return "ERROR: Description is too long!";
@@ -219,7 +225,8 @@ public class Global {
     }
 
     /**
-     * Loads all Award objects from the database and stores them in the local awards list.
+     * Loads all Award objects from the database and stores them in the local awards
+     * list.
      * Uses JPQL to query the database.
      */
     public void readAllAwardWithJplq() {
@@ -229,7 +236,7 @@ public class Global {
 
         List<Award> awardList = session.createQuery("SELECT a FROM Award a", Award.class).getResultList();
 
-        awards = (ArrayList<Award>)awardList;
+        awards = (ArrayList<Award>) awardList;
 
         for (Award award : awards) {
             award.readAllAwardRuleWithJplq();
@@ -238,23 +245,24 @@ public class Global {
         DatabaseHelper.exit();
     }
 
-
     /**
      * Reads all student awards from the database using JPA and stores them in the
      * {@code studentsAwards} list.
      *
-
+     * 
      * Note: Ensure that the {@link DatabaseHelper} and {@link StudentAward} classes
-     * are properly configured with JPA/Hibernate mappings before calling this method.
+     * are properly configured with JPA/Hibernate mappings before calling this
+     * method.
      */
     public void readAllStudentAwardWithJplq() {
         DatabaseHelper DatabaseHelper = new DatabaseHelper();
         DatabaseHelper.setup();
         Session session = DatabaseHelper.getSessionFactory().openSession();
 
-        List<StudentAward> studentAwardList = session.createQuery("SELECT sa FROM StudentAward sa", StudentAward.class).getResultList();
+        List<StudentAward> studentAwardList = session.createQuery("SELECT sa FROM StudentAward sa", StudentAward.class)
+                .getResultList();
 
-        this.studentsAwards = (ArrayList<StudentAward>)studentAwardList;
+        this.studentsAwards = (ArrayList<StudentAward>) studentAwardList;
 
         session.close();
         DatabaseHelper.exit();
@@ -277,13 +285,13 @@ public class Global {
         return null;
     }
 
-
     /**
      * Searches for a user in the list of users by their unique user ID.
      *
      * This method iterates through the list of users until it finds a user
      * whose {@code userId} matches the specified value. If such a user is found,
-     * the method returns that {@link User} object; otherwise, it returns {@code null}.
+     * the method returns that {@link User} object; otherwise, it returns
+     * {@code null}.
      *
      * @param userId the unique identifier of the user to search for
      * @return the {@link User} object with the specified {@code userId},
@@ -304,31 +312,34 @@ public class Global {
      * Updates an existing award with the specified ID.
      *
      * @param id               The ID of the award to update.
-     * @param awardName        The new name of the award. Must not be empty and no longer than 100 characters.
-     * @param awardDescription The new description of the award. Must not be empty and no longer than 500 characters.
-     * @return "Success" if the award was successfully updated, or an error message if validation fails or the award does not exist.
+     * @param awardName        The new name of the award. Must not be empty and no
+     *                         longer than 100 characters.
+     * @param awardDescription The new description of the award. Must not be empty
+     *                         and no longer than 500 characters.
+     * @return "Success" if the award was successfully updated, or an error message
+     *         if validation fails or the award does not exist.
      */
-    public String updateAward(int id,String awardName, String awardDescription) {
+    public String updateAward(int id, String awardName, String awardDescription) {
         Award award = searchAward(id);
-        if(award != null) {
-            if(!awardName.isEmpty() && !awardDescription.isEmpty()) {
-                if(awardName.length() <= 100) {
-                    if(awardDescription.length() <= 500) {
-//                        award.setAwardName(awardName);
-//                        award.setAwardDescription(awardDescription);
-//
-//                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-//                        DatabaseHelper.setup();
-//                        Session session = DatabaseHelper.getSessionFactory().openSession();
-//                        session.beginTransaction();
-//
-//                        session.merge(award);
-//
-//                        session.getTransaction().commit();
-//                        session.close();
-//                        DatabaseHelper.exit();
-//
-//                        return "Success";
+        if (award != null) {
+            if (!awardName.isEmpty() && !awardDescription.isEmpty()) {
+                if (awardName.length() <= 100) {
+                    if (awardDescription.length() <= 500) {
+                        // award.setAwardName(awardName);
+                        // award.setAwardDescription(awardDescription);
+                        //
+                        // DatabaseHelper DatabaseHelper = new DatabaseHelper();
+                        // DatabaseHelper.setup();
+                        // Session session = DatabaseHelper.getSessionFactory().openSession();
+                        // session.beginTransaction();
+                        //
+                        // session.merge(award);
+                        //
+                        // session.getTransaction().commit();
+                        // session.close();
+                        // DatabaseHelper.exit();
+                        //
+                        // return "Success";
                         try {
                             award.setAwardName(awardName);
                             award.setAwardDescription(awardDescription);
@@ -368,8 +379,10 @@ public class Global {
      * a {@link StudentAward} with the specified {@code studentAwardId}.
      * Returns the matching object if found, otherwise returns {@code null}.
      *
-     * @param studentAwardId the unique identifier of the {@link StudentAward} to search for
-     * @return the {@link StudentAward} with the given ID, or {@code null} if not found
+     * @param studentAwardId the unique identifier of the {@link StudentAward} to
+     *                       search for
+     * @return the {@link StudentAward} with the given ID, or {@code null} if not
+     *         found
      */
     public StudentAward searchStudentAward(int studentAwardId) {
         int i = 0;
@@ -382,63 +395,66 @@ public class Global {
         return null;
     }
 
-
-//    /**
-//     * Creates a new award rule for the specified project and teacher.
-//     *
-//     * @param completionPercent the completion percentage (0–100)
-//     * @param isAllGoalsCompleted whether all goals must be completed
-//     * @param teacherId the ID of the teacher
-//     * @param projectId the ID of the project
-//     * @param awardId the ID of the award
-//     * @return "Success" if created successfully, or an error message if any field is invalid or missing
-//     */
-//    // move to api
-//    public String createAwardRule(double completionPercent, boolean isAllGoalsCompleted, long teacherId, int projectId,int awardId) {
-//        User user = searchUser(teacherId);
-//        Award award = searchAward(awardId);
-//        Project project = null;
-//        for(Course c : courses) {
-//            project =c.findProjectById(projectId);
-//            if(project != null) {
-//                break;
-//            }
-//        }
-//        if(award != null) {
-//            if (user != null) {
-//                if(project != null) {
-//                    return award.createAwardRule(completionPercent,isAllGoalsCompleted,user,project);
-//                }
-//            }
-//        }
-//
-//        return "ERROR: One of the field is empty or null";
-//
-//    }
-//
-//
-//    /**
-//     * Updates an existing award rule by its identifier.
-//     *
-//     * @param ruleId the ID of the award rule
-//     * @param completionPercent the new completion percentage (0–100)
-//     * @param isAllGoalsCompleted whether all goals must be completed
-//     * @param awardId the ID of the award
-//     * @return "Success" if updated successfully, or an error message if any field is invalid or missing
-//     */
-//    // move to api
-//    public String updateAwardRule(int ruleId, double completionPercent, boolean isAllGoalsCompleted, int awardId) {
-//        Award award = searchAward(awardId);
-//
-//        if(award != null) {
-//            return award.updateAwardRule(ruleId,completionPercent,isAllGoalsCompleted);
-//        }
-//
-//        return "ERROR: One of the field is empty or null";
-//
-//    }
-//
-
+    // /**
+    // * Creates a new award rule for the specified project and teacher.
+    // *
+    // * @param completionPercent the completion percentage (0–100)
+    // * @param isAllGoalsCompleted whether all goals must be completed
+    // * @param teacherId the ID of the teacher
+    // * @param projectId the ID of the project
+    // * @param awardId the ID of the award
+    // * @return "Success" if created successfully, or an error message if any field
+    // is invalid or missing
+    // */
+    // // move to api
+    // public String createAwardRule(double completionPercent, boolean
+    // isAllGoalsCompleted, long teacherId, int projectId,int awardId) {
+    // User user = searchUser(teacherId);
+    // Award award = searchAward(awardId);
+    // Project project = null;
+    // for(Course c : courses) {
+    // project =c.findProjectById(projectId);
+    // if(project != null) {
+    // break;
+    // }
+    // }
+    // if(award != null) {
+    // if (user != null) {
+    // if(project != null) {
+    // return
+    // award.createAwardRule(completionPercent,isAllGoalsCompleted,user,project);
+    // }
+    // }
+    // }
+    //
+    // return "ERROR: One of the field is empty or null";
+    //
+    // }
+    //
+    //
+    // /**
+    // * Updates an existing award rule by its identifier.
+    // *
+    // * @param ruleId the ID of the award rule
+    // * @param completionPercent the new completion percentage (0–100)
+    // * @param isAllGoalsCompleted whether all goals must be completed
+    // * @param awardId the ID of the award
+    // * @return "Success" if updated successfully, or an error message if any field
+    // is invalid or missing
+    // */
+    // // move to api
+    // public String updateAwardRule(int ruleId, double completionPercent, boolean
+    // isAllGoalsCompleted, int awardId) {
+    // Award award = searchAward(awardId);
+    //
+    // if(award != null) {
+    // return award.updateAwardRule(ruleId,completionPercent,isAllGoalsCompleted);
+    // }
+    //
+    // return "ERROR: One of the field is empty or null";
+    //
+    // }
+    //
 
     /**
      * Finds a project by its ID across all courses.
@@ -448,9 +464,9 @@ public class Global {
      */
     public Project findProject(int projectId) {
         Project project = null;
-        for(Course c : courses) {
-            project =c.findProjectById(projectId);
-            if(project != null) {
+        for (Course c : courses) {
+            project = c.findProjectById(projectId);
+            if (project != null) {
                 return project;
             }
         }
@@ -474,7 +490,6 @@ public class Global {
         return null;
     }
 
-
     /**
      * Assigns an award to a student for a specific project.
      * Performs multiple validations before assignment:
@@ -486,19 +501,21 @@ public class Global {
      * - Teacher is assigned to the course of the project
      * - Student is a member of the project's team
      *
-     * If all validations pass, creates a StudentAward and persists it to the database.
+     * If all validations pass, creates a StudentAward and persists it to the
+     * database.
      *
-     * @param awardId    The ID of the award to assign.
-     * @param studentId  The ID of the student who will receive the award.
-     * @param teacherId  The ID of the teacher assigning the award.
-     * @param projectId  The ID of the project associated with the award.
-     * @return A string indicating success or the specific validation error encountered.
+     * @param awardId   The ID of the award to assign.
+     * @param studentId The ID of the student who will receive the award.
+     * @param teacherId The ID of the teacher assigning the award.
+     * @param projectId The ID of the project associated with the award.
+     * @return A string indicating success or the specific validation error
+     *         encountered.
      */
     public String assignAwardStudent(int awardId, long studentId, long teacherId, int projectId) {
         Award award = searchAward(awardId);
-        if(award != null) {
-            if(award.getAssignType() == AwardType.MANUAL) {
-                if(award.getAssignMode() == AssignMode.INDIVIDUAL) {
+        if (award != null) {
+            if (award.getAssignType() == AwardType.MANUAL) {
+                if (award.getAssignMode() == AssignMode.INDIVIDUAL) {
                     User student = searchUser(studentId);
                     if (student != null && student.getRole() == UserRole.STUDENT) {
                         User teacher = searchUser(teacherId);
@@ -537,7 +554,6 @@ public class Global {
         }
     }
 
-
     /**
      * Persists a StudentAward object into the database.
      *
@@ -557,8 +573,7 @@ public class Global {
                     project,
                     project.getTeam(),
                     Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-                    award.getPointsValue()
-            );
+                    award.getPointsValue());
 
             DatabaseHelper databaseHelper = new DatabaseHelper();
             databaseHelper.setup();
@@ -589,25 +604,27 @@ public class Global {
      * - Team exists
      * - Project containing the team exists
      *
-     * If all validations pass, a StudentAward is persisted for each student in the team.
+     * If all validations pass, a StudentAward is persisted for each student in the
+     * team.
      *
      * @param awardId   The ID of the award to assign.
      * @param teacherId The ID of the teacher assigning the award.
      * @param teamId    The ID of the team receiving the award.
-     * @return "Success" if all awards were assigned successfully, otherwise a descriptive error message.
+     * @return "Success" if all awards were assigned successfully, otherwise a
+     *         descriptive error message.
      */
     public String assignTeamAward(int awardId, long teacherId, int teamId) {
         Award award = searchAward(awardId);
-        if(award != null) {
-            if(award.getAssignType() == AwardType.MANUAL) {
-                if(award.getAssignMode() == AssignMode.TEAM) {
+        if (award != null) {
+            if (award.getAssignType() == AwardType.MANUAL) {
+                if (award.getAssignMode() == AssignMode.TEAM) {
                     User teacher = searchUser(teacherId);
                     if (teacher != null && teacher.getRole() == UserRole.TEACHER) {
                         Team team = searchTeam(teamId);
                         if (team != null) {
                             Project project = findProjectByTeamId(teamId);
-                            if(project != null) {
-                                for(TeamMember member : team.getTeamMember()) {
+                            if (project != null) {
+                                for (TeamMember member : team.getTeamMember()) {
                                     persistStudentAward(award,
                                             member.getStudent(),
                                             (Teacher) teacher,
@@ -635,16 +652,20 @@ public class Global {
 
     }
 
-
     /**
-     * Deletes a StudentAward record from the database and removes it from the local list.
+     * Deletes a StudentAward record from the database and removes it from the local
+     * list.
      *
-     * This method first searches for the StudentAward by its ID. If found, it opens a Hibernate
-     * session and begins a transaction to remove the record. After successful deletion, the record
+     * This method first searches for the StudentAward by its ID. If found, it opens
+     * a Hibernate
+     * session and begins a transaction to remove the record. After successful
+     * deletion, the record
      * is also removed from the local {@code studentsAwards} list.
      *
-     * If any exception occurs during the deletion process, the transaction is rolled back and
-     * an error message is returned. If the StudentAward is not found, a corresponding error message
+     * If any exception occurs during the deletion process, the transaction is
+     * rolled back and
+     * an error message is returned. If the StudentAward is not found, a
+     * corresponding error message
      * is returned.
      *
      * @param studentAwardId the ID of the StudentAward to delete
@@ -652,17 +673,17 @@ public class Global {
      */
     public String deleteStudentAward(int studentAwardId) {
         StudentAward studentAward = searchStudentAward(studentAwardId);
-        if(studentAward != null) {
-//            DatabaseHelper databaseHelper = new DatabaseHelper();
-//            databaseHelper.setup();
-//            Session session = databaseHelper.getSessionFactory().openSession();
-//            session.beginTransaction();
-//
-//            session.remove(studentAward);
-//
-//            session.getTransaction().commit();
-//            session.close();
-//            databaseHelper.exit();
+        if (studentAward != null) {
+            // DatabaseHelper databaseHelper = new DatabaseHelper();
+            // databaseHelper.setup();
+            // Session session = databaseHelper.getSessionFactory().openSession();
+            // session.beginTransaction();
+            //
+            // session.remove(studentAward);
+            //
+            // session.getTransaction().commit();
+            // session.close();
+            // databaseHelper.exit();
             DatabaseHelper databaseHelper = new DatabaseHelper();
             Session session = null;
 
@@ -696,7 +717,6 @@ public class Global {
         }
     }
 
-
     /**
      * Checks if an award is associated with any student awards.
      *
@@ -704,14 +724,13 @@ public class Global {
      * @return true if the award exists in any StudentAward record, false otherwise
      */
     public boolean isAwardInStudentAwards(int awardId) {
-        for(StudentAward studentAward : studentsAwards) {
-            if(studentAward.getAward().getAwardID() == awardId) {
+        for (StudentAward studentAward : studentsAwards) {
+            if (studentAward.getAward().getAwardID() == awardId) {
                 return true;
             }
         }
         return false;
     }
-
 
     /**
      * Deletes an award from the database.
@@ -728,13 +747,13 @@ public class Global {
      */
     public String deleteAward(int awardId) {
         Award award = searchAward(awardId);
-        if(award != null) {
-            if(!isAwardInStudentAwards(awardId)) {
+        if (award != null) {
+            if (!isAwardInStudentAwards(awardId)) {
                 Boolean result = true;
-                if(award.getAwardRules().size() >0) {
+                if (award.getAwardRules().size() > 0) {
                     result = award.deleteAllAwardRules();
                 }
-                if(result) {
+                if (result) {
                     DatabaseHelper databaseHelper = new DatabaseHelper();
                     Session session = null;
 
@@ -773,19 +792,17 @@ public class Global {
         }
     }
 
-
-
-
-
-
     /**
      * Creates a new Course and saves it to the database.
      *
-     * @param courseName The name of the course. Must not be empty and no longer than 100 characters.
-     * @return "Success" if the course was created and saved; otherwise, an error message describing the issue.
+     * @param courseName The name of the course. Must not be empty and no longer
+     *                   than 100 characters.
+     * @return "Success" if the course was created and saved; otherwise, an error
+     *         message describing the issue.
      */
     public String createCourse(String courseName) {
-        // courseId is auto-generated by the DB; ignore provided id and let JPA assign it
+        // courseId is auto-generated by the DB; ignore provided id and let JPA assign
+        // it
         if (courseName == null || courseName.isEmpty()) {
             return "ERROR: Name is empty!";
         }
@@ -810,7 +827,8 @@ public class Global {
     }
 
     /**
-     * Loads all Course objects from the database and stores them in the local courses list.
+     * Loads all Course objects from the database and stores them in the local
+     * courses list.
      * Uses JPQL to query the database.
      */
     public void readAllCourseWithJplq() {
@@ -836,7 +854,8 @@ public class Global {
      * Searches for a course in the local courses list by its unique ID.
      *
      * @param courseId The ID of the course to search for.
-     * @return The Course object with the given ID if found; otherwise, returns null.
+     * @return The Course object with the given ID if found; otherwise, returns
+     *         null.
      */
     public Course searchCourse(int courseId) {
         int i = 0;
@@ -853,8 +872,10 @@ public class Global {
      * Updates an existing course with the specified ID.
      *
      * @param id         The ID of the course to update.
-     * @param courseName The new name of the course. Must not be empty and no longer than 100 characters.
-     * @return "Success" if the course was successfully updated, or an error message if validation fails or the course does not exist.
+     * @param courseName The new name of the course. Must not be empty and no longer
+     *                   than 100 characters.
+     * @return "Success" if the course was successfully updated, or an error message
+     *         if validation fails or the course does not exist.
      */
     public String updateCourse(int id, String courseName) {
         readAllCourseWithJplq();
@@ -889,86 +910,98 @@ public class Global {
      * Deletes an existing course with the specified ID.
      *
      * @param id The ID of the course to delete.
-     * @return "Success" if the course was successfully deleted, or an error message if the course does not exist or deletion fails.
+     * @return "Success" if the course was successfully deleted, or an error message
+     *         if the course does not exist or deletion fails.
      */
     public String deleteCourse(int id) {
-        Course course = searchCourse(id);
-        readAllCourseWithJplq();
-        if (course == null) {
-            return "ERROR: Course with id " + id + " does not exist";
-        } else if (!course.getProjects().isEmpty()) {
-            return "ERROR: Course still has projects";
-        }
-        else {
-            while (!course.getTeachers().isEmpty()) {
-                course.deleteCourseTeacher(course.getTeachers().get(0).getCourseTeacherID());
-            }
-            DatabaseHelper databaseHelper = new DatabaseHelper();
-            databaseHelper.setup();
-            Session session = null;
-            try {
-                session = databaseHelper.getSessionFactory().openSession();
-                session.beginTransaction();
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = null;
+        try {
+            session = databaseHelper.getSessionFactory().openSession();
+            session.beginTransaction();
 
-                Course managedCourse = session.merge(course);
-                session.remove(managedCourse);
+            Course course = session.get(Course.class, id);
 
-                session.getTransaction().commit();
-                session.remove(course);
-                return "Success";
-            } catch (Exception e) {
-                if (session != null && session.getTransaction().isActive()) {
-                    session.getTransaction().rollback();
-                }
-                return "ERROR: Failed to delete Course: " + e.getMessage();
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
-                databaseHelper.exit();
+            if (course == null) {
+                session.getTransaction().rollback();
+                return "ERROR: Course with id " + id + " does not exist";
             }
+
+            if (!course.getProjects().isEmpty()) {
+                session.getTransaction().rollback();
+                return "ERROR: Course still has projects";
+            }
+
+            // Delete associated CourseTeachers
+            session.createMutationQuery("DELETE FROM CourseTeacher ct WHERE ct.course.courseID = :courseId")
+                    .setParameter("courseId", id)
+                    .executeUpdate();
+
+            session.remove(course);
+
+            session.getTransaction().commit();
+
+            // Update local list
+            readAllCourseWithJplq();
+
+            return "Success";
+        } catch (Exception e) {
+            if (session != null && session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+            return "ERROR: Failed to delete course: " + e.getMessage();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+            databaseHelper.exit();
         }
     }
 
-     /**
+    /**
      * Creates a new TEAM object and saves it to the database.
-     * @param teamName    The name of the team. Must not be empty and no longer than 100 characters.
-     * @return "Success" if the team was successfully created and saved, or an error message if any validation fails.
+     * 
+     * @param teamName The name of the team. Must not be empty and no longer than
+     *                 100 characters.
+     * @return "Success" if the team was successfully created and saved, or an error
+     *         message if any validation fails.
      */
-     public String createTeam( String teamName) {
-         if (teamName == null || teamName.isEmpty())
-             return "ERROR: Name is empty!";
-         if (teamName.length() > 100)
-             return "ERROR: Name is too long!";
+    public String createTeam(String teamName) {
+        if (teamName == null || teamName.isEmpty())
+            return "ERROR: Name is empty!";
+        if (teamName.length() > 100)
+            return "ERROR: Name is too long!";
 
-         // prevent duplicate name locally
-         for (Team t : teams) {
-             if (t.getTeamName().equalsIgnoreCase(teamName)) {
-                 return "ERROR: Team name already exists!";
-             }
-         }
+        // prevent duplicate name locally
+        for (Team t : teams) {
+            if (t.getTeamName().equalsIgnoreCase(teamName)) {
+                return "ERROR: Team name already exists!";
+            }
+        }
 
-         // Create new team
-         Team newTeam = new Team(teamName);
-         teams.add(newTeam);
+        // Create new team
+        Team newTeam = new Team(teamName);
+        teams.add(newTeam);
 
-         // saving team just created into database by using Hibernate
-         DatabaseHelper DatabaseHelper = new DatabaseHelper();
-         DatabaseHelper.setup();
-         Session session = DatabaseHelper.getSessionFactory().openSession();
-         session.beginTransaction();
+        // saving team just created into database by using Hibernate
+        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper.setup();
+        Session session = DatabaseHelper.getSessionFactory().openSession();
+        session.beginTransaction();
 
-         session.persist(newTeam);
+        session.persist(newTeam);
 
-         session.getTransaction().commit();
-         session.close();
-         DatabaseHelper.exit();
+        session.getTransaction().commit();
+        session.close();
+        DatabaseHelper.exit();
 
-         return "Success";
-     }
+        return "Success";
+    }
 
     /**
-     * Loads all Team objects from the database and stores them in the local teams list.
+     * Loads all Team objects from the database and stores them in the local teams
+     * list.
      * Uses JPLQ to query the database.
      */
     public void readAllTeamWithJplq() {
@@ -981,7 +1014,8 @@ public class Global {
 
         // also load members for each team so the in-memory cache is complete
         for (Team t : teams) {
-            if (t != null) t.readAllTeamMemberWithJplq();
+            if (t != null)
+                t.readAllTeamMemberWithJplq();
         }
 
         session.close();
@@ -1007,9 +1041,10 @@ public class Global {
     /**
      * Updates the name of an existing {@link Team} identified by its unique ID.
      *
-    * @param id        the unique ID of the {@link Team} to update
-    * @param teamName  the new name for the team; must not be {@code null} or empty, and must be ≤ 100 characters
-    * @return "Success" if the update was completed successfully,
+     * @param id       the unique ID of the {@link Team} to update
+     * @param teamName the new name for the team; must not be {@code null} or empty,
+     *                 and must be ≤ 100 characters
+     * @return "Success" if the update was completed successfully,
      */
 
     public String updateTeam(int id, String teamName) {
@@ -1043,18 +1078,28 @@ public class Global {
     /**
      * Creates a new Teacher and saves it to the database.
      *
-     * @param name The name of the teacher. Must not be empty and no longer than 100 characters.
-     * @param login The login of the teacher. Must be unique and no longer than 50 characters.
-     * @param password The password of the teacher. Must not be empty and no longer than 255 characters.
-     * @return "Success" if the teacher was successfully created and saved, or an error message if any validation fails.
+     * @param name     The name of the teacher. Must not be empty and no longer than
+     *                 100 characters.
+     * @param login    The login of the teacher. Must be unique and no longer than
+     *                 50 characters.
+     * @param password The password of the teacher. Must not be empty and no longer
+     *                 than 255 characters.
+     * @return "Success" if the teacher was successfully created and saved, or an
+     *         error message if any validation fails.
      */
     public String createTeacher(String name, String login, String password) {
-        if (name == null || name.isEmpty()) return "ERROR: Name is empty!";
-        if (login == null || login.isEmpty()) return "ERROR: Login is empty!";
-        if (password == null || password.isEmpty()) return "ERROR: Password is empty!";
-        if (name.length() > 100) return "ERROR: Name is too long!";
-        if (login.length() > 50) return "ERROR: Login is too long!";
-        if (password.length() > 255) return "ERROR: Password is too long!";
+        if (name == null || name.isEmpty())
+            return "ERROR: Name is empty!";
+        if (login == null || login.isEmpty())
+            return "ERROR: Login is empty!";
+        if (password == null || password.isEmpty())
+            return "ERROR: Password is empty!";
+        if (name.length() > 100)
+            return "ERROR: Name is too long!";
+        if (login.length() > 50)
+            return "ERROR: Login is too long!";
+        if (password.length() > 255)
+            return "ERROR: Password is too long!";
 
         // Check if login already exists
         if (findUserByLogin(login) != null) {
@@ -1074,7 +1119,8 @@ public class Global {
             transaction.commit();
             return "Success";
         } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction != null)
+                transaction.rollback();
             return "ERROR: Database error - " + e.getMessage();
         } finally {
             session.close();
@@ -1085,23 +1131,39 @@ public class Global {
     /**
      * Creates a new Student and saves it to the database.
      *
-     * @param name The name of the student. Must not be empty and no longer than 100 characters.
-     * @param login The login of the student. Must be unique and no longer than 50 characters.
-     * @param password The password of the student. Must not be empty and no longer than 255 characters.
-     * @param studentNumber The student number. Must be unique and no longer than 20 characters.
-     * @param currentSemester The current semester of the student. Must be at least 1.
-     * @return "Success" if the student was successfully created and saved, or an error message if any validation fails.
+     * @param name            The name of the student. Must not be empty and no
+     *                        longer than 100 characters.
+     * @param login           The login of the student. Must be unique and no longer
+     *                        than 50 characters.
+     * @param password        The password of the student. Must not be empty and no
+     *                        longer than 255 characters.
+     * @param studentNumber   The student number. Must be unique and no longer than
+     *                        20 characters.
+     * @param currentSemester The current semester of the student. Must be at least
+     *                        1.
+     * @return "Success" if the student was successfully created and saved, or an
+     *         error message if any validation fails.
      */
-    public String createStudent(String name, String login, String password, String studentNumber, Integer currentSemester) {
-        if (name == null || name.isEmpty()) return "ERROR: Name is empty!";
-        if (login == null || login.isEmpty()) return "ERROR: Login is empty!";
-        if (password == null || password.isEmpty()) return "ERROR: Password is empty!";
-        if (studentNumber == null || studentNumber.isEmpty()) return "ERROR: Student number is empty!";
-        if (currentSemester == null || currentSemester < 1) return "ERROR: Current semester must be at least 1!";
-        if (name.length() > 100) return "ERROR: Name is too long!";
-        if (login.length() > 50) return "ERROR: Login is too long!";
-        if (password.length() > 255) return "ERROR: Password is too long!";
-        if (studentNumber.length() > 20) return "ERROR: Student number is too long!";
+    public String createStudent(String name, String login, String password, String studentNumber,
+            Integer currentSemester) {
+        if (name == null || name.isEmpty())
+            return "ERROR: Name is empty!";
+        if (login == null || login.isEmpty())
+            return "ERROR: Login is empty!";
+        if (password == null || password.isEmpty())
+            return "ERROR: Password is empty!";
+        if (studentNumber == null || studentNumber.isEmpty())
+            return "ERROR: Student number is empty!";
+        if (currentSemester == null || currentSemester < 1)
+            return "ERROR: Current semester must be at least 1!";
+        if (name.length() > 100)
+            return "ERROR: Name is too long!";
+        if (login.length() > 50)
+            return "ERROR: Login is too long!";
+        if (password.length() > 255)
+            return "ERROR: Password is too long!";
+        if (studentNumber.length() > 20)
+            return "ERROR: Student number is too long!";
 
         // Check if login already exists
         if (findUserByLogin(login) != null) {
@@ -1126,7 +1188,8 @@ public class Global {
             transaction.commit();
             return "Success";
         } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction != null)
+                transaction.rollback();
             return "ERROR: Database error - " + e.getMessage();
         } finally {
             session.close();
@@ -1135,7 +1198,8 @@ public class Global {
     }
 
     /**
-     * Loads all User objects from the database and stores them in the local users list.
+     * Loads all User objects from the database and stores them in the local users
+     * list.
      * Uses JPQL to query the database.
      */
     public void readAllUserWithJplq() {
@@ -1156,7 +1220,8 @@ public class Global {
     }
 
     /**
-     * Loads all Teacher objects from the database and stores them in the local users list.
+     * Loads all Teacher objects from the database and stores them in the local
+     * users list.
      * Uses JPQL to query the database.
      */
     public void readAllTeacherWithJplq() {
@@ -1182,7 +1247,8 @@ public class Global {
     }
 
     /**
-     * Loads all Student objects from the database and stores them in the local users list.
+     * Loads all Student objects from the database and stores them in the local
+     * users list.
      * Uses JPQL to query the database.
      */
     public void readAllStudentWithJplq() {
@@ -1210,11 +1276,15 @@ public class Global {
     /**
      * Updates an existing Teacher with the specified ID.
      *
-     * @param userId The ID of the teacher to update.
-     * @param name The new name of the teacher. Must not be empty and no longer than 100 characters.
-     * @param login The new login of the teacher. Must be unique and no longer than 50 characters.
-     * @param password The new password of the teacher. Must not be empty and no longer than 255 characters.
-     * @return "Success" if the teacher was successfully updated, or an error message if validation fails or the teacher does not exist.
+     * @param userId   The ID of the teacher to update.
+     * @param name     The new name of the teacher. Must not be empty and no longer
+     *                 than 100 characters.
+     * @param login    The new login of the teacher. Must be unique and no longer
+     *                 than 50 characters.
+     * @param password The new password of the teacher. Must not be empty and no
+     *                 longer than 255 characters.
+     * @return "Success" if the teacher was successfully updated, or an error
+     *         message if validation fails or the teacher does not exist.
      */
     public String updateTeacher(long userId, String name, String login, String password) {
         User user = searchUser(userId);
@@ -1224,12 +1294,18 @@ public class Global {
 
         Teacher teacher = (Teacher) user;
 
-        if (name == null || name.isEmpty()) return "ERROR: Name is empty!";
-        if (login == null || login.isEmpty()) return "ERROR: Login is empty!";
-        if (password == null || password.isEmpty()) return "ERROR: Password is empty!";
-        if (name.length() > 100) return "ERROR: Name is too long!";
-        if (login.length() > 50) return "ERROR: Login is too long!";
-        if (password.length() > 255) return "ERROR: Password is too long!";
+        if (name == null || name.isEmpty())
+            return "ERROR: Name is empty!";
+        if (login == null || login.isEmpty())
+            return "ERROR: Login is empty!";
+        if (password == null || password.isEmpty())
+            return "ERROR: Password is empty!";
+        if (name.length() > 100)
+            return "ERROR: Name is too long!";
+        if (login.length() > 50)
+            return "ERROR: Login is too long!";
+        if (password.length() > 255)
+            return "ERROR: Password is too long!";
 
         // Check if login already exists for another user
         User existingUser = findUserByLogin(login);
@@ -1251,7 +1327,8 @@ public class Global {
             transaction.commit();
             return "Success";
         } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction != null)
+                transaction.rollback();
             return "ERROR: Database error - " + e.getMessage();
         } finally {
             session.close();
@@ -1262,15 +1339,22 @@ public class Global {
     /**
      * Updates an existing Student with the specified ID.
      *
-     * @param userId The ID of the student to update.
-     * @param name The new name of the student. Must not be empty and no longer than 100 characters.
-     * @param login The new login of the student. Must be unique and no longer than 50 characters.
-     * @param password The new password of the student. Must not be empty and no longer than 255 characters.
-     * @param studentNumber The new student number. Must be unique and no longer than 20 characters.
-     * @param currentSemester The new current semester of the student. Must be at least 1.
-     * @return "Success" if the student was successfully updated, or an error message if validation fails or the student does not exist.
+     * @param userId          The ID of the student to update.
+     * @param name            The new name of the student. Must not be empty and no
+     *                        longer than 100 characters.
+     * @param login           The new login of the student. Must be unique and no
+     *                        longer than 50 characters.
+     * @param password        The new password of the student. Must not be empty and
+     *                        no longer than 255 characters.
+     * @param studentNumber   The new student number. Must be unique and no longer
+     *                        than 20 characters.
+     * @param currentSemester The new current semester of the student. Must be at
+     *                        least 1.
+     * @return "Success" if the student was successfully updated, or an error
+     *         message if validation fails or the student does not exist.
      */
-    public String updateStudent(long userId, String name, String login, String password, String studentNumber, Integer currentSemester) {
+    public String updateStudent(long userId, String name, String login, String password, String studentNumber,
+            Integer currentSemester) {
         User user = searchUser(userId);
         if (user == null || !(user instanceof Student)) {
             return "ERROR: Student with this id does not exist";
@@ -1278,15 +1362,24 @@ public class Global {
 
         Student student = (Student) user;
 
-        if (name == null || name.isEmpty()) return "ERROR: Name is empty!";
-        if (login == null || login.isEmpty()) return "ERROR: Login is empty!";
-        if (password == null || password.isEmpty()) return "ERROR: Password is empty!";
-        if (studentNumber == null || studentNumber.isEmpty()) return "ERROR: Student number is empty!";
-        if (currentSemester == null || currentSemester < 1) return "ERROR: Current semester must be at least 1!";
-        if (name.length() > 100) return "ERROR: Name is too long!";
-        if (login.length() > 50) return "ERROR: Login is too long!";
-        if (password.length() > 255) return "ERROR: Password is too long!";
-        if (studentNumber.length() > 20) return "ERROR: Student number is too long!";
+        if (name == null || name.isEmpty())
+            return "ERROR: Name is empty!";
+        if (login == null || login.isEmpty())
+            return "ERROR: Login is empty!";
+        if (password == null || password.isEmpty())
+            return "ERROR: Password is empty!";
+        if (studentNumber == null || studentNumber.isEmpty())
+            return "ERROR: Student number is empty!";
+        if (currentSemester == null || currentSemester < 1)
+            return "ERROR: Current semester must be at least 1!";
+        if (name.length() > 100)
+            return "ERROR: Name is too long!";
+        if (login.length() > 50)
+            return "ERROR: Login is too long!";
+        if (password.length() > 255)
+            return "ERROR: Password is too long!";
+        if (studentNumber.length() > 20)
+            return "ERROR: Student number is too long!";
 
         // Check if login already exists for another user
         User existingUser = findUserByLogin(login);
@@ -1316,7 +1409,8 @@ public class Global {
             transaction.commit();
             return "Success";
         } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction != null)
+                transaction.rollback();
             return "ERROR: Database error - " + e.getMessage();
         } finally {
             session.close();
@@ -1328,7 +1422,8 @@ public class Global {
      * Deletes a User (Teacher or Student) with the specified ID.
      *
      * @param userId The ID of the user to delete.
-     * @return "Success" if the user was successfully deleted, or an error message if the user does not exist or deletion fails.
+     * @return "Success" if the user was successfully deleted, or an error message
+     *         if the user does not exist or deletion fails.
      */
     public String deleteUser(long userId) {
         User user = searchUser(userId);
@@ -1347,7 +1442,8 @@ public class Global {
             users.remove(user);
             return "Success";
         } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction != null)
+                transaction.rollback();
             return "ERROR: Cannot delete user - " + e.getMessage() +
                     ". User might be referenced by other entities.";
         } finally {
@@ -1405,7 +1501,6 @@ public class Global {
             databaseHelper.exit();
         }
     }
-
 
     // =============================================
     // END OF CRUD METHODS - USER, TEACHER AND STUDENT
