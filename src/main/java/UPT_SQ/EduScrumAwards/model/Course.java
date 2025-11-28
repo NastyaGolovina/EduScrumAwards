@@ -11,7 +11,6 @@ package UPT_SQ.EduScrumAwards.model;
 
 import jakarta.persistence.*;
 import org.hibernate.Session;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
