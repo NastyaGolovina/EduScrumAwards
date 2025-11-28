@@ -17,17 +17,26 @@ public class CourseController {
     }
 
     @PostMapping("/create")
-    public String createCourse(@RequestParam String courseName) {
-        return global.createCourse(courseName);
+    public ResponseEntity<String> createCourse(@RequestParam String courseName) {
+        global.readAllCourseWithJplq();
+        String result = global.createCourse(courseName);
+        HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(result);
     }
 
     @PutMapping("/update")
-    public String updateCourse(@RequestParam int id, @RequestParam String courseName) {
-        return global.updateCourse(id, courseName);
+    public ResponseEntity<String> updateCourse(@RequestParam int id, @RequestParam String courseName) {
+        global.readAllCourseWithJplq();
+        String result = global.updateCourse(id, courseName);
+        HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status).body(result);
     }
 
     @DeleteMapping("/delete")
-    public String deleteCourse(@RequestParam int id) {
-        return global.deleteCourse(id);
+    public ResponseEntity<String> deleteCourse(@RequestParam int id) {
+        global.readAllCourseWithJplq();
+        String result = global.deleteCourse(id);
+        HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status).body(result);
     }
 }
