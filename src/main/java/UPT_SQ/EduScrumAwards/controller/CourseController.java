@@ -21,19 +21,13 @@ public class CourseController {
         return global.createCourse(courseName);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public String updateCourse(@RequestParam int id, @RequestParam String courseName) {
         return global.updateCourse(id, courseName);
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<String> deleteCourse(@RequestParam int id) {
-        String result = global.deleteCourse(id);
-
-        if (result.startsWith("Record successfully")) {
-            return ResponseEntity.ok(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
-        }
+    @DeleteMapping("/delete")
+    public String deleteCourse(@RequestParam int id) {
+        return global.deleteCourse(id);
     }
 }
