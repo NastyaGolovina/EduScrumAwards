@@ -1,47 +1,82 @@
 package UPT_SQ.EduScrumAwards.controller;
 
 import UPT_SQ.EduScrumAwards.model.Course;
+import UPT_SQ.EduScrumAwards.model.Global;
 import UPT_SQ.EduScrumAwards.model.Teacher;
+import UPT_SQ.EduScrumAwards.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//@RestController
-//@RequestMapping("/CourseTeachers")
-//public class CourseTeacherController {
-//    private final Course course;
-//
-//    @Autowired
-//    public CourseTeacherController(Course course) {
-//        this.course = course;
-//    }
-//
-//    @PostMapping("/create")
-//    public String createCourse(
-//            @RequestParam Teacher teacher,
-//            @RequestParam boolean isResponsible) {
-//        if (teacher != null) {
-//            return course.createCourseTeacher(teacher, isResponsible);
-//        }
-//        return "ERROR: Teacher is null";
-//    }
-//
-//    @PostMapping("/update")
-//    public String updateCourse(
-//            @RequestParam int id,
-//            @RequestParam boolean isResponsible) {
-//        return course.updateCourseTeacher(id, isResponsible);
-//    }
-//
-//    @PostMapping("/delete")
-//    public ResponseEntity<String> deleteCourseTeacher(@RequestParam int id) {
-//        String result = course.deleteCourseTeacher(id);
-//
-//        if (result.startsWith("Record successfully")) {
-//            return ResponseEntity.ok(result);
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
-//        }
-//    }
-//}
+@RestController
+@RequestMapping("/CourseTeachers")
+public class CourseTeacherController {
+    private final Global global;
+
+    @Autowired
+    public CourseTeacherController(Global global) {
+        this.global = global;
+    }
+
+    // Create a CourseTeacher for a given course and teacher IDs
+    @PostMapping("/create")
+    public ResponseEntity<String> createCourseTeacher(
+            @RequestParam int courseId,
+            @RequestParam long teacherId,
+            @RequestParam boolean isResponsible) {
+        // Load required data into in-memory lists
+        global.readAllCourseWithJplq();
+        global.readAllTeacherWithJplq();
+
+        Course course = global.searchCourse(courseId);
+        if (course == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Course with id " + courseId + " does not exist");
+        }
+        // Ensure CT list is loaded for operations relying on local list
+        course.readAllCourseTeacherWithJplq();
+
+        User user = global.searchUser(teacherId);
+        if (!(user instanceof Teacher)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Teacher with id " + teacherId + " does not exist");
+        }
+        Teacher teacher = (Teacher) user;
+
+        String result = course.createCourseTeacher(teacher, isResponsible);
+        HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(result);
+    }
+
+    // Update isResponsible of a CourseTeacher by id within a course
+    @PutMapping("/update")
+    public ResponseEntity<String> updateCourseTeacher(
+            @RequestParam int courseId,
+            @RequestParam int id,
+            @RequestParam boolean isResponsible) {
+        global.readAllCourseWithJplq();
+        Course course = global.searchCourse(courseId);
+        if (course == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Course with id " + courseId + " does not exist");
+        }
+        course.readAllCourseTeacherWithJplq();
+        String result = course.updateCourseTeacher(id, isResponsible);
+        HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status).body(result);
+    }
+
+    // Delete a CourseTeacher by id within a course
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteCourseTeacher(
+            @RequestParam int courseId,
+            @RequestParam int id) {
+        global.readAllCourseWithJplq();
+        Course course = global.searchCourse(courseId);
+        if (course == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Course with id " + courseId + " does not exist");
+        }
+        course.readAllCourseTeacherWithJplq();
+        String result = course.deleteCourseTeacher(id);
+        HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status).body(result);
+    }
+}
