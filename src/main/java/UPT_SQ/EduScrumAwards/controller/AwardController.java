@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:63342")
 @RestController
 @RequestMapping("/awards")
 public class AwardController {
@@ -41,10 +42,10 @@ public class AwardController {
     @PostMapping("/update")
     public String updateAward(
             @RequestParam int id,
-            @RequestParam String awardName,
-            @RequestParam String awardDescription) {
+            @RequestParam String name,
+            @RequestParam String description) {
 
-        return global.updateAward(id,awardName,awardDescription);
+        return global.updateAward(id,name,description);
     }
 
 

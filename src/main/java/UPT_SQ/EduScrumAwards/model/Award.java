@@ -38,7 +38,7 @@ public class Award {
     @Enumerated(EnumType.STRING)
     @Column(name = "mode")
     private AssignMode assignMode;
-//    @JsonIgnore
+    @JsonIgnore
     @Transient
     private ArrayList<AwardRule> awardRules;
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:63342")
 @RestController
 @RequestMapping("/students-awards")
 public class StudentsAwardsController {
@@ -20,11 +21,11 @@ public class StudentsAwardsController {
     }
 
 
-//
-//    @GetMapping("/all")
-//    public List<StudentAward> getAllStudentAwards() {
-//        return global.getStudentsAwards();
-//    }
+
+    @GetMapping("/all")
+    public List<StudentAward> getAllStudentAwards() {
+        return global.getStudentsAwards();
+    }
 
 
     @PostMapping("/assignStudentAward")
