@@ -35,16 +35,16 @@ public class Course {
      * Teachers for this course (CourseTeacher rows).
      * Mapped by the "course" field in CourseTeacher.
      */
-    @OneToMany(mappedBy = "course")
     @JsonIgnore
+    @OneToMany(mappedBy = "course")
     private List<CourseTeacher> courseTeachers;
 
     /**
      * The list of projects that belong to this course.
      * Mapped by the "course" field in Project.
      */
-    @OneToMany(mappedBy = "course")
     @JsonIgnore
+    @OneToMany(mappedBy = "course")
     private List<Project> projects;
 
     // Students list (association) could be added here in the future
@@ -66,12 +66,19 @@ public class Course {
         this.courseName = courseName;
         courseTeachers = new ArrayList<>();
         projects = new ArrayList<>();
-        readAllCourseTeacherWithJplq();
-        retrieveProjects();
+//        readAllCourseTeacherWithJplq();
+//        retrieveProjects();
     }
 
     public void setCourseTeachers(List<CourseTeacher> courseTeachers) {
         this.courseTeachers = courseTeachers;
+    }
+
+    public List<CourseTeacher> getCourseTeachers() {
+        if (courseTeachers == null) {
+            courseTeachers = new ArrayList<>();
+        }
+        return courseTeachers;
     }
 
     public void setCourseID(int courseID) {
@@ -91,6 +98,7 @@ public class Course {
         return courseName;
     }
 
+    @JsonIgnore
     public List<CourseTeacher> getTeachers() {
         if (courseTeachers == null)
             courseTeachers = new ArrayList<>();
@@ -109,6 +117,7 @@ public class Course {
         this.courseName = courseName;
     }
 
+    @JsonIgnore
     public void setTeachers(List<CourseTeacher> teachers) {
         this.courseTeachers = teachers;
     }
