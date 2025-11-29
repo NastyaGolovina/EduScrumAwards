@@ -943,7 +943,10 @@ public class Global {
             session.getTransaction().commit();
 
             // Update local list
-            readAllCourseWithJplq();
+            Course localCourse = searchCourse(id);
+            if (localCourse != null) {
+                courses.remove(localCourse);
+            }
 
             return "Success";
         } catch (Exception e) {
