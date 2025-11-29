@@ -25,9 +25,6 @@ public class CourseTeacherController {
             @RequestParam int courseId,
             @RequestParam long teacherId,
             @RequestParam boolean isResponsible) {
-        // Load required data into in-memory lists
-        global.readAllCourseWithJplq();
-        global.readAllTeacherWithJplq();
 
         Course course = global.searchCourse(courseId);
         if (course == null) {
@@ -53,7 +50,6 @@ public class CourseTeacherController {
             @RequestParam int courseId,
             @RequestParam int id,
             @RequestParam boolean isResponsible) {
-        global.readAllCourseWithJplq();
         Course course = global.searchCourse(courseId);
         if (course == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Course with id " + courseId + " does not exist");
@@ -69,7 +65,6 @@ public class CourseTeacherController {
     public ResponseEntity<String> deleteCourseTeacher(
             @RequestParam int courseId,
             @RequestParam int id) {
-        global.readAllCourseWithJplq();
         Course course = global.searchCourse(courseId);
         if (course == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Course with id " + courseId + " does not exist");

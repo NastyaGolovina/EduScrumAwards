@@ -21,13 +21,11 @@ public class CourseController {
 
     @GetMapping("/all")
     public List<Course> getAllCourses() {
-        global.readAllCourseWithJplq();
         return global.getCourses();
     }
 
     @PostMapping("/create")
     public ResponseEntity<String> createCourse(@RequestParam("name") String courseName) {
-        global.readAllCourseWithJplq();
         String result = global.createCourse(courseName);
         HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(result);
@@ -35,7 +33,6 @@ public class CourseController {
 
     @PostMapping("/update")
     public ResponseEntity<String> updateCourse(@RequestParam int id, @RequestParam("name") String courseName) {
-        global.readAllCourseWithJplq();
         String result = global.updateCourse(id, courseName);
         HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.NOT_FOUND;
         return ResponseEntity.status(status).body(result);
@@ -43,7 +40,6 @@ public class CourseController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteCourse(@RequestParam int id) {
-        global.readAllCourseWithJplq();
         String result = global.deleteCourse(id);
         HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.NOT_FOUND;
         return ResponseEntity.status(status).body(result);
