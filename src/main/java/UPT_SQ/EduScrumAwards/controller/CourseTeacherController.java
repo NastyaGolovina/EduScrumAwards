@@ -30,9 +30,6 @@ public class CourseTeacherController {
         if (course == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Course with id " + courseId + " does not exist");
         }
-        // Ensure CT list is loaded for operations relying on local list
-        course.readAllCourseTeacherWithJplq();
-
         User user = global.searchUser(teacherId);
         if (!(user instanceof Teacher)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Teacher with id " + teacherId + " does not exist");
@@ -54,7 +51,6 @@ public class CourseTeacherController {
         if (course == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Course with id " + courseId + " does not exist");
         }
-        course.readAllCourseTeacherWithJplq();
         String result = course.updateCourseTeacher(id, isResponsible);
         HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.NOT_FOUND;
         return ResponseEntity.status(status).body(result);
@@ -69,7 +65,6 @@ public class CourseTeacherController {
         if (course == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR: Course with id " + courseId + " does not exist");
         }
-        course.readAllCourseTeacherWithJplq();
         String result = course.deleteCourseTeacher(id);
         HttpStatus status = result.startsWith("Success") ? HttpStatus.OK : HttpStatus.NOT_FOUND;
         return ResponseEntity.status(status).body(result);

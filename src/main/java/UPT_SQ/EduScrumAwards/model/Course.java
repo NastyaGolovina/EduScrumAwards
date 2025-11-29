@@ -66,8 +66,6 @@ public class Course {
         this.courseName = courseName;
         courseTeachers = new ArrayList<>();
         projects = new ArrayList<>();
-//        readAllCourseTeacherWithJplq();
-//        retrieveProjects();
     }
 
     public void setCourseTeachers(List<CourseTeacher> courseTeachers) {
