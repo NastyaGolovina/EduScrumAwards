@@ -139,6 +139,52 @@ public class Project {
         return "Sprint updated Successfully!";
     }
 
+    /** Deletes a Sprint by ID if no StudentAwards are linked to it */
+    public String deleteSprint(int sprintId) {
+        if (sprints == null || sprints.isEmpty()) return "No sprints to delete!";
+
+        Sprint sprintToDelete = searchSprint(sprintId);
+        if (sprintToDelete == null) return "Sprint with ID " + sprintId + " not found!";
+
+        // Check if there are StudentAwards linked to this Sprint
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = dbHelper.getSessionFactory().openSession();
+        try {
+            Long awardsCount = session.createQuery(
+                    "SELECT COUNT(sa) FROM StudentAward sa WHERE sa.sprint.sprintId = :sid",
+                    Long.class
+            ).setParameter("sid", sprintId).getSingleResult();
+
+            if (awardsCount != null && awardsCount > 0) {
+                return "Cannot delete Sprint: StudentAwards are linked to it!";
+            }
+
+            // Begin transaction to delete Sprint and its goals
+            session.beginTransaction();
+
+            // Remove Sprint (cascade will delete Goals due to orphanRemoval = true)
+            if (!session.contains(sprintToDelete)) {
+                sprintToDelete = session.merge(sprintToDelete);
+            }
+            session.remove(sprintToDelete);
+
+            session.getTransaction().commit();
+
+            // Remove from in-memory list
+            sprints.removeIf(s -> s.getSprintId() == sprintId);
+
+            return "Sprint deleted successfully!";
+        } catch (Exception e) {
+            if (session.getTransaction().isActive()) session.getTransaction().rollback();
+            return "ERROR: Failed to delete Sprint. " + e.getMessage();
+        } finally {
+            session.close();
+            dbHelper.exit();
+        }
+    }
+
+
     /** Retrieves all student awards for this project */
     public ArrayList<StudentAward> studentsAwards() {
         DatabaseHelper dbHelper = new DatabaseHelper();
