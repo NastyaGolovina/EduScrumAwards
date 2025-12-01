@@ -84,7 +84,8 @@ public class Sprint {
     public Project getProject() { return project; }
     public void setProject(Project project) { this.project = project; }
 
-    /** Add an existing Goal to this Sprint */
+// ---------- CREATE ----------
+    /** Add an existing Goal or create a new one in DB */
     public String addGoal(Goal goal) {
         if (goal == null) return "Goal cannot be null!";
         if (goals == null) goals = new ArrayList<>();
@@ -94,13 +95,18 @@ public class Sprint {
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
         Session session = db.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.persist(goal);
-        session.getTransaction().commit();
-        session.close();
-        db.exit();
-
-        return "Goal added successfully!";
+        try {
+            session.beginTransaction();
+            session.persist(goal);  // save to DB
+            session.getTransaction().commit();
+            return "Goal added successfully!";
+        } catch (Exception e) {
+            if (session.getTransaction().isActive()) session.getTransaction().rollback();
+            return "ERROR: Failed to add goal. " + e.getMessage();
+        } finally {
+            session.close();
+            db.exit();
+        }
     }
 
     /** Create a Goal from parameters and add it */
@@ -109,6 +115,23 @@ public class Sprint {
         if (score <= 0) return "Goal score must be positive!";
         Goal goal = new Goal(description, score);
         return addGoal(goal);
+    }
+
+    /** Load all goals from DB */
+    public void retrieveGoals() {
+        DatabaseHelper db = new DatabaseHelper();
+        db.setup();
+        Session session = db.getSessionFactory().openSession();
+        try {
+            List<Goal> goalList = session.createQuery(
+                            "SELECT g FROM Goal g WHERE g.sprint.sprintId = :sid", Goal.class)
+                    .setParameter("sid", this.sprintId)
+                    .getResultList();
+            this.goals = new ArrayList<>(goalList);
+        } finally {
+            session.close();
+            db.exit();
+        }
     }
 
     /** Update an existing Goal */
@@ -124,48 +147,72 @@ public class Sprint {
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
         Session session = db.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.merge(goal);
-        session.getTransaction().commit();
-        session.close();
-        db.exit();
-
-        return "Goal updated successfully!";
+        try {
+            session.beginTransaction();
+            session.merge(goal);  // update DB
+            session.getTransaction().commit();
+            return "Goal updated successfully!";
+        } catch (Exception e) {
+            if (session.getTransaction().isActive()) session.getTransaction().rollback();
+            return "ERROR: Failed to update goal. " + e.getMessage();
+        } finally {
+            session.close();
+            db.exit();
+        }
     }
 
-    public void retrieveGoals() {
+    /** Delete a Goal by ID */
+    public String deleteGoal(int goalId) {
+        if (goals == null || goals.isEmpty()) return "No goals to delete!";
+
+        Goal goalToDelete = goals.stream()
+                .filter(g -> g.getGoalId() == goalId)
+                .findFirst()
+                .orElse(null);
+        if (goalToDelete == null) return "Goal not found!";
+
+        // Remove from DB
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
-        Session session = db.getSessionFactory().openSession();
-        session.beginTransaction();
+        try (Session session = db.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.remove(session.contains(goalToDelete) ? goalToDelete : session.merge(goalToDelete));
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            return "ERROR: Failed to delete goal. " + e.getMessage();
+        } finally {
+            db.exit();
+        }
 
-        List<Goal> goalList = session.createQuery(
-                        "SELECT g FROM Goal g WHERE g.sprint.sprintId = :sid", Goal.class
-                )
-                .setParameter("sid", this.sprintId)
-                .getResultList();
+        // Remove from in-memory list
+        goals.remove(goalToDelete);
 
-        this.goals = new ArrayList<>(goalList);
-
-        session.getTransaction().commit();
-        session.close();
-        db.exit();
+        return "Goal deleted successfully!";
     }
 
     /** Calculate total score of all Goals */
     public double calcTotalScore() {
         if (goals == null || goals.isEmpty()) return 0;
-        return goals.stream().mapToInt(Goal::getScore).sum();
+
+        int total = 0;
+        for (Goal g : goals) {
+            total += g.getScore();
+        }
+        return total;
     }
 
     /** Calculate completion percentage based on Goal scores */
     public double calcCompletionByScore() {
         double totalScore = calcTotalScore();
         if (totalScore == 0) return 0;
-        double completedScore = goals.stream()
-                .filter(Goal::isCompleted)
-                .mapToInt(Goal::getScore)
-                .sum();
+
+        int completedScore = 0;
+        for (Goal g : goals) {
+            if (g.isCompleted()) {
+                completedScore += g.getScore();
+            }
+        }
+
         return (completedScore / totalScore) * 100;
     }
 
