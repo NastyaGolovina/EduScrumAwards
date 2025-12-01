@@ -421,7 +421,7 @@ public class Course {
         return project;
     }
 
-    /** Retrieves all projects for this course and stores them locally */
+    /** Retrieves all projects for this course and fully loads related arrays */
     public void retrieveProjects() {
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
@@ -429,18 +429,44 @@ public class Course {
         session.beginTransaction();
 
         List<Project> projectList = session.createQuery(
-                "SELECT p FROM Project p WHERE p.course.courseID = :cid", Project.class)
+                        "SELECT p FROM Project p WHERE p.course.courseID = :cid", Project.class)
                 .setParameter("cid", this.courseID)
                 .getResultList();
 
         this.projects = new ArrayList<>(projectList);
+
+        // Fully load arrays for each project
+        for (Project p : this.projects) {
+            // Load team members
+            Team team = p.getTeam();
+            if (team != null) {
+                if (!session.contains(team)) {
+                    team = session.merge(team);
+                }
+                if (team.getTeamMember() != null) {
+                    team.getTeamMember().size(); // force loading
+                }
+            }
+
+            // Load sprints and goals
+            if (p.getSprints() != null) {
+                for (Sprint s : p.getSprints()) {
+                    if (!session.contains(s)) {
+                        session.merge(s);
+                    }
+                    if (s.getGoals() != null) {
+                        s.getGoals().size(); // force loading
+                    }
+                }
+            }
+        }
 
         session.getTransaction().commit();
         session.close();
         db.exit();
     }
 
-    /** Create a new Project */
+    /** Create a new Project and fully load related arrays */
     public String createProject(String projectName, Team team, Course course) {
         if (projectName == null || projectName.isEmpty())
             return "Project name cannot be empty!";
@@ -449,46 +475,162 @@ public class Course {
         if (course == null)
             return "Course cannot be null!";
 
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = dbHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        // Validate one-to-one team assignment
+        Long count = session.createQuery(
+                        "SELECT COUNT(p) FROM Project p WHERE p.team.teamID = :tid",
+                        Long.class)
+                .setParameter("tid", team.getTeamID())
+                .uniqueResult();
+
+        if (count != null && count > 0) {
+            session.getTransaction().rollback();
+            session.close();
+            dbHelper.exit();
+            return "This team is already assigned to another project!";
+        }
+
+        // Create project
         Project project = new Project();
         project.setProjectName(projectName);
         project.setTeam(team);
         project.setCourse(course);
 
-        DatabaseHelper dbHelper = new DatabaseHelper();
-        dbHelper.setup();
-        Session session = dbHelper.getSessionFactory().openSession();
-        session.beginTransaction();
         session.persist(project);
         session.getTransaction().commit();
         session.close();
         dbHelper.exit();
 
-        return "Project added Successfully!";
+        // Add to local list
+        if (this.projects == null) this.projects = new ArrayList<>();
+        this.projects.add(project);
+
+        // Initialize in-memory arrays
+        if (project.getSprints() == null) project.setSprints(new ArrayList<>());
+        if (team.getTeamMember() == null) team.setTeamMember(new ArrayList<>());
+
+        return "Project added successfully!";
     }
 
+
     /** Update an existing Project */
-    public String updateProject(int projectId, String projectName, Team team, Course course) {
+    public String updateProject(int projectId, String projectName) {
         Project project = searchProject(projectId);
         if (project == null)
             return "Project with ID " + projectId + " not found!";
 
         if (projectName != null && !projectName.isEmpty())
             project.setProjectName(projectName);
-        if (team != null)
-            project.setTeam(team);
-        if (course != null)
-            project.setCourse(course);
 
         DatabaseHelper dbHelper = new DatabaseHelper();
         dbHelper.setup();
         Session session = dbHelper.getSessionFactory().openSession();
         session.beginTransaction();
-        session.merge(project);
+
+        Project managed = (Project) session.merge(project);
         session.getTransaction().commit();
         session.close();
         dbHelper.exit();
 
+        // Update in-memory list
+        if (this.projects != null) {
+            for (int i = 0; i < this.projects.size(); i++) {
+                if (this.projects.get(i).getProjectId() == managed.getProjectId()) {
+                    this.projects.set(i, managed);
+                    break;
+                }
+            }
+        }
+
         return "Project updated Successfully!";
     }
 
+
+    /** Delete an existing Project that belongs to this Course */
+    public String deleteProject(int projectId) {
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = null;
+
+        try {
+            session = dbHelper.getSessionFactory().openSession();
+            session.beginTransaction();
+
+            // Load the project and ensure it belongs to this course
+            Project project = session.get(Project.class, projectId);
+            if (project == null) {
+                session.getTransaction().rollback();
+                return "ERROR: Project not found!";
+            }
+            if (project.getCourse() == null || project.getCourse().getCourseID() != this.courseID) {
+                session.getTransaction().rollback();
+                return "ERROR: Project does not belong to this course!";
+            }
+
+            // Block deletion if there are StudentAward or AwardRule references
+            Long awardsCount = session.createQuery(
+                            "SELECT COUNT(sa) FROM StudentAward sa WHERE sa.project.projectId = :pid", Long.class)
+                    .setParameter("pid", projectId)
+                    .uniqueResult();
+
+            Long rulesCount = session.createQuery(
+                            "SELECT COUNT(ar) FROM AwardRule ar WHERE ar.project.projectId = :pid", Long.class)
+                    .setParameter("pid", projectId)
+                    .uniqueResult();
+
+            if ((awardsCount != null && awardsCount > 0) || (rulesCount != null && rulesCount > 0)) {
+                session.getTransaction().rollback();
+                return "Cannot delete project: linked StudentAward or AwardRule exists.";
+            }
+
+            // Clear project's sprints and goals to allow orphan removal
+            if (project.getSprints() != null) {
+                for (Sprint s : project.getSprints()) {
+                    if (s.getGoals() != null) {
+                        s.getGoals().clear(); // remove all goals
+                    }
+                }
+                project.getSprints().clear();
+            }
+
+            // Delete the project itself
+            if (!session.contains(project)) {
+                project = session.merge(project);
+            }
+            session.remove(project);
+
+            // Delete the team (and its members) if present
+            Team team = project.getTeam();
+            if (team != null) {
+                if (!session.contains(team)) {
+                    team = session.merge(team);
+                }
+                if (team.getTeamMember() != null) {
+                    team.getTeamMember().clear();
+                }
+                session.remove(team);
+            }
+
+            session.getTransaction().commit();
+
+            // Keep in-memory list in sync
+            if (this.projects != null) {
+                this.projects.removeIf(p -> p.getProjectId() == projectId);
+            }
+
+            return "Project deleted successfully!";
+        } catch (Exception e) {
+            if (session != null && session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+            return "ERROR: Failed to delete project. Reason: " + e.getMessage();
+        } finally {
+            if (session != null) session.close();
+            dbHelper.exit();
+        }
+    }
 }
