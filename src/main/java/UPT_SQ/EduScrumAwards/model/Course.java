@@ -429,34 +429,27 @@ public class Course {
         session.beginTransaction();
 
         List<Project> projectList = session.createQuery(
-                        "SELECT p FROM Project p WHERE p.course.courseID = :cid", Project.class)
+                        "SELECT p FROM Project p WHERE p.course.courseID = :cid",
+                        Project.class)
                 .setParameter("cid", this.courseID)
                 .getResultList();
 
         this.projects = new ArrayList<>(projectList);
 
-        // Fully load arrays for each project
-        for (Project p : this.projects) {
-            // Load team members
+        // Fully load related arrays
+        for (Project p : projects) {
+
+            // Load Sprints + Goals
+            p.retrieveSprints();
+
+            // Load Team Members
             Team team = p.getTeam();
             if (team != null) {
                 if (!session.contains(team)) {
                     team = session.merge(team);
                 }
                 if (team.getTeamMember() != null) {
-                    team.getTeamMember().size(); // force loading
-                }
-            }
-
-            // Load sprints and goals
-            if (p.getSprints() != null) {
-                for (Sprint s : p.getSprints()) {
-                    if (!session.contains(s)) {
-                        session.merge(s);
-                    }
-                    if (s.getGoals() != null) {
-                        s.getGoals().size(); // force loading
-                    }
+                    team.getTeamMember().size();
                 }
             }
         }

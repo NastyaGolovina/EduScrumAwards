@@ -86,12 +86,18 @@ public class Project {
 
         List<Sprint> sprintList = session.createQuery(
                         "SELECT s FROM Sprint s WHERE s.project.projectId = :pid",
-                        Sprint.class
-                )
+                        Sprint.class)
                 .setParameter("pid", this.projectId)
                 .getResultList();
 
         this.sprints = new ArrayList<>(sprintList);
+
+        // load goals for each sprint
+        for (Sprint s : this.sprints) {
+            if (s != null) {
+                s.retrieveGoals();
+            }
+        }
 
         session.getTransaction().commit();
         session.close();
