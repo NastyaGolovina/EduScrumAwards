@@ -328,10 +328,10 @@ public class Team {
                 databaseHelper.setup();
                 session = databaseHelper.getSessionFactory().openSession();
                 session.beginTransaction();
-                session.remove(teamMember);
+                session.remove(teamMember); //delete in db
                 session.getTransaction().commit();
 
-                // Update in-memory list
+                // delete in local list
                 teamMembers.remove(teamMember);
 
                 return "Team Member successfully deleted.";
