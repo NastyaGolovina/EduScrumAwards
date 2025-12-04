@@ -261,4 +261,101 @@ public class GlobalTest {
         assertFalse(global.isAwardInStudentAwards(1));
     }
 
+
+    @Test
+    void testCreateTeam_NameNull() {
+        String result = global.createTeam(null);
+
+        assertEquals("ERROR: Name is empty!", result);
+        assertTrue(global.getTeams().isEmpty());
+    }
+
+    @Test
+    void testCreateTeam_NameEmpty() {
+        String result = global.createTeam("");
+
+        assertEquals("ERROR: Name is empty!", result);
+        assertTrue(global.getTeams().isEmpty());
+    }
+
+    @Test
+    void testCreateTeam_DuplicateName() {
+        // Prepare existing team
+        Team team = new Team(1, "Alpha", new ArrayList<>());
+        global.getTeams().add(team);
+
+        // Try to create with same name (case-insensitive)
+        String result = global.createTeam("alpha");
+
+        assertEquals("ERROR: Team name already exists!", result);
+        assertEquals(1, global.getTeams().size());
+    }
+
+    /**
+     * This one WILL hit the database part.
+     * It assumes your Hibernate test config is correctly set up.
+     * If you don't have DB ready yet, you can temporarily disable it.
+     */
+    @Test
+    void testCreateTeam_Success() {
+        String result = global.createTeam("New Team");
+
+        assertEquals("Success", result);
+        assertEquals(1, global.getTeams().size());
+        assertEquals("New Team", global.getTeams().get(0).getTeamName());
+    }
+
+    @Test
+    void testUpdateTeam_TeamNotFound() {
+        // no teams in list
+        String result = global.updateTeam(99, "New Name");
+
+        assertEquals("ERROR: Team with this id does not exist", result);
+    }
+
+    @Test
+    void testUpdateTeam_NameNull() {
+        Team team = new Team(1, "Alpha", new ArrayList<>());
+        global.getTeams().add(team);
+
+        String result = global.updateTeam(1, null);
+
+        assertEquals("ERROR: Name is empty!", result);
+        assertEquals("Alpha", team.getTeamName());
+    }
+
+    @Test
+    void testUpdateTeam_NameEmpty() {
+        Team team = new Team(1, "Alpha", new ArrayList<>());
+        global.getTeams().add(team);
+
+        String result = global.updateTeam(1, "");
+
+        assertEquals("ERROR: Name is empty!", result);
+        assertEquals("Alpha", team.getTeamName());
+    }
+    @Test
+    void testIsTeamInStudentAwards_Found() {
+        Global global = new Global();
+        global.setStudentsAwards(new ArrayList<>());
+
+        Team team = new Team();
+        team.setTeamID(1);
+
+        StudentAward sa = new StudentAward();
+        sa.setTeam(team);
+
+        global.getStudentsAwards().add(sa);
+
+        assertTrue(global.isTeamInStudentAwards(1));
+    }
+
+    @Test
+    void testDeleteTeam_TeamNotFound() {
+        String result = global.deleteTeam(123);
+
+        assertEquals("ERROR: Team not found", result);
+    }
+
 }
+

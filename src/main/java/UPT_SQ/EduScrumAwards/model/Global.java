@@ -1079,7 +1079,7 @@ public class Global {
      * @param teamId the ID of the team to check
      * @return true if the team exists in any StudentAward record, false otherwise
      */
-    private boolean isTeamInStudentAwards(int teamId) {
+    public boolean isTeamInStudentAwards(int teamId) {
         for (StudentAward studentAward : studentsAwards) {
             if (studentAward.getTeam() != null &&
                     studentAward.getTeam().getTeamID() == teamId) {
@@ -1096,7 +1096,7 @@ public class Global {
      * @return true if the team exists in any Project record, false otherwise
      */
 
-    private boolean isTeamInProject(int teamId) {
+    public boolean isTeamInProject(int teamId) {
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
         Session session = db.getSessionFactory().openSession();
