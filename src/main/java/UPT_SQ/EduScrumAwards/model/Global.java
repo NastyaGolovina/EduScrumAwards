@@ -844,6 +844,7 @@ public class Global {
         for (Course c : courses) {
             if (c != null) {
                 c.readAllCourseTeacherWithJplq();
+                c.retrieveProjects();
             }
         }
         session.close();

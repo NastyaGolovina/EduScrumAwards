@@ -1,5 +1,6 @@
 package UPT_SQ.EduScrumAwards.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
@@ -37,6 +38,7 @@ public class Project {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sprint> sprints = new ArrayList<>();
 
@@ -82,7 +84,7 @@ public class Project {
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
         Session session = db.getSessionFactory().openSession();
-        session.beginTransaction();
+//        session.beginTransaction();
 
         List<Sprint> sprintList = session.createQuery(
                         "SELECT s FROM Sprint s WHERE s.project.projectId = :pid",
@@ -99,7 +101,7 @@ public class Project {
             }
         }
 
-        session.getTransaction().commit();
+//        session.getTransaction().commit();
         session.close();
         db.exit();
     }

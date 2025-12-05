@@ -1,4 +1,5 @@
 package UPT_SQ.EduScrumAwards.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
@@ -41,6 +42,7 @@ public class Team {
      * orphanRemoval = true removes team members automatically if they
      * are no longer referenced by this team.
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> teamMembers = new ArrayList<>();
 
@@ -96,7 +98,10 @@ public class Team {
     public void setTeamName(String teamName) {
         this.teamName = teamName;
     }
+
+
     /** @return the list of team members associated with this team */
+    @JsonIgnore
     public List<TeamMember> getTeamMember() {
         return teamMembers;
     }
