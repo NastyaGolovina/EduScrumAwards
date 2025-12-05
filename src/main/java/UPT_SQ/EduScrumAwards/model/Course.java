@@ -36,7 +36,7 @@ public class Course {
      * Mapped by the "course" field in CourseTeacher.
      */
     @JsonIgnore
-    @OneToMany(mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
     private List<CourseTeacher> courseTeachers;
 
     /**
@@ -44,7 +44,7 @@ public class Course {
      * Mapped by the "course" field in Project.
      */
     @JsonIgnore
-    @OneToMany(mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
     private List<Project> projects;
 
     // Students list (association) could be added here in the future
@@ -265,6 +265,23 @@ public class Course {
     public boolean isCourseTeacher(Teacher t) {
         for (CourseTeacher ct : courseTeachers) {
             if (ct.getTeacher() == t) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Checks if a user with the specified ID is a teacher of the course.
+     *
+     * @param id the ID of the user to check
+     * @return {@code true} if the user with the given ID is a teacher of the course;
+     *         {@code false} otherwise
+     */
+    public boolean isCourseTeacher(long id) {
+        for (CourseTeacher ct : courseTeachers) {
+            if (ct.getTeacher().getUserId() == id) {
                 return true;
             }
         }

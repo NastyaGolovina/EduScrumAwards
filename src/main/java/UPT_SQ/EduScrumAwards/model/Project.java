@@ -39,7 +39,7 @@ public class Project {
     private Course course;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sprint> sprints = new ArrayList<>();
 
     /** Default no-argument constructor required by JPA */
