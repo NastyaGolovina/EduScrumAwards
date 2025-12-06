@@ -1,5 +1,6 @@
 package UPT_SQ.EduScrumAwards.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
@@ -35,6 +36,7 @@ public class Sprint {
     @Temporal(TemporalType.DATE)
     private Date endDate;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Goal> goals = new ArrayList<>();
 

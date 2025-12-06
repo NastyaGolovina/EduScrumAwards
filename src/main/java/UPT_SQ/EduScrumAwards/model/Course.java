@@ -36,7 +36,7 @@ public class Course {
      * Mapped by the "course" field in CourseTeacher.
      */
     @JsonIgnore
-    @OneToMany(mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
     private List<CourseTeacher> courseTeachers;
 
     /**
@@ -44,7 +44,7 @@ public class Course {
      * Mapped by the "course" field in Project.
      */
     @JsonIgnore
-    @OneToMany(mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
     private List<Project> projects;
 
     // Students list (association) could be added here in the future
@@ -271,6 +271,23 @@ public class Course {
         return false;
     }
 
+
+    /**
+     * Checks if a user with the specified ID is a teacher of the course.
+     *
+     * @param id the ID of the user to check
+     * @return {@code true} if the user with the given ID is a teacher of the course;
+     *         {@code false} otherwise
+     */
+    public boolean isCourseTeacher(long id) {
+        for (CourseTeacher ct : courseTeachers) {
+            if (ct.getTeacher().getUserId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Creates a new CourseTeacher and saves it to the database.
      *
@@ -426,7 +443,7 @@ public class Course {
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
         Session session = db.getSessionFactory().openSession();
-        session.beginTransaction();
+//        session.beginTransaction();
 
         List<Project> projectList = session.createQuery(
                         "SELECT p FROM Project p WHERE p.course.courseID = :cid",
@@ -443,18 +460,18 @@ public class Course {
             p.retrieveSprints();
 
             // Load Team Members
-            Team team = p.getTeam();
-            if (team != null) {
-                if (!session.contains(team)) {
-                    team = session.merge(team);
-                }
-                if (team.getTeamMember() != null) {
-                    team.getTeamMember().size();
-                }
-            }
+//            Team team = p.getTeam();
+//            if (team != null) {
+//                if (!session.contains(team)) {
+//                    team = session.merge(team);
+//                }
+//                if (team.getTeamMember() != null) {
+//                    team.getTeamMember().size();
+//                }
+//            }
         }
 
-        session.getTransaction().commit();
+//        session.getTransaction().commit();
         session.close();
         db.exit();
     }

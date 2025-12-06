@@ -20,11 +20,11 @@ public class AwardRule {
     @Column(name = "rule_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ruleId;
-    @JsonIgnore
+//    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "award_id")
     private Award award;
-    @JsonIgnore
+//    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;

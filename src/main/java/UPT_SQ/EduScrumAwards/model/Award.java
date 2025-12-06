@@ -230,21 +230,41 @@ public class Award {
     public String createAwardRule(double completionPercent, boolean isAllGoalsCompleted, User teacher, Project project) {
             if(completionPercent>= 0 && completionPercent <= 100) {
                 if(teacher.getRole() == UserRole.TEACHER) {
-                    if (project.getCourse().isCourseTeacher((Teacher) teacher)) {
-                        AwardRule awardRule = new AwardRule(completionPercent, isAllGoalsCompleted,
-                                (Teacher) teacher, project, this);
-                        awardRules.add(awardRule);
-                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
-                        DatabaseHelper.setup();
-                        Session session = DatabaseHelper.getSessionFactory().openSession();
-                        session.beginTransaction();
+                    if (project.getCourse().isCourseTeacher(teacher.getUserId())) {
+//                        AwardRule awardRule = new AwardRule(completionPercent, isAllGoalsCompleted,
+//                                (Teacher) teacher, project, this);
+//                        awardRules.add(awardRule);
+//                        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+//                        DatabaseHelper.setup();
+//                        Session session = DatabaseHelper.getSessionFactory().openSession();
+//                        session.beginTransaction();
+//
+//                        session.persist(awardRule);
+//
+//                        session.getTransaction().commit();
+//                        session.close();
+//                        DatabaseHelper.exit();
+//                        return "Success";
+                        try {
+                            AwardRule awardRule = new AwardRule(completionPercent, isAllGoalsCompleted,
+                                    (Teacher) teacher, project, this);
+                            awardRules.add(awardRule);
+                            DatabaseHelper DatabaseHelper = new DatabaseHelper();
+                            DatabaseHelper.setup();
+                            Session session = DatabaseHelper.getSessionFactory().openSession();
+                            session.beginTransaction();
 
-                        session.persist(awardRule);
+                            session.persist(awardRule);
 
-                        session.getTransaction().commit();
-                        session.close();
-                        DatabaseHelper.exit();
-                        return "Success";
+                            session.getTransaction().commit();
+                            session.close();
+                            DatabaseHelper.exit();
+                            return "Success";
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return "Error: " + e.getMessage();
+                        }
+
                     } else {
                     return "ERROR: teacher is not related to this course";
                     }
@@ -275,20 +295,40 @@ public class Award {
         if(completionPercent>= 0 && completionPercent <= 100) {
             AwardRule rule = searchAwardRule(id);
             if(rule != null) {
-                rule.setCompletionPercent(completionPercent);
-                rule.setAllGoalsCompleted(isAllGoalsCompleted);
+//                rule.setCompletionPercent(completionPercent);
+//                rule.setAllGoalsCompleted(isAllGoalsCompleted);
+//
+//                DatabaseHelper DatabaseHelper = new DatabaseHelper();
+//                DatabaseHelper.setup();
+//                Session session = DatabaseHelper.getSessionFactory().openSession();
+//                session.beginTransaction();
+//
+//                session.merge(rule);
+//
+//                session.getTransaction().commit();
+//                session.close();
+//                DatabaseHelper.exit();
+//                return "Success";
+                try {
+                    rule.setCompletionPercent(completionPercent);
+                    rule.setAllGoalsCompleted(isAllGoalsCompleted);
 
-                DatabaseHelper DatabaseHelper = new DatabaseHelper();
-                DatabaseHelper.setup();
-                Session session = DatabaseHelper.getSessionFactory().openSession();
-                session.beginTransaction();
+                    DatabaseHelper DatabaseHelper = new DatabaseHelper();
+                    DatabaseHelper.setup();
+                    Session session = DatabaseHelper.getSessionFactory().openSession();
+                    session.beginTransaction();
 
-                session.merge(rule);
+                    session.merge(rule);
 
-                session.getTransaction().commit();
-                session.close();
-                DatabaseHelper.exit();
-                return "Success";
+                    session.getTransaction().commit();
+                    session.close();
+                    DatabaseHelper.exit();
+                    return "Success";
+                } catch (Exception e) {
+                    e.printStackTrace(); 
+                    return "Error: " + e.getMessage();
+                }
+
             } else {
                 return "ERROR: Rule does not exist";
             }

@@ -1,5 +1,6 @@
 package UPT_SQ.EduScrumAwards.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
@@ -37,7 +38,8 @@ public class Project {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sprint> sprints = new ArrayList<>();
 
     /** Default no-argument constructor required by JPA */
@@ -82,7 +84,7 @@ public class Project {
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
         Session session = db.getSessionFactory().openSession();
-        session.beginTransaction();
+//        session.beginTransaction();
 
         List<Sprint> sprintList = session.createQuery(
                         "SELECT s FROM Sprint s WHERE s.project.projectId = :pid",
@@ -99,10 +101,22 @@ public class Project {
             }
         }
 
-        session.getTransaction().commit();
+//        session.getTransaction().commit();
         session.close();
         db.exit();
     }
+
+    public Sprint findSprintById(int sprintId) {
+        if (sprints == null)
+            return null;
+        for (Sprint s : sprints) {
+            if (s != null && s.getSprintId() == sprintId) {
+                return s;
+            }
+        }
+        return null;
+    }
+
 
     /** Creates a new Sprint for this project */
     public String createSprint(Date startDate, Date endDate) {
