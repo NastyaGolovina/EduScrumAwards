@@ -33,8 +33,6 @@ public class TeamController {
     ) {
         Team team = global.searchTeam(teamId);
         if (team != null) {
-            // ensure members are loaded/fresh
-            team.readAllTeamMemberWithJplq();
             return team;
         }
         return null;
@@ -55,7 +53,7 @@ public class TeamController {
         return global.updateTeam(teamId, teamName);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{teamId}")
     public ResponseEntity<String> deleteTeam(
             @PathVariable int teamId
     ) {

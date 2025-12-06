@@ -53,7 +53,6 @@ public class TeamMemberController {
     ) {
         Team team = global.searchTeam(teamId);
         if (team != null) {
-            team.readAllTeamMemberWithJplq();
             return team.searchTeamMember(memberId);
         }
         return null;
