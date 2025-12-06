@@ -962,6 +962,15 @@ public class Global {
         }
     }
 
+    public Team findTeamByName(String teamName) {
+        for (Team t : teams) {
+            if (t.getTeamName().equalsIgnoreCase(teamName)) {
+                return t;
+            }
+        }
+        return null;
+    }
+
     /**
      * Creates a new TEAM object and saves it to the database.
      * 
@@ -976,11 +985,13 @@ public class Global {
         if (teamName.length() > 100)
             return "ERROR: Name is too long!";
 
+        // Refresh local list from DB so we see all existing teams
+        readAllTeamWithJplq();
+
         // prevent duplicate name locally
-        for (Team t : teams) {
-            if (t.getTeamName().equalsIgnoreCase(teamName)) {
-                return "ERROR: Team name already exists!";
-            }
+        Team existing = findTeamByName(teamName);
+        if (existing != null) {
+            return "ERROR: Team name already exists!";
         }
 
         // Create new team
@@ -1058,6 +1069,12 @@ public class Global {
             return "ERROR: Name is empty!";
         if (teamName.length() > 100)
             return "ERROR: Name is too long!";
+
+        // check if another team already has this name
+        Team existingTeam = findTeamByName(teamName);
+        if (existingTeam != null && existingTeam.getTeamID() != id) {
+            return "ERROR: Team name already exists!";
+        }
 
         team.setTeamName(teamName);
 
