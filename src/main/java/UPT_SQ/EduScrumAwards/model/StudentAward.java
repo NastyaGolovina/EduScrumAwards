@@ -261,6 +261,26 @@ public class StudentAward {
         this.sprint = sprint;
     }
 
+
+    /**
+     * Returns the current {@link AwardRule} associated with this object.
+     *
+     * @return the award rule
+     */
+    public AwardRule getRule() {
+        return rule;
+    }
+
+    /**
+     * Sets the {@link AwardRule} for this object.
+     *
+     * @param rule the award rule to set
+     */
+    public void setRule(AwardRule rule) {
+        this.rule = rule;
+    }
+
+
     /**
      * Returns a string representation of the {@link StudentAward} object.
      *
