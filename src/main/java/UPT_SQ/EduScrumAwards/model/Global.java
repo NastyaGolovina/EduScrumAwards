@@ -5,7 +5,10 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -536,7 +539,7 @@ public class Global {
                         if (teacher != null && teacher.getRole() == UserRole.TEACHER) {
                             Project project = findProject(projectId);
                             if (project != null) {
-                                if (project.getCourse().isCourseTeacher((Teacher) teacher)) {
+                                if (project.getCourse().isCourseTeacher(teacher.getUserId())) {
                                     if (project.getTeam().isTeamMember(studentId) != null) {
                                         return persistStudentAward(award,
                                                 (Student) student,
@@ -579,15 +582,19 @@ public class Global {
      */
     private String persistStudentAward(Award award, Student student, Teacher teacher, Project project) {
         try {
-            // Создаем объект StudentAward
+
             StudentAward studentAward = new StudentAward(
                     award,
                     student,
                     teacher,
                     project,
                     project.getTeam(),
-                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+//                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+//                    Date.from(LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant()),
+                    Date.from(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()),
                     award.getPointsValue());
+
+            studentsAwards.add(studentAward);
 
             DatabaseHelper databaseHelper = new DatabaseHelper();
             databaseHelper.setup();
