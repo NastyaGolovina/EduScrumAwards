@@ -46,9 +46,7 @@ public class TeamMember {
      * The "student_id" foreign key column stores the reference to the Student entity.
      */
     @ManyToOne
-    @JoinColumn(name = "student_id",
-            referencedColumnName = "user_id",
-            nullable = false)
+    @JoinColumn(name = "Team_ID", nullable = false)
     private Student student;
 
     /**
@@ -58,7 +56,7 @@ public class TeamMember {
      * The "team_id" foreign key column stores the reference to the Team entity.
      */
     @ManyToOne
-    @JoinColumn(name = "Team_ID", nullable = false)
+    @JoinColumn(name = "User_ID", nullable = false)
     @JsonIgnore
     private Team team;
 
