@@ -106,6 +106,18 @@ public class Project {
         db.exit();
     }
 
+    public Sprint findSprintById(int sprintId) {
+        if (sprints == null)
+            return null;
+        for (Sprint s : sprints) {
+            if (s != null && s.getSprintId() == sprintId) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+
     /** Creates a new Sprint for this project */
     public String createSprint(Date startDate, Date endDate) {
         if (sprints == null) sprints = new ArrayList<>();
