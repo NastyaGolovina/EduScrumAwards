@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -217,6 +220,58 @@ public class Sprint {
 
         return (completedScore / totalScore) * 100;
     }
+
+//    public boolean checkSprint(ArrayList<StudentAward> studentAwards)
+
+//
+//    public String assignAutomaticAward(ArrayList<Award> awards, ArrayList<StudentAward> studentAwards) {
+//        for(Award award : awards){
+//            ArrayList<AwardRule> rules = award.getAwardRules();
+//            if(rules==null || rules.isEmpty()) continue;
+//            for(AwardRule rule : rules){
+//                if(rule.getProject().getProjectId() == this.project.getProjectId()) {
+//                    double completion = calcCompletionByScore();
+//                    if (completion >= rule.getCompletionPercent() ||
+//                            (rule.isAllGoalsCompleted() && completion == 100.0)) {
+//                        try {
+//
+//                            for(TeamMember teamMember : project.getTeam().getTeamMember()) {
+//                                StudentAward studentAward = new StudentAward(
+//                                        award,
+//                                        teamMember.getStudent(),
+//                                        rule.getTeacher(),
+//                                        this.project,
+//                                        this.project.getTeam(),
+//                                        Date.from(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()),
+//                                        award.getPointsValue(),
+//                                        this,
+//                                        rule);
+//
+//                                studentAwards.add(studentAward);
+//
+//                                DatabaseHelper databaseHelper = new DatabaseHelper();
+//                                databaseHelper.setup();
+//                                Session session = databaseHelper.getSessionFactory().openSession();
+//                                session.beginTransaction();
+//
+//                                session.persist(studentAward);
+//
+//                                session.getTransaction().commit();
+//                                session.close();
+//                                databaseHelper.exit();
+//
+//                                return "Success";
+//                            }
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                            return "ERROR: Failed to persist StudentAward - " + e.getMessage();
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return "Success";
+//    }
 
     @Override
     public String toString() {

@@ -36,6 +36,9 @@ public class StudentAward {
     @JoinColumn(name = "sprint_id")
     private Sprint sprint;
     @ManyToOne
+    @JoinColumn(name = "rule_id")
+    private AwardRule rule;
+    @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
     @Column(name = "date")
@@ -68,6 +71,7 @@ public class StudentAward {
         this.date = date;
         this.points = points;
         this.sprint = null;
+        this.rule = null;
     }
 
     /**
@@ -82,7 +86,7 @@ public class StudentAward {
      * @param points the number of points associated with the award
      * @param sprint the sprint linked to this award
      */
-    public StudentAward(Award award, Student student, Teacher teacher, Project project, Team team, Date date, int points,Sprint sprint) {
+    public StudentAward(Award award, Student student, Teacher teacher, Project project, Team team, Date date, int points,Sprint sprint,AwardRule rule) {
         this.award = award;
         this.student = student;
         this.teacher = teacher;
@@ -91,6 +95,7 @@ public class StudentAward {
         this.date = date;
         this.points = points;
         this.sprint = sprint;
+        this.rule = rule;
     }
 
 
