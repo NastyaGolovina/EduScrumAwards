@@ -50,6 +50,18 @@ public class AwardController {
         return teachers;
     }
 
+    @GetMapping("/students/all")
+    public List<Student> getAllStudents() {
+        List<Student> students = new ArrayList<>();
+        for(User user : global.getUsers()) {
+            if(UserRole.STUDENT == user.getRole()) {
+                students.add((Student)user);
+            }
+        }
+        return students;
+    }
+
+
 
     @PostMapping("/create")
     public String createAward(
