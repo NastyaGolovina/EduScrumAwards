@@ -1,4 +1,5 @@
 package UPT_SQ.EduScrumAwards.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
@@ -42,6 +43,7 @@ public class Team {
      * are no longer referenced by this team.
      */
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<TeamMember> teamMembers = new ArrayList<>();
 
 

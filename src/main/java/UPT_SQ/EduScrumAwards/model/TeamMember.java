@@ -1,4 +1,5 @@
 package UPT_SQ.EduScrumAwards.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 /**
@@ -45,7 +46,9 @@ public class TeamMember {
      * The "student_id" foreign key column stores the reference to the Student entity.
      */
     @ManyToOne
-    @JoinColumn(name = "User_ID", nullable = false)
+    @JoinColumn(name = "student_id",
+            referencedColumnName = "user_id",
+            nullable = false)
     private Student student;
 
     /**
@@ -56,6 +59,7 @@ public class TeamMember {
      */
     @ManyToOne
     @JoinColumn(name = "Team_ID", nullable = false)
+    @JsonIgnore
     private Team team;
 
     /**
