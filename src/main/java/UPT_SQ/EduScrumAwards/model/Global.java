@@ -26,6 +26,7 @@ public class Global {
     private ArrayList<Team> teams;
     private ArrayList<Award> awards;
     private ArrayList<StudentAward> studentsAwards;
+    private ArrayList<Project> projects;
 
     /**
      * Constructs a new {@code Global} instance and initializes all lists
@@ -38,6 +39,7 @@ public class Global {
         teams = new ArrayList<>();
         awards = new ArrayList<>();
         studentsAwards = new ArrayList<>();
+        projects = new ArrayList<>();
     }
 
     @PostConstruct
@@ -472,6 +474,18 @@ public class Global {
         }
         return project;
     }
+
+    public Sprint findSprint(int sprintId) {
+        Sprint sprint = null;
+        for (Project p : projects) {
+            sprint = p.findSprintById(sprintId);
+            if (sprint != null) {
+                return sprint;
+            }
+        }
+        return sprint;
+    }
+
 
     /**
      * Searches for a project by its team ID.
