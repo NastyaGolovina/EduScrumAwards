@@ -30,11 +30,13 @@ public class Student extends User {
     // RELATIONSHIPS (commented until other classes are ready)
 
     // Relationship with TeamMember (to be implemented by Lily)
-    // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @JsonIgnore
     // private List<TeamMember> teamMemberships = new ArrayList<>();
 
     // Relationship with StudentAward (to be implemented by Anastasia)
-    // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JsonIgnore
+    // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     // private List<StudentAward> studentAwards = new ArrayList<>();
 
     // Constructors

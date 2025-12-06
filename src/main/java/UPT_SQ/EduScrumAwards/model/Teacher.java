@@ -7,7 +7,8 @@ import jakarta.persistence.*;
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Teacher extends User {
 
-    /*@OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    /*@OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<CourseTeacher> courses = new ArrayList<>();*/
 
     public Teacher() {
