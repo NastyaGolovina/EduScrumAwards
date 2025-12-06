@@ -2,7 +2,6 @@ package UPT_SQ.EduScrumAwards.controller;
 
 import UPT_SQ.EduScrumAwards.model.Global;
 import UPT_SQ.EduScrumAwards.model.Project;
-import UPT_SQ.EduScrumAwards.model.Sprint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
