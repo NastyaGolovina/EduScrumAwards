@@ -1,56 +1,77 @@
 package UPT_SQ.EduScrumAwards.controller;
 
+import UPT_SQ.EduScrumAwards.model.Course;
 import UPT_SQ.EduScrumAwards.model.Global;
 import UPT_SQ.EduScrumAwards.model.Project;
+import UPT_SQ.EduScrumAwards.model.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
-    @RestController
-    @RequestMapping("/projects")
-    public class ProjectController {
+@RestController
+@RequestMapping("/courses/{courseId}/projects")
+public class ProjectController {
 
-        @Autowired
-        private Global global;
+    private final Global global;
 
-        // List all sprints for a project
-        @GetMapping("/{projectId}/sprints")
-        public Object getSprints(@PathVariable int projectId) {
-            Project p = global.findProject(projectId);
-            if (p == null) return "Project not found!";
-            p.retrieveSprints();
-            return p.getSprints();
-        }
+    @Autowired
+    public ProjectController(Global global) {
 
-        // Create a sprint
-        @PostMapping("/{projectId}/sprints")
-        public String createSprint(@PathVariable int projectId,
-                                   @RequestParam Date startDate,
-                                   @RequestParam Date endDate) {
-            Project p = global.findProject(projectId);
-            if (p == null) return "Project not found!";
-            return p.createSprint(startDate, endDate);
-        }
-
-        // Update a sprint
-        @PutMapping("/{projectId}/sprints/{sprintId}")
-        public String updateSprint(@PathVariable int projectId,
-                                   @PathVariable int sprintId,
-                                   @RequestParam Date startDate,
-                                   @RequestParam Date endDate) {
-            Project p = global.findProject(projectId);
-            if (p == null) return "Project not found!";
-            return p.updateSprint(sprintId, startDate, endDate);
-        }
-
-        // Delete a sprint
-        @DeleteMapping("/{projectId}/sprints/{sprintId}")
-        public String deleteSprint(@PathVariable int projectId,
-                                   @PathVariable int sprintId) {
-            Project p = global.findProject(projectId);
-            if (p == null) return "Project not found!";
-            return p.deleteSprint(sprintId);
-        }
+        this.global = global;
     }
+
+    // list projects for a course
+    @GetMapping
+    public Object listProjects(@PathVariable int courseId) {
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+        // Do NOT reload from DB (singleton global already loaded)
+        return c.getProjects();
+    }
+
+    // get a single project
+    @GetMapping("/{projectId}")
+    public Object getProject(@PathVariable int courseId, @PathVariable int projectId) {
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+        Project p = c.findProjectById(projectId); // uses Course method
+        if (p == null) return "Project not found!";
+        return p;
+    }
+
+    // create project (teamId required)
+    @PostMapping("/create")
+    public String createProject(@PathVariable int courseId,
+                                @RequestParam String projectName,
+                                @RequestParam int teamId) {
+
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+
+        // find team in Global (method name may differ: adapt if needed)
+        Team team = global.searchTeam(teamId); // replace with your actual method if it's findTeam(...)
+        if (team == null) return "Team not found!";
+
+        return c.createProject(projectName, team, c);
+    }
+
+    // update project name
+    @PutMapping("/{projectId}/update")
+    public String updateProject(@PathVariable int courseId,
+                                @PathVariable int projectId,
+                                @RequestParam String projectName) {
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+        return c.updateProject(projectId, projectName);
+    }
+
+    // delete project
+    @DeleteMapping("/{projectId}/delete")
+    public String deleteProject(@PathVariable int courseId,
+                                @PathVariable int projectId) {
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+        return c.deleteProject(projectId);
+    }
+}

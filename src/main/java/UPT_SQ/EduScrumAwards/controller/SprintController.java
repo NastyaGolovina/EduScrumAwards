@@ -1,59 +1,85 @@
 package UPT_SQ.EduScrumAwards.controller;
 
-import UPT_SQ.EduScrumAwards.model.Global;
+import UPT_SQ.EduScrumAwards.model.Course;
+import UPT_SQ.EduScrumAwards.model.Project;
 import UPT_SQ.EduScrumAwards.model.Sprint;
+import UPT_SQ.EduScrumAwards.model.Global;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sprints")
+@RequestMapping("/courses/{courseId}/projects/{projectId}/sprints")
 public class SprintController {
 
+    private final Global global;
+
     @Autowired
-    private Global global;
+    public SprintController(Global global) {
 
-
-    // List all goals
-    @GetMapping("/{sprintId}/goals")
-    public Object getGoals(@PathVariable int sprintId) {
-        Sprint s = global.findSprint(sprintId);
-        if (s == null) return "Sprint not found!";
-        s.retrieveGoals();
-        return s.getGoals();
+        this.global = global;
     }
 
-    // Create goal
-    @PostMapping("/{sprintId}/goals")
-    public String createGoal(@PathVariable int sprintId,
-                             @RequestParam String description,
-                             @RequestParam int score) {
-        Sprint s = global.findSprint(sprintId);
-        if (s == null) return "Sprint not found!";
-        return s.createGoal(description, score);
+    // list sprints for project
+    @GetMapping
+    public Object listSprints(@PathVariable int courseId, @PathVariable int projectId) {
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+        Project p = c.findProjectById(projectId);
+        if (p == null) return "Project not found!";
+        return p.getSprints();
     }
 
-    // Update goal
-    @PutMapping("/{sprintId}/goals/{goalId}")
-    public String updateGoal(@PathVariable int sprintId,
-                             @PathVariable int goalId,
-                             @RequestParam String description,
-                             @RequestParam int score,
-                             @RequestParam boolean completed) {
-        Sprint s = global.findSprint(sprintId);
+    // get sprint
+    @GetMapping("/{sprintId}")
+    public Object getSprint(@PathVariable int courseId, @PathVariable int projectId, @PathVariable int sprintId) {
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+        Project p = c.findProjectById(projectId);
+        if (p == null) return "Project not found!";
+        Sprint s = p.findSprintById(sprintId);
         if (s == null) return "Sprint not found!";
-        s.retrieveGoals();
-        return s.updateGoal(goalId, description, score, completed);
+        return s;
     }
 
-    // Delete goal
-    @DeleteMapping("/{sprintId}/goals/{goalId}")
-    public String deleteGoal(@PathVariable int sprintId,
-                             @PathVariable int goalId) {
-        Sprint s = global.findSprint(sprintId);
-        if (s == null) return "Sprint not found!";
-        s.retrieveGoals();
-        return s.deleteGoal(goalId);
+    // create sprint
+    @PostMapping("/create")
+    public String createSprint(@PathVariable int courseId,
+                               @PathVariable int projectId,
+                               @RequestParam Date startDate,
+                               @RequestParam Date endDate) {
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+        Project p = c.findProjectById(projectId);
+        if (p == null) return "Project not found!";
+        return p.createSprint(startDate, endDate); // Project method handles persistence
+    }
+
+    // update sprint
+    @PutMapping("/{sprintId}/update")
+    public String updateSprint(@PathVariable int courseId,
+                               @PathVariable int projectId,
+                               @PathVariable int sprintId,
+                               @RequestParam Date startDate,
+                               @RequestParam Date endDate) {
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+        Project p = c.findProjectById(projectId);
+        if (p == null) return "Project not found!";
+        return p.updateSprint(sprintId, startDate, endDate);
+    }
+
+    // delete sprint
+    @DeleteMapping("/{sprintId}/delete")
+    public String deleteSprint(@PathVariable int courseId,
+                               @PathVariable int projectId,
+                               @PathVariable int sprintId) {
+        Course c = global.searchCourse(courseId);
+        if (c == null) return "Course not found!";
+        Project p = c.findProjectById(projectId);
+        if (p == null) return "Project not found!";
+        return p.deleteSprint(sprintId);
     }
 }
