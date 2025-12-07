@@ -195,6 +195,14 @@ public class Sprint {
         return "Goal deleted successfully!";
     }
 
+    public Goal findGoalById(int goalId) {
+        for (Goal g : goals) {
+            if (g.getGoalId() == goalId) return g;
+        }
+        return null;
+    }
+
+
     /** Calculate total score of all Goals */
     public double calcTotalScore() {
         if (goals == null || goals.isEmpty()) return 0;
