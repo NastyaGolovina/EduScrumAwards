@@ -994,9 +994,6 @@ public class Global {
         if (teamName.length() > 100)
             return "ERROR: Name is too long!";
 
-        // Refresh local list from DB so we see all existing teams
-        readAllTeamWithJplq();
-
         // prevent duplicate name locally
         Team existing = findTeamByName(teamName);
         if (existing != null) {
