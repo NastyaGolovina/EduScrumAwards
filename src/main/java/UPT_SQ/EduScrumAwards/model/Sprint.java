@@ -229,6 +229,20 @@ public class Sprint {
         return (completedScore / totalScore) * 100;
     }
 
+
+    /**
+     * Checks whether a specific award rule has already been assigned to a student
+     * within a list of existing student awards for the same sprint.
+     *
+     * This method iterates over all provided {@link StudentAward} objects and
+     * compares both the sprint ID and the rule ID to determine whether the rule
+     * has been previously applied.
+     *
+     * @param studentAwards the list of existing student awards to check
+     * @param rule the award rule to verify
+     * @return {@code true} if the rule has already been assigned for this sprint,
+     *         {@code false} otherwise
+     */
     public boolean isRuleAssigned(ArrayList<StudentAward> studentAwards,AwardRule rule) {
         for (StudentAward studentAward : studentAwards) {
             if(studentAward.getSprint().sprintId == this.sprintId &&
@@ -239,7 +253,24 @@ public class Sprint {
         return false;
     }
 
-
+    /**
+     * Automatically assigns awards to students based on project progress and
+     * award rules.
+     *
+     * The method evaluates each available {@link Award} and its associated
+     * {@link AwardRule} objects. If the rule matches the current project's ID and
+     * the project's completion percentage meets the rule's requirements, a new
+     * {@link StudentAward} is created for each team member—provided the rule has
+     * not already been assigned.
+     *
+     * <p>Each newly created {@link StudentAward} is persisted to the database.
+     * The method returns a success status or an error message if persistence fails.</p>
+     *
+     * @param awards the list of available awards
+     * @param studentAwards the list of existing student awards
+     * @return "Success" if awards are assigned or no action is needed;
+     *         otherwise an error message if persistence fails
+     */
     public String assignAutomaticAward(ArrayList<Award> awards, ArrayList<StudentAward> studentAwards) {
         for(Award award : awards){
             ArrayList<AwardRule> rules = award.getAwardRules();
