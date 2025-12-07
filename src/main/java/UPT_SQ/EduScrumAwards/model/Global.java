@@ -45,11 +45,26 @@ public class Global {
 
     @PostConstruct
     public void init() {
-        readAllTeamWithJplq();
-        readAllUserWithJplq();
-        readAllAwardWithJplq();
-        readAllCourseWithJplq();
-        readAllStudentAwardWithJplq();
+        try {
+            System.out.println("Initializing Global...");
+
+            readAllTeamWithJplq();
+            readAllUserWithJplq();
+            readAllAwardWithJplq();
+            readAllCourseWithJplq();
+            readAllStudentAwardWithJplq();
+
+            System.out.println("✓ Global initialization complete");
+            System.out.println("  - Users: " + users.size());
+            System.out.println("  - Courses: " + courses.size());
+            System.out.println("  - Teams: " + teams.size());
+            System.out.println("  - Awards: " + awards.size());
+            System.out.println("  - Student Awards: " + studentsAwards.size());
+
+        } catch (Exception e) {
+            System.err.println("ERROR during Global initialization: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -1327,11 +1342,9 @@ public class Global {
             databaseHelper.exit();
         }
     }
-
     /**
-     * Loads all User objects from the database and stores them in the local users
-     * list.
-     * Uses JPQL to query the database.
+     * Loads all User objects from the database and stores them in the local users list.
+     * Uses JPQL to query the database and loads all associated lists for each user.
      */
     public void readAllUserWithJplq() {
         DatabaseHelper databaseHelper = new DatabaseHelper();
@@ -1342,12 +1355,71 @@ public class Global {
             List<User> userList = session.createQuery("FROM User", User.class).getResultList();
             users = new ArrayList<>(userList);
             System.out.println("✓ Loaded " + users.size() + " users from database");
+
+            // Load all associated lists for each user
+            for (User user : users) {
+                if (user instanceof Teacher) {
+                    Teacher teacher = (Teacher) user;
+                    teacher.readAllCourseTeacherWithJplq();
+                    teacher.readAllStudentAwardWithJplq();
+                    System.out.println("  Teacher " + teacher.getName() +
+                            ": " + teacher.getCourses().size() + " courses, " +
+                            teacher.getAssignedAwards().size() + " assigned awards");
+                } else if (user instanceof Student) {
+                    Student student = (Student) user;
+                    student.readAllTeamMemberWithJplq();
+                    student.readAllStudentAwardWithJplq();
+                    System.out.println("  Student " + student.getName() +
+                            ": " + student.getTeamMemberships().size() + " team memberships, " +
+                            student.getStudentAwards().size() + " awards received");
+                }
+            }
         } catch (Exception e) {
             System.err.println("ERROR loading users: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             session.close();
             databaseHelper.exit();
         }
+    }
+
+    /**
+     * Checks if a user can be deleted (not linked to any other entities)
+     * Uses the loaded lists in memory (following Anastasia's pattern)
+     *
+     * @param userId ID of the user to check
+     * @return true if can be deleted, false otherwise
+     */
+    public boolean canDeleteUser(long userId) {
+        User user = searchUser(userId);
+        if (user == null) {
+            return false;
+        }
+
+        if (user instanceof Teacher) {
+            Teacher teacher = (Teacher) user;
+            boolean hasCourseTeachers = !teacher.getCourses().isEmpty();
+            boolean hasAssignedAwards = !teacher.getAssignedAwards().isEmpty();
+
+            System.out.println("Teacher " + teacher.getName() + " deletability check:");
+            System.out.println("  - Has CourseTeachers: " + hasCourseTeachers + " (" + teacher.getCourses().size() + ")");
+            System.out.println("  - Has Assigned Awards: " + hasAssignedAwards + " (" + teacher.getAssignedAwards().size() + ")");
+
+            return !hasCourseTeachers && !hasAssignedAwards;
+
+        } else if (user instanceof Student) {
+            Student student = (Student) user;
+            boolean hasTeamMemberships = !student.getTeamMemberships().isEmpty();
+            boolean hasStudentAwards = !student.getStudentAwards().isEmpty();
+
+            System.out.println("Student " + student.getName() + " deletability check:");
+            System.out.println("  - Has Team Memberships: " + hasTeamMemberships + " (" + student.getTeamMemberships().size() + ")");
+            System.out.println("  - Has Student Awards: " + hasStudentAwards + " (" + student.getStudentAwards().size() + ")");
+
+            return !hasTeamMemberships && !hasStudentAwards;
+        }
+
+        return true;
     }
 
     /**
@@ -1551,12 +1623,20 @@ public class Global {
 
     /**
      * Deletes a User (Teacher or Student) with the specified ID.
+     * Only allowed if the user is not linked to any other entities.
+     * Removes from both database and in-memory arrays.
      *
      * @param userId The ID of the user to delete.
      * @return "Success" if the user was successfully deleted, or an error message
-     *         if the user does not exist or deletion fails.
+     *         if the user does not exist, has references, or deletion fails.
      */
     public String deleteUser(long userId) {
+        // First check in memory
+        if (!canDeleteUser(userId)) {
+            return "ERROR: Cannot delete user because they are linked to other entities " +
+                    "(CourseTeachers, TeamMembers, or StudentAwards).";
+        }
+
         User user = searchUser(userId);
         if (user == null) {
             return "ERROR: User with this id does not exist";
@@ -1564,21 +1644,40 @@ public class Global {
 
         DatabaseHelper databaseHelper = new DatabaseHelper();
         databaseHelper.setup();
-        Session session = databaseHelper.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
+        Session session = null;
+        Transaction transaction = null;
 
         try {
-            session.remove(user);
-            transaction.commit();
-            users.remove(user);
-            return "Success";
-        } catch (Exception e) {
-            if (transaction != null)
+            session = databaseHelper.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+
+            // Load the user from database to ensure we have a managed entity
+            User userToDelete = session.get(User.class, userId);
+            if (userToDelete == null) {
                 transaction.rollback();
+                return "ERROR: User with this id does not exist in database";
+            }
+
+            // Remove the user (this will cascade delete if CascadeType.ALL is set)
+            session.remove(userToDelete);
+            transaction.commit();
+
+            // Remove from the in-memory array (important!)
+            users.remove(user);
+
+            System.out.println("✓ User deleted successfully from DB and memory: " + userId);
+            return "Success";
+
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
             return "ERROR: Cannot delete user - " + e.getMessage() +
-                    ". User might be referenced by other entities.";
+                    ". User might be referenced by other entities (database constraint).";
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
             databaseHelper.exit();
         }
     }

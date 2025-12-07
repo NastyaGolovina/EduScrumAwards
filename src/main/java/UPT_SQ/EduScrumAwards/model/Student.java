@@ -1,6 +1,9 @@
 package UPT_SQ.EduScrumAwards.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.Session;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,15 +32,13 @@ public class Student extends User {
 
     // RELATIONSHIPS (commented until other classes are ready)
 
-    // Relationship with TeamMember (to be implemented by Lily)
-    // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JsonIgnore
-    // private List<TeamMember> teamMemberships = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "student")
+    private List<TeamMember> teamMemberships = new ArrayList<>();
 
-    // Relationship with StudentAward (to be implemented by Anastasia)
-//    @JsonIgnore
-    // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    // private List<StudentAward> studentAwards = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "student")
+    private List<StudentAward> studentAwards = new ArrayList<>();
 
     // Constructors
     public Student() {
@@ -76,17 +77,6 @@ public class Student extends User {
     }
 
     /**
-     * Returns the student's award list
-     * TODO: Implement when StudentAward is ready
-     * @return List of student awards
-     */
-    public List<StudentAward> getStudentAwards() {
-        // TODO: Implement when StudentAward is ready
-        System.out.println("Retrieving student awards...");
-        return new ArrayList<>();
-    }
-
-    /**
      * Method for the student to receive an award
      * TODO: Implement when StudentAward is ready
      * @param award Award to be received
@@ -119,7 +109,65 @@ public class Student extends User {
         return false;
     }
 
-    // Getters and Setters
+    /**
+     * Loads all TeamMember associations for this student using JPQL
+     */
+    public void readAllTeamMemberWithJplq() {
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+
+        try {
+            List<TeamMember> teamMemberList = session.createQuery(
+                            "SELECT tm FROM TeamMember tm WHERE tm.student.userId = :studentId",
+                            TeamMember.class)
+                    .setParameter("studentId", this.getUserId())
+                    .getResultList();
+            this.teamMemberships = (ArrayList<TeamMember>) teamMemberList;
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    /**
+     * Loads all StudentAward associations for this student using JPQL
+     */
+    public void readAllStudentAwardWithJplq() {
+        DatabaseHelper databaseHelper = new DatabaseHelper();
+        databaseHelper.setup();
+        Session session = databaseHelper.getSessionFactory().openSession();
+
+        try {
+            List<StudentAward> studentAwardList = session.createQuery(
+                            "SELECT sa FROM StudentAward sa WHERE sa.student.userId = :studentId",
+                            StudentAward.class)
+                    .setParameter("studentId", this.getUserId())
+                    .getResultList();
+            this.studentAwards = (ArrayList<StudentAward>) studentAwardList;
+        } finally {
+            session.close();
+            databaseHelper.exit();
+        }
+    }
+
+    // Getters e Setters
+    public List<TeamMember> getTeamMemberships() {
+        return teamMemberships;
+    }
+
+    public void setTeamMemberships(List<TeamMember> teamMemberships) {
+        this.teamMemberships = teamMemberships;
+    }
+
+    public List<StudentAward> getStudentAwards() {
+        return studentAwards;
+    }
+
+    public void setStudentAwards(List<StudentAward> studentAwards) {
+        this.studentAwards = studentAwards;
+    }
+
     public String getStudentNumber() {
         return studentNumber;
     }
@@ -144,16 +192,6 @@ public class Student extends User {
         this.totalScore = totalScore;
     }
 
-    // Getters for relationships (will be uncommented when classes are ready)
-    /*
-    public List<TeamMember> getTeamMemberships() {
-        return teamMemberships;
-    }
-
-    public void setTeamMemberships(List<TeamMember> teamMemberships) {
-        this.teamMemberships = teamMemberships;
-    }
-    */
 
     @Override
     public String toString() {
