@@ -443,7 +443,6 @@ public class Course {
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
         Session session = db.getSessionFactory().openSession();
-//        session.beginTransaction();
 
         List<Project> projectList = session.createQuery(
                         "SELECT p FROM Project p WHERE p.course.courseID = :cid",
@@ -459,19 +458,8 @@ public class Course {
             // Load Sprints + Goals
             p.retrieveSprints();
 
-            // Load Team Members
-//            Team team = p.getTeam();
-//            if (team != null) {
-//                if (!session.contains(team)) {
-//                    team = session.merge(team);
-//                }
-//                if (team.getTeamMember() != null) {
-//                    team.getTeamMember().size();
-//                }
-//            }
         }
 
-//        session.getTransaction().commit();
         session.close();
         db.exit();
     }
