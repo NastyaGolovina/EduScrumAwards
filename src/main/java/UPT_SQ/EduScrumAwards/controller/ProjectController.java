@@ -26,7 +26,6 @@ public class ProjectController {
     public Object listProjects(@PathVariable int courseId) {
         Course c = global.searchCourse(courseId);
         if (c == null) return "Course not found!";
-        // Do NOT reload from DB (singleton global already loaded)
         return c.getProjects();
     }
 
@@ -35,7 +34,7 @@ public class ProjectController {
     public Object getProject(@PathVariable int courseId, @PathVariable int projectId) {
         Course c = global.searchCourse(courseId);
         if (c == null) return "Course not found!";
-        Project p = c.findProjectById(projectId); // uses Course method
+        Project p = c.findProjectById(projectId);
         if (p == null) return "Project not found!";
         return p;
     }
@@ -49,8 +48,8 @@ public class ProjectController {
         Course c = global.searchCourse(courseId);
         if (c == null) return "Course not found!";
 
-        // find team in Global (method name may differ: adapt if needed)
-        Team team = global.searchTeam(teamId); // replace with your actual method if it's findTeam(...)
+        // find team in Global
+        Team team = global.searchTeam(teamId);
         if (team == null) return "Team not found!";
 
         return c.createProject(projectName, team, c);
