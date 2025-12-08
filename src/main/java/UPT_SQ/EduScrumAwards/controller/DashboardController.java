@@ -132,6 +132,59 @@ public class DashboardController {
 
 
 
+    @GetMapping("/students-awards/{studentId}")
+    public List<StudentAwardDTO> getStudentsAwards(
+            @PathVariable long studentId) {
+        List<StudentAwardDTO> studentAwards = new ArrayList<>();
+        for(StudentAward studentAward : global.getStudentsAwards()) {
+            if(studentAward.getStudent().getUserId() == studentId) {
+                studentAwards.add(new StudentAwardDTO(studentAward.getStudentAwardId(),
+                        studentAward.getAward().getAwardName(),
+                        studentAward.getProject().getProjectName(),
+                        studentAward.getDate(),
+                        studentAward.getPoints()));
+            }
+        }
+        return studentAwards;
+    }
+
+    @GetMapping("/course_average/{studentId}")
+    public List<CourseAverageDTO> getCourseAverage(
+            @PathVariable long studentId) {
+        List<CourseAverageDTO> courseAverages = new ArrayList<>();
+        for(Course course : global.getCourses()) {
+            Map<Long, Integer> students = new HashMap<>();
+            for(StudentAward studentAward : global.getStudentsAwards()) {
+                if(studentAward.getProject().getCourse().getCourseID() == course.getCourseID()) {
+                    long userId = studentAward.getStudent().getUserId();
+                    if (students.containsKey(userId)) {
+                        students.put(userId, students.get(userId)
+                                + studentAward.getPoints());
+                    } else {
+                        students.put(userId, studentAward.getPoints());
+                    }
+                }
+            }
+            if(!students.isEmpty()) {
+                int sum = 0;
+                for (Map.Entry<Long, Integer> entry : students.entrySet()) {
+                    sum += entry.getValue();
+                }
+                courseAverages.add(new CourseAverageDTO(course.getCourseID(),
+                        course.getCourseName(),
+                        (double) sum /students.size(),
+                        global.getCourseStudentPointValue(course.getCourseID() , studentId)));
+            }
+        }
+        return courseAverages;
+    }
+
+
+
+
+
+
+
 
 
 }
