@@ -75,6 +75,16 @@ public class Student extends User {
         return this.totalScore;
     }
 
+    public int calculatePoints(ArrayList<StudentAward> studentsAwards) {
+        int points = 0;
+        for(StudentAward studentAward : studentsAwards) {
+            if(studentAward.getStudent().getUserId() == this.getUserId()) {
+                points += studentAward.getPoints();
+            }
+        }
+        return points;
+    }
+
     /**
      * Returns the student's award list
      * TODO: Implement when StudentAward is ready
