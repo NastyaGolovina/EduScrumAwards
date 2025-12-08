@@ -108,5 +108,30 @@ public class DashboardController {
 
 
 
+    @GetMapping("/projects/progress")
+    public List<ProjectsProgressDTO> getAllProjectsProgress() {
+        List<ProjectsProgressDTO> progress = new ArrayList<>();
+        for(Course course : global.getCourses()) {
+            for(Project project : course.getProjects()) {
+                double sum = 0;
+                ArrayList<Sprint> sprints = (ArrayList<Sprint>) project.getSprints();
+                if (!sprints.isEmpty())  {
+                    for (Sprint sprint :sprints) {
+                        sum += sprint.calcCompletionByScore();
+                    }
+                    double completion = sum / sprints.size();
+                    progress.add(new ProjectsProgressDTO(project.getProjectId(),
+                            project.getProjectName(),
+                            completion));
+                }
+
+            }
+        }
+        return progress;
+    }
+
+
+
+
 
 }
