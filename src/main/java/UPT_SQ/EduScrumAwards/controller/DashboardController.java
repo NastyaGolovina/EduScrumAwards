@@ -2,6 +2,7 @@ package UPT_SQ.EduScrumAwards.controller;
 
 
 
+import UPT_SQ.EduScrumAwards.DTO.*;
 import UPT_SQ.EduScrumAwards.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,58 +24,89 @@ public class DashboardController {
         this.global = global;
     }
 
+//    @GetMapping("/students/points")
+//    public Map<Long, Integer> getAllStudents() {
+//        Map<Long, Integer> students = new HashMap<>();
+//        for(User user : global.getUsers()) {
+//            if(UserRole.STUDENT == user.getRole()) {
+//                Student student = (Student) user;
+//                if (students.containsKey(student.getUserId())) {
+//                    students.put(user.getUserId(), students.get(student.getUserId())
+//                            + student.calculatePoints(global.getStudentsAwards()));
+//                } else {
+//                    students.put(user.getUserId(), student.calculatePoints(global.getStudentsAwards()));
+//                }
+//            }
+//        }
+//        Map<Long, Integer> sorted =
+//                students.entrySet()
+//                        .stream()
+//                        .sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
+//                        .collect(Collectors.toMap(
+//                                Map.Entry::getKey,
+//                                Map.Entry::getValue,
+//                                (a, b) -> a,
+//                                LinkedHashMap::new
+//                        ));
+//
+//        return sorted;
+//    }
+
     @GetMapping("/students/points")
-    public Map<Long, Integer> getAllStudents() {
-        Map<Long, Integer> students = new HashMap<>();
-        for(User user : global.getUsers()) {
-            if(UserRole.STUDENT == user.getRole()) {
+    public List<StudentPointsDTO> getAllStudents() {
+        List<StudentPointsDTO> students = new ArrayList<>();
+        for (User user : global.getUsers()) {
+            if (UserRole.STUDENT == user.getRole()) {
                 Student student = (Student) user;
-                if (students.containsKey(student.getUserId())) {
-                    students.put(user.getUserId(), students.get(student.getUserId())
-                            + student.calculatePoints(global.getStudentsAwards()));
-                } else {
-                    students.put(user.getUserId(), student.calculatePoints(global.getStudentsAwards()));
-                }
+                int points = student.calculatePoints(global.getStudentsAwards());
+                students.add(new StudentPointsDTO(student.getUserId(),
+                        student.getName(),student.getStudentNumber(), points));
             }
         }
-        Map<Long, Integer> sorted =
-                students.entrySet()
-                        .stream()
-                        .sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue,
-                                (a, b) -> a,
-                                LinkedHashMap::new
-                        ));
 
-        return sorted;
+        students.sort((a, b) -> b.getPoints().compareTo(a.getPoints()));
+        return students;
     }
+
+
+//    @GetMapping("/teams/points")
+//    public Map<Integer, Integer> getAllTeams() {
+//        Map<Integer, Integer> teams = new HashMap<>();
+//        for(Team team : global.getTeams()) {
+//            int teamId = team.getTeamID();
+//                if (teams.containsKey(teamId)) {
+//                    teams.put(teamId, teams.get(teamId)
+//                            + team.earnAward(global.getStudentsAwards()));
+//                } else {
+//                    teams.put(teamId, team.earnAward(global.getStudentsAwards()));
+//                }
+//        }
+//        Map<Integer, Integer> sorted =
+//                teams.entrySet()
+//                        .stream()
+//                        .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed())
+//                        .collect(Collectors.toMap(
+//                                Map.Entry::getKey,
+//                                Map.Entry::getValue,
+//                                (a, b) -> a,
+//                                LinkedHashMap::new
+//                        ));
+//        return sorted;
+//    }
 
     @GetMapping("/teams/points")
-    public Map<Integer, Integer> getAllTeams() {
-        Map<Integer, Integer> teams = new HashMap<>();
-        for(Team team : global.getTeams()) {
-            int teamId = team.getTeamID();
-                if (teams.containsKey(teamId)) {
-                    teams.put(teamId, teams.get(teamId)
-                            + team.earnAward(global.getStudentsAwards()));
-                } else {
-                    teams.put(teamId, team.earnAward(global.getStudentsAwards()));
-                }
+    public List<TeamPointsDTO> getAllTeams() {
+        List<TeamPointsDTO> teams = new ArrayList<>();
+        for (Team team : global.getTeams()) {
+            int points = team.earnAward(global.getStudentsAwards());
+            teams.add(new TeamPointsDTO(team.getTeamID(), team.getTeamName(), points));
         }
-        Map<Integer, Integer> sorted =
-                teams.entrySet()
-                        .stream()
-                        .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed())
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue,
-                                (a, b) -> a,
-                                LinkedHashMap::new
-                        ));
-        return sorted;
+
+        teams.sort((a, b) -> b.getPoints().compareTo(a.getPoints()));
+        return teams;
     }
+
+
 
 
 }
