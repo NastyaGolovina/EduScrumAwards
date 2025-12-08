@@ -1,5 +1,6 @@
 package UPT_SQ.EduScrumAwards.controller;
 
+import UPT_SQ.EduScrumAwards.DTO.*;
 import UPT_SQ.EduScrumAwards.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,38 +29,83 @@ public class AwardController {
         return global.getAwards();
     }
 
+    @GetMapping("/all/DTO")
+    public List<AwardDTO> getAllDTOAwards() {
+        List<AwardDTO> awardDTOS = new ArrayList<>();
+        for (Award award : global.getAwards()) {
+            awardDTOS.add(new AwardDTO(award.getAwardID(),award.getAwardName(),award.getPointsValue()));
+        }
+        return awardDTOS;
+    }
+
+
+//    @GetMapping("/projects/all")
+//    public List<Project> getAllProject() {
+//        List<Project> projects = new ArrayList<>();
+//        for(Course course : global.getCourses()) {
+//            projects.addAll(course.getProjects());
+//        }
+//        return projects;
+//    }
 
     @GetMapping("/projects/all")
-    public List<Project> getAllProject() {
-        List<Project> projects = new ArrayList<>();
+    public List<ProjectDTO> getAllProject() {
+        List<ProjectDTO> projects = new ArrayList<>();
         for(Course course : global.getCourses()) {
-            projects.addAll(course.getProjects());
+            for(Project project : course.getProjects()) {
+                projects.add(new ProjectDTO(project.getProjectId(), project.getProjectName()));
+            }
         }
         return projects;
     }
 
 
+
     @GetMapping("/teachers/all")
-    public List<Teacher> getAllTeachers() {
-        List<Teacher> teachers = new ArrayList<>();
+    public List<SimpleUserDTO> getAllTeachers() {
+        List<SimpleUserDTO> teachers = new ArrayList<>();
         for(User user : global.getUsers()) {
             if(UserRole.TEACHER == user.getRole()) {
-                teachers.add((Teacher)user);
+                teachers.add(new SimpleUserDTO(user.getUserId(), user.getName()));
             }
         }
         return teachers;
     }
 
     @GetMapping("/students/all")
-    public List<Student> getAllStudents() {
-        List<Student> students = new ArrayList<>();
+    public List<SimpleUserDTO> getAllStudents() {
+        List<SimpleUserDTO> students = new ArrayList<>();
         for(User user : global.getUsers()) {
             if(UserRole.STUDENT == user.getRole()) {
-                students.add((Student)user);
+                students.add(new SimpleUserDTO(user.getUserId(), user.getName()));
             }
         }
         return students;
     }
+
+
+
+//    @GetMapping("/teachers/all")
+//    public List<Teacher> getAllTeachers() {
+//        List<Teacher> teachers = new ArrayList<>();
+//        for(User user : global.getUsers()) {
+//            if(UserRole.TEACHER == user.getRole()) {
+//                teachers.add((Teacher)user);
+//            }
+//        }
+//        return teachers;
+//    }
+//
+//    @GetMapping("/students/all")
+//    public List<Student> getAllStudents() {
+//        List<Student> students = new ArrayList<>();
+//        for(User user : global.getUsers()) {
+//            if(UserRole.STUDENT == user.getRole()) {
+//                students.add((Student)user);
+//            }
+//        }
+//        return students;
+//    }
 
 
 

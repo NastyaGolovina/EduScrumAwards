@@ -99,6 +99,7 @@ public class Team {
         this.teamName = teamName;
     }
     /** @return the list of team members associated with this team */
+    @JsonIgnore
     public List<TeamMember> getTeamMember() {
         return teamMembers;
     }
