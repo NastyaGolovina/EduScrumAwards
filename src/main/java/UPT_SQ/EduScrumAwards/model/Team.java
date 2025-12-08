@@ -385,6 +385,34 @@ public class Team {
         return total;
     }
 
+
+
+    /**
+     * Calculates the total award points earned by this team.
+     *
+     * <p>This method iterates over the provided list of {@link StudentAward}
+     * objects and sums the points of all awards that are associated with
+     * the current team (based on matching team IDs).</p>
+     *
+     * @param awards the list of student awards to evaluate; may contain null entries
+     * @return the total number of points earned by this team
+     */
+    public int earnAward(ArrayList<StudentAward> awards) {
+
+        // get all student awards linked to this team
+//        ArrayList<StudentAward> awards = this.studentsAwards();
+
+        int total = 0;
+        for (StudentAward sa : awards) {
+            if (sa != null && sa.getTeam() != null
+                    && sa.getTeam().getTeamID() == this.teamID) {
+                total += sa.getPoints();
+            }
+        }
+
+        return total;
+    }
+
     /**
      * Checks if a student with the given ID is a member of the team.
      *

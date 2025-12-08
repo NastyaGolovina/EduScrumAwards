@@ -75,6 +75,17 @@ public class Student extends User {
         return this.totalScore;
     }
 
+
+    /**
+     * Calculates the total points earned by this student.
+     *
+     * <p>This method iterates over a list of {@link StudentAward} objects
+     * and sums the points for all awards belonging to the current student
+     * (based on matching user IDs).</p>
+     *
+     * @param studentsAwards the list of student awards to check
+     * @return the total points awarded to this student
+     */
     public int calculatePoints(ArrayList<StudentAward> studentsAwards) {
         int points = 0;
         for(StudentAward studentAward : studentsAwards) {
