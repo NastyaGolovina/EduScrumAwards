@@ -413,66 +413,16 @@ public class Global {
         return null;
     }
 
-    // /**
-    // * Creates a new award rule for the specified project and teacher.
-    // *
-    // * @param completionPercent the completion percentage (0–100)
-    // * @param isAllGoalsCompleted whether all goals must be completed
-    // * @param teacherId the ID of the teacher
-    // * @param projectId the ID of the project
-    // * @param awardId the ID of the award
-    // * @return "Success" if created successfully, or an error message if any field
-    // is invalid or missing
-    // */
-    // // move to api
-    // public String createAwardRule(double completionPercent, boolean
-    // isAllGoalsCompleted, long teacherId, int projectId,int awardId) {
-    // User user = searchUser(teacherId);
-    // Award award = searchAward(awardId);
-    // Project project = null;
-    // for(Course c : courses) {
-    // project =c.findProjectById(projectId);
-    // if(project != null) {
-    // break;
-    // }
-    // }
-    // if(award != null) {
-    // if (user != null) {
-    // if(project != null) {
-    // return
-    // award.createAwardRule(completionPercent,isAllGoalsCompleted,user,project);
-    // }
-    // }
-    // }
-    //
-    // return "ERROR: One of the field is empty or null";
-    //
-    // }
-    //
-    //
-    // /**
-    // * Updates an existing award rule by its identifier.
-    // *
-    // * @param ruleId the ID of the award rule
-    // * @param completionPercent the new completion percentage (0–100)
-    // * @param isAllGoalsCompleted whether all goals must be completed
-    // * @param awardId the ID of the award
-    // * @return "Success" if updated successfully, or an error message if any field
-    // is invalid or missing
-    // */
-    // // move to api
-    // public String updateAwardRule(int ruleId, double completionPercent, boolean
-    // isAllGoalsCompleted, int awardId) {
-    // Award award = searchAward(awardId);
-    //
-    // if(award != null) {
-    // return award.updateAwardRule(ruleId,completionPercent,isAllGoalsCompleted);
-    // }
-    //
-    // return "ERROR: One of the field is empty or null";
-    //
-    // }
-    //
+    public int getCourseStudentPointValue(int courseId , long studentId) {
+        int sum = 0;
+        for (StudentAward studentAward : studentsAwards) {
+            if(studentAward.getStudent().getUserId() == studentId
+                    && studentAward.getProject().getCourse().getCourseID() == courseId){
+                sum += studentAward.getPoints();
+            }
+        }
+        return sum;
+    }
 
     /**
      * Finds a project by its ID across all courses.
@@ -593,7 +543,12 @@ public class Global {
                     project.getTeam(),
 //                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
 //                    Date.from(LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant()),
-                    Date.from(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()),
+//                    Date.from(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()),
+                    Date.from(
+                            LocalDateTime.now()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toInstant()
+                    ),
                     award.getPointsValue());
 
             studentsAwards.add(studentAward);
