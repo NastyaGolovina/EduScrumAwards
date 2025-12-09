@@ -54,12 +54,12 @@ public class Global {
             readAllCourseWithJplq();
             readAllStudentAwardWithJplq();
 
-            System.out.println("✓ Global initialization complete");
-            System.out.println("  - Users: " + users.size());
-            System.out.println("  - Courses: " + courses.size());
-            System.out.println("  - Teams: " + teams.size());
-            System.out.println("  - Awards: " + awards.size());
-            System.out.println("  - Student Awards: " + studentsAwards.size());
+//            System.out.println("✓ Global initialization complete");
+//            System.out.println("  - Users: " + users.size());
+//            System.out.println("  - Courses: " + courses.size());
+//            System.out.println("  - Teams: " + teams.size());
+//            System.out.println("  - Awards: " + awards.size());
+//            System.out.println("  - Student Awards: " + studentsAwards.size());
 
         } catch (Exception e) {
             System.err.println("ERROR during Global initialization: " + e.getMessage());

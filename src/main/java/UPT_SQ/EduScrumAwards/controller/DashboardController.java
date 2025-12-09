@@ -13,12 +13,24 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
+/**
+ * REST controller providing dashboard-related data such as student rankings,
+ * team rankings, project progress, student award history, and course averages.
+ * <p>
+ * This controller aggregates data from multiple models to provide analytics
+ * for reporting and visualization purposes.
+ */
 @RestController
 @RequestMapping("/dashboard")
 public class DashboardController {
 
     private final Global global;
 
+    /**
+     * Constructor for dependency injection.
+     *
+     * @param global the global in-memory datastore containing all awards, users, projects, and teams
+     */
     @Autowired
     public DashboardController(Global global) {
         this.global = global;
@@ -52,6 +64,13 @@ public class DashboardController {
 //        return sorted;
 //    }
 
+
+    /**
+     * Retrieves all students along with their calculated points,
+     * sorted in descending order of total points.
+     *
+     * @return a sorted list of StudentPointsDTO objects
+     */
     @GetMapping("/students/points")
     public List<StudentPointsDTO> getAllStudents() {
         List<StudentPointsDTO> students = new ArrayList<>();
@@ -94,6 +113,12 @@ public class DashboardController {
 //        return sorted;
 //    }
 
+    /**
+     * Retrieves all teams along with their total earned award points,
+     * sorted in descending order.
+     *
+     * @return a sorted list of TeamPointsDTO objects
+     */
     @GetMapping("/teams/points")
     public List<TeamPointsDTO> getAllTeams() {
         List<TeamPointsDTO> teams = new ArrayList<>();
@@ -108,6 +133,12 @@ public class DashboardController {
 
 
 
+    /**
+     * Calculates and returns progress for all projects.
+     * Progress is determined by averaging sprint completion scores.
+     *
+     * @return a list of ProjectsProgressDTO entries
+     */
     @GetMapping("/projects/progress")
     public List<ProjectsProgressDTO> getAllProjectsProgress() {
         List<ProjectsProgressDTO> progress = new ArrayList<>();
@@ -130,8 +161,12 @@ public class DashboardController {
         return progress;
     }
 
-
-
+    /**
+     * Retrieves all awards received by a specific student.
+     *
+     * @param studentId the ID of the student
+     * @return a list of StudentAwardDTO entries containing award history
+     */
     @GetMapping("/students-awards/{studentId}")
     public List<StudentAwardDTO> getStudentsAwards(
             @PathVariable long studentId) {
@@ -148,6 +183,14 @@ public class DashboardController {
         return studentAwards;
     }
 
+
+    /**
+     * Computes the average points of all students for each course
+     * and returns the requesting student's value within that course.
+     *
+     * @param studentId ID of the student for whom individual course average is requested
+     * @return a list of CourseAverageDTO entries containing course averages and student-specific points
+     */
     @GetMapping("/course_average/{studentId}")
     public List<CourseAverageDTO> getCourseAverage(
             @PathVariable long studentId) {
