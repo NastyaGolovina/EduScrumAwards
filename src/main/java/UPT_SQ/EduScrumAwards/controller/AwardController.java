@@ -163,7 +163,6 @@ public class AwardController {
         return global.createAward(name, description, points, assignType, assignMode);
     }
 
-
     /**
      * Updates an existing award.
      *
@@ -180,7 +179,6 @@ public class AwardController {
 
         return global.updateAward(id,name,description);
     }
-
 
     /**
      * Deletes an award by its ID.
