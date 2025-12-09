@@ -48,8 +48,8 @@ public class Global {
         try {
             System.out.println("Initializing Global...");
 
-            readAllTeamWithJplq();
             readAllUserWithJplq();
+            readAllTeamWithJplq();
             readAllAwardWithJplq();
             readAllCourseWithJplq();
             readAllStudentAwardWithJplq();
@@ -1189,21 +1189,29 @@ public class Global {
      *         error message if any validation fails.
      */
     public String createTeacher(String name, String login, String password) {
-        if (name == null || name.isEmpty())
+        if (name == null || name.trim().isEmpty())
             return "ERROR: Name is empty!";
-        if (login == null || login.isEmpty())
+        if (login == null || login.trim().isEmpty())
             return "ERROR: Login is empty!";
-        if (password == null || password.isEmpty())
+        if (password == null || password.trim().isEmpty())
             return "ERROR: Password is empty!";
         if (name.length() > 100)
             return "ERROR: Name is too long!";
         if (login.length() > 50)
             return "ERROR: Login is too long!";
-        if (password.length() > 255)
-            return "ERROR: Password is too long!";
 
-        // Check if login already exists
-        if (findUserByLogin(login) != null) {
+
+        if (!isValidEmailFormat(login)) {
+            return "ERROR: Login must be a valid email address!";
+        }
+
+
+        if (!isPasswordValid(password)) {
+            return "ERROR: Password must be at least 6 characters and maximum 255!";
+        }
+
+        // Check if login already exists (using the faster method)
+        if (isLoginAlreadyUsed(login)) {
             return "ERROR: Login already exists!";
         }
 
@@ -1247,13 +1255,13 @@ public class Global {
      */
     public String createStudent(String name, String login, String password, String studentNumber,
             Integer currentSemester) {
-        if (name == null || name.isEmpty())
+        if (name == null || name.trim().isEmpty())
             return "ERROR: Name is empty!";
-        if (login == null || login.isEmpty())
+        if (login == null || login.trim().isEmpty())
             return "ERROR: Login is empty!";
-        if (password == null || password.isEmpty())
+        if (password == null || password.trim().isEmpty())
             return "ERROR: Password is empty!";
-        if (studentNumber == null || studentNumber.isEmpty())
+        if (studentNumber == null || studentNumber.trim().isEmpty())
             return "ERROR: Student number is empty!";
         if (currentSemester == null || currentSemester < 1)
             return "ERROR: Current semester must be at least 1!";
@@ -1261,13 +1269,20 @@ public class Global {
             return "ERROR: Name is too long!";
         if (login.length() > 50)
             return "ERROR: Login is too long!";
-        if (password.length() > 255)
-            return "ERROR: Password is too long!";
         if (studentNumber.length() > 20)
             return "ERROR: Student number is too long!";
 
+
+        if (!isValidEmailFormat(login)) {
+            return "ERROR: Login must be a valid email address!";
+        }
+
+        if (!isPasswordValid(password)) {
+            return "ERROR: Password must be at least 6 characters and maximum 255!";
+        }
+
         // Check if login already exists
-        if (findUserByLogin(login) != null) {
+        if (isLoginAlreadyUsed(login)) {
             return "ERROR: Login already exists!";
         }
 
@@ -1275,7 +1290,6 @@ public class Global {
         if (findStudentByNumber(studentNumber) != null) {
             return "ERROR: Student number already exists!";
         }
-
         Student newStudent = new Student(name, login, password, studentNumber, currentSemester);
         users.add(newStudent);
 
@@ -1460,28 +1474,39 @@ public class Global {
 
         Teacher teacher = (Teacher) user;
 
-        if (name == null || name.isEmpty())
+        if (name == null || name.trim().isEmpty())
             return "ERROR: Name is empty!";
-        if (login == null || login.isEmpty())
+        if (login == null || login.trim().isEmpty())
             return "ERROR: Login is empty!";
-        if (password == null || password.isEmpty())
-            return "ERROR: Password is empty!";
         if (name.length() > 100)
             return "ERROR: Name is too long!";
         if (login.length() > 50)
             return "ERROR: Login is too long!";
-        if (password.length() > 255)
-            return "ERROR: Password is too long!";
+
+        // ✅ VALIDAÇÃO DE EMAIL (adicionar)
+        if (!isValidEmailFormat(login)) {
+            return "ERROR: Login must be a valid email address!";
+        }
+
+        // Se senha for fornecida, validar
+        String finalPassword = teacher.getPassword(); // manter senha atual por padrão
+        if (password != null && !password.trim().isEmpty()) {
+            // ✅ VALIDAÇÃO DE SENHA (adicionar)
+            if (!isPasswordValid(password)) {
+                return "ERROR: Password must be at least 6 characters and maximum 255!";
+            }
+            finalPassword = password;
+        }
 
         // Check if login already exists for another user
-        User existingUser = findUserByLogin(login);
-        if (existingUser != null && existingUser.getUserId() != userId) {
+        User existingUser = findUserByLoginInMemory(login);
+        if (existingUser != null && !existingUser.getUserId().equals(userId)) {
             return "ERROR: Login already exists for another user!";
         }
 
         teacher.setName(name);
         teacher.setLogin(login);
-        teacher.setPassword(password);
+        teacher.setPassword(finalPassword);
 
         DatabaseHelper databaseHelper = new DatabaseHelper();
         databaseHelper.setup();
@@ -1528,13 +1553,11 @@ public class Global {
 
         Student student = (Student) user;
 
-        if (name == null || name.isEmpty())
+        if (name == null || name.trim().isEmpty())
             return "ERROR: Name is empty!";
-        if (login == null || login.isEmpty())
+        if (login == null || login.trim().isEmpty())
             return "ERROR: Login is empty!";
-        if (password == null || password.isEmpty())
-            return "ERROR: Password is empty!";
-        if (studentNumber == null || studentNumber.isEmpty())
+        if (studentNumber == null || studentNumber.trim().isEmpty())
             return "ERROR: Student number is empty!";
         if (currentSemester == null || currentSemester < 1)
             return "ERROR: Current semester must be at least 1!";
@@ -1542,13 +1565,29 @@ public class Global {
             return "ERROR: Name is too long!";
         if (login.length() > 50)
             return "ERROR: Login is too long!";
-        if (password.length() > 255)
-            return "ERROR: Password is too long!";
         if (studentNumber.length() > 20)
             return "ERROR: Student number is too long!";
 
+        // ✅ VALIDAÇÃO DE EMAIL (adicionar)
+        if (!isValidEmailFormat(login)) {
+            return "ERROR: Login must be a valid email address!";
+        }
+
+        // Se senha for fornecida, validar
+        String finalPassword = student.getPassword(); // manter senha atual por padrão
+        if (password != null && !password.trim().isEmpty()) {
+            // ✅ VALIDAÇÃO DE SENHA (adicionar)
+            if (!isPasswordValid(password)) {
+                return "ERROR: Password must be at least 6 characters and maximum 255!";
+            }
+            finalPassword = password;
+        } else {
+            // Se a senha não for fornecida, mantemos a senha atual
+            finalPassword = student.getPassword();
+        }
+
         // Check if login already exists for another user
-        User existingUser = findUserByLogin(login);
+        User existingUser = findUserByLoginInMemory(login);
         if (existingUser != null && existingUser.getUserId() != userId) {
             return "ERROR: Login already exists for another user!";
         }
@@ -1561,7 +1600,7 @@ public class Global {
 
         student.setName(name);
         student.setLogin(login);
-        student.setPassword(password);
+        student.setPassword(finalPassword);
         student.setStudentNumber(studentNumber);
         student.setCurrentSemester(currentSemester);
 
@@ -1695,6 +1734,99 @@ public class Global {
         }
     }
 
+    // =============================================
+// VALIDAÇÃO DE LOGIN E SENHA (VERSÃO SIMPLIFICADA)
+// =============================================
+
+    /**
+     * Valida as credenciais de login
+     * @return Usuário se válido, null se inválido
+     */
+    public User validateLogin(String login, String password) {
+        // Verificar campos vazios
+        if (login == null || login.trim().isEmpty()) {
+            System.out.println("ERROR: Login is empty");
+            return null;
+        }
+
+        if (password == null || password.trim().isEmpty()) {
+            System.out.println("ERROR: Password is empty");
+            return null;
+        }
+
+        // Procurar usuário
+        for (User user : users) {
+            if (user.getLogin().equals(login)) {
+                if (user.getPassword().equals(password)) {
+                    System.out.println("SUCCESS: Login válido para " + user.getName());
+                    return user;
+                } else {
+                    System.out.println("ERROR: Senha incorreta para " + login);
+                    return null;
+                }
+            }
+        }
+
+        System.out.println("ERROR: Usuário não encontrado: " + login);
+        return null;
+    }
+
+    /**
+     * Verifica se um login já está em uso
+     */
+    public boolean isLoginAlreadyUsed(String login) {
+        if (login == null || login.trim().isEmpty()) {
+            return false;
+        }
+
+        for (User user : users) {
+            if (user.getLogin().equalsIgnoreCase(login.trim())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Valida formato básico de email
+     */
+    public boolean isValidEmailFormat(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+
+        // Regex básica para email
+        return email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
+    }
+
+    /**
+     * Valida requisitos mínimos da senha
+     */
+    public boolean isPasswordValid(String password) {
+        if (password == null || password.trim().isEmpty()) {
+            return false;
+        }
+
+        // Mínimo 6 caracteres, máximo 255
+        return password.length() >= 6 && password.length() <= 255;
+    }
+
+    /**
+     * Busca usuário pelo login na lista em memória (mais rápido)
+     */
+    public User findUserByLoginInMemory(String login) {
+        if (login == null || login.trim().isEmpty()) {
+            return null;
+        }
+
+        for (User user : users) {
+            if (user.getLogin().equalsIgnoreCase(login.trim())) {
+                return user;
+            }
+        }
+        return null;
+    }
     // =============================================
     // END OF CRUD METHODS - USER, TEACHER AND STUDENT
     // =============================================

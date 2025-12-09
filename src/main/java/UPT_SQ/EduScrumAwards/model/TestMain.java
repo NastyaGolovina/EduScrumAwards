@@ -679,6 +679,7 @@ public class TestMain {
             System.out.println("11  - TEST CREATE COURSE");
             System.out.println("12  - TEST DELETE COURSE");
             System.out.println("13  - TEST USER DELETION WITH ASSOCIATIONS");
+            System.out.println("14  - TESTAR VALIDAÇÕES DE LOGIN E CRUD DE USUÁRIO");
             System.out.println("0️⃣  - EXIT");
             System.out.print("\nChoose an option: ");
 
@@ -724,6 +725,9 @@ public class TestMain {
                     break;
                 case 13:
                     testUserDeletionWithAssociations();
+                    break;
+                case 14:
+                    testLoginAndUserCRUDMenu();
                     break;
                 case 0:
                     continueProgram = false;
@@ -1532,6 +1536,799 @@ public class TestMain {
         } else {
             System.out.print("Course not found!");
         }
+    }
+
+    // Adicione este método à sua classe TestMain
+
+    /**
+     * Menu interativo para testar validações de login e CRUD de usuário
+     */
+    private static void testLoginAndUserCRUDMenu() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 MENU DE VALIDAÇÕES DE LOGIN E CRUD DE USUÁRIO");
+        System.out.println("🎯 ===========================================");
+
+        boolean continuar = true;
+
+        while (continuar) {
+            System.out.println("\n📋 MENU PRINCIPAL:");
+            System.out.println("1️⃣  - VALIDAR EMAIL E SENHA (Login)");
+            System.out.println("2️⃣  - VERIFICAR DISPONIBILIDADE DE LOGIN");
+            System.out.println("3️⃣  - CRIAR NOVO TEACHER");
+            System.out.println("4️⃣  - CRIAR NOVO STUDENT");
+            System.out.println("5️⃣  - LISTAR TODOS OS USUÁRIOS");
+            System.out.println("6️⃣  - BUSCAR USUÁRIO POR ID");
+            System.out.println("7️⃣  - ATUALIZAR TEACHER");
+            System.out.println("8️⃣  - ATUALIZAR STUDENT");
+            System.out.println("9️⃣  - DELETAR USUÁRIO");
+            System.out.println("🔟  - VERIFICAR SE USUÁRIO PODE SER DELETADO");
+            System.out.println("11  - TESTAR VALIDAÇÃO DE SENHA");
+            System.out.println("12  - TESTAR VALIDAÇÃO DE EMAIL");
+            System.out.println("13  - ESTATÍSTICAS DO SISTEMA");
+            System.out.println("0️⃣  - VOLTAR AO MENU PRINCIPAL");
+            System.out.print("\nEscolha uma opção: ");
+
+            try {
+                int opcao = scanner.nextInt();
+                scanner.nextLine(); // Limpar buffer
+
+                switch (opcao) {
+                    case 1:
+                        testarValidacaoLogin();
+                        break;
+                    case 2:
+                        testarDisponibilidadeLogin();
+                        break;
+                    case 3:
+                        criarTeacher();
+                        break;
+                    case 4:
+                        criarStudent();
+                        break;
+                    case 5:
+                        listarTodosUsuarios();
+                        break;
+                    case 6:
+                        buscarUsuarioPorId();
+                        break;
+                    case 7:
+                        atualizarTeacher();
+                        break;
+                    case 8:
+                        atualizarStudent();
+                        break;
+                    case 9:
+                        deletarUsuario();
+                        break;
+                    case 10:
+                        verificarDeletabilidade();
+                        break;
+                    case 11:
+                        testarValidacaoSenha();
+                        break;
+                    case 12:
+                        testarValidacaoEmail();
+                        break;
+                    case 13:
+                        exibirEstatisticas();
+                        break;
+                    case 0:
+                        continuar = false;
+                        System.out.println("\n🔙 Retornando ao menu principal...");
+                        break;
+                    default:
+                        System.out.println("❌ Opção inválida!");
+                }
+
+                if (continuar && opcao != 0) {
+                    System.out.print("\n⏸️  Pressione ENTER para continuar...");
+                    scanner.nextLine();
+                }
+
+            } catch (Exception e) {
+                System.out.println("❌ Erro na entrada: " + e.getMessage());
+                scanner.nextLine(); // Limpar buffer
+            }
+        }
+    }
+
+// =============================================
+// MÉTODOS DE TESTE PARA AS FUNCIONALIDADES
+// =============================================
+
+    /**
+     * Testa a validação de login (email e senha)
+     */
+    private static void testarValidacaoLogin() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 TESTANDO VALIDAÇÃO DE LOGIN");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("Digite o email/login: ");
+        String login = scanner.nextLine();
+
+        System.out.print("Digite a senha: ");
+        String senha = scanner.nextLine();
+
+        User usuario = global.validateLogin(login, senha);
+
+        if (usuario != null) {
+            System.out.println("\n✅ LOGIN VÁLIDO!");
+            System.out.println("👤 Usuário autenticado:");
+            System.out.println("   Nome: " + usuario.getName());
+            System.out.println("   ID: " + usuario.getUserId());
+            System.out.println("   Tipo: " + usuario.getRole());
+            System.out.println("   Login: " + usuario.getLogin());
+        } else {
+            System.out.println("\n❌ LOGIN INVÁLIDO!");
+            System.out.println("Verifique seu email e senha.");
+        }
+    }
+
+    /**
+     * Testa a disponibilidade de um login
+     */
+    private static void testarDisponibilidadeLogin() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 TESTANDO DISPONIBILIDADE DE LOGIN");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("Digite o login/email para verificar: ");
+        String login = scanner.nextLine();
+
+        boolean disponivel = !global.isLoginAlreadyUsed(login);
+
+        if (disponivel) {
+            System.out.println("\n✅ Login '" + login + "' está DISPONÍVEL!");
+        } else {
+            System.out.println("\n❌ Login '" + login + "' já está EM USO!");
+        }
+    }
+
+    /**
+     * Cria um novo Teacher com validações
+     */
+    private static void criarTeacher() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 CRIANDO NOVO TEACHER");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("Nome do Teacher: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Email/login: ");
+        String login = scanner.nextLine();
+
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+
+        System.out.print("Confirme a senha: ");
+        String confirmarSenha = scanner.nextLine();
+
+        // Validações
+        if (!senha.equals(confirmarSenha)) {
+            System.out.println("\n❌ ERRO: As senhas não coincidem!");
+            return;
+        }
+
+        if (!global.isValidEmailFormat(login)) {
+            System.out.println("\n❌ ERRO: Formato de email inválido!");
+            return;
+        }
+
+        if (!global.isPasswordValid(senha)) {
+            System.out.println("\n❌ ERRO: Senha deve ter 6-255 caracteres!");
+            return;
+        }
+
+        if (global.isLoginAlreadyUsed(login)) {
+            System.out.println("\n❌ ERRO: Este login já está em uso!");
+            return;
+        }
+
+        System.out.println("\n⏳ Criando teacher...");
+        String resultado = global.createTeacher(nome, login, senha);
+
+        if (resultado.equals("Success")) {
+            System.out.println("\n✅ TEACHER CRIADO COM SUCESSO!");
+            System.out.println("📋 Detalhes:");
+            System.out.println("   Nome: " + nome);
+            System.out.println("   Login: " + login);
+            System.out.println("   Tipo: TEACHER");
+
+            // Recarregar lista de usuários
+            global.readAllUserWithJplq();
+        } else {
+            System.out.println("\n❌ ERRO ao criar teacher: " + resultado);
+        }
+    }
+
+    /**
+     * Cria um novo Student com validações
+     */
+    private static void criarStudent() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 CRIANDO NOVO STUDENT");
+        System.out.println("🎯 ===========================================");
+        System.out.println();
+        scanner.nextLine(); // Limpar buffer
+        System.out.print("Nome do Student: ");
+        String nome = scanner.nextLine();
+        System.out.println();
+        System.out.print("Email/login: ");
+        String login = scanner.nextLine();
+        System.out.println();
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+        System.out.println();
+        System.out.print("Confirme a senha: ");
+        String confirmarSenha = scanner.nextLine();
+
+        System.out.print("Número de estudante: ");
+        String numeroEstudante = scanner.nextLine();
+        System.out.println();
+        System.out.print("Semestre atual: ");
+        int semestre;
+
+        try {
+            semestre = scanner.nextInt();
+            scanner.nextLine(); // Limpar buffer
+        } catch (Exception e) {
+            System.out.println("\n❌ ERRO: Semestre deve ser um número!");
+            scanner.nextLine(); // Limpar buffer
+            return;
+        }
+
+        // Validações
+        if (!senha.equals(confirmarSenha)) {
+            System.out.println("\n❌ ERRO: As senhas não coincidem!");
+            return;
+        }
+
+        if (!global.isValidEmailFormat(login)) {
+            System.out.println("\n❌ ERRO: Formato de email inválido!");
+            return;
+        }
+
+        if (!global.isPasswordValid(senha)) {
+            System.out.println("\n❌ ERRO: Senha deve ter 6-255 caracteres!");
+            return;
+        }
+
+        if (global.isLoginAlreadyUsed(login)) {
+            System.out.println("\n❌ ERRO: Este login já está em uso!");
+            return;
+        }
+
+        // Verificar se número de estudante já existe
+        // Precisamos implementar um método para isso
+        // Por enquanto, vamos criar sem essa validação
+
+        System.out.println("\n⏳ Criando student...");
+        String resultado = global.createStudent(nome, login, senha, numeroEstudante, semestre);
+
+        if (resultado.equals("Success")) {
+            System.out.println("\n✅ STUDENT CRIADO COM SUCESSO!");
+            System.out.println("📋 Detalhes:");
+            System.out.println("   Nome: " + nome);
+            System.out.println("   Login: " + login);
+            System.out.println("   Número de estudante: " + numeroEstudante);
+            System.out.println("   Semestre: " + semestre);
+            System.out.println("   Tipo: STUDENT");
+
+            // Recarregar lista de usuários
+            global.readAllUserWithJplq();
+        } else {
+            System.out.println("\n❌ ERRO ao criar student: " + resultado);
+        }
+    }
+
+    /**
+     * Lista todos os usuários do sistema
+     */
+    private static void listarTodosUsuarios() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 LISTANDO TODOS OS USUÁRIOS");
+        System.out.println("🎯 ===========================================");
+
+        // Garantir que temos dados atualizados
+        global.readAllUserWithJplq();
+
+        if (global.getUsers().isEmpty()) {
+            System.out.println("📭 Nenhum usuário cadastrado no sistema.");
+            return;
+        }
+
+        System.out.println("\n👥 TOTAL DE USUÁRIOS: " + global.getUsers().size());
+        System.out.println("--------------------------------------------");
+
+        int contador = 1;
+        for (User user : global.getUsers()) {
+            String tipo = user.getRole() == UserRole.TEACHER ? "TEACHER" : "STUDENT";
+            System.out.println("\n" + contador + ". 👤 " + user.getName());
+            System.out.println("   🆔 ID: " + user.getUserId());
+            System.out.println("   📧 Login: " + user.getLogin());
+            System.out.println("   👥 Tipo: " + tipo);
+
+            if (user instanceof Student) {
+                Student student = (Student) user;
+                System.out.println("   🎓 Número: " + student.getStudentNumber());
+                System.out.println("   📅 Semestre: " + student.getCurrentSemester());
+            }
+
+            contador++;
+        }
+    }
+
+    /**
+     * Busca um usuário por ID
+     */
+    private static void buscarUsuarioPorId() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 BUSCAR USUÁRIO POR ID");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("Digite o ID do usuário: ");
+
+        try {
+            long id = scanner.nextLong();
+            scanner.nextLine(); // Limpar buffer
+
+            User usuario = global.searchUser(id);
+
+            if (usuario != null) {
+                String tipo = usuario.getRole() == UserRole.TEACHER ? "TEACHER" : "STUDENT";
+
+                System.out.println("\n✅ USUÁRIO ENCONTRADO!");
+                System.out.println("📋 Detalhes:");
+                System.out.println("   👤 Nome: " + usuario.getName());
+                System.out.println("   🆔 ID: " + usuario.getUserId());
+                System.out.println("   📧 Login: " + usuario.getLogin());
+                System.out.println("   👥 Tipo: " + tipo);
+
+                if (usuario instanceof Student) {
+                    Student student = (Student) usuario;
+                    System.out.println("   🎓 Número: " + student.getStudentNumber());
+                    System.out.println("   📅 Semestre: " + student.getCurrentSemester());
+                }
+            } else {
+                System.out.println("\n❌ Usuário não encontrado com ID: " + id);
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ ERRO: ID deve ser um número!");
+            scanner.nextLine(); // Limpar buffer
+        }
+    }
+
+    /**
+     * Atualiza um Teacher existente
+     */
+    private static void atualizarTeacher() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 ATUALIZAR TEACHER");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("ID do Teacher a atualizar: ");
+
+        try {
+            long id = scanner.nextLong();
+            scanner.nextLine(); // Limpar buffer
+
+            User usuario = global.searchUser(id);
+
+            if (usuario == null || !(usuario instanceof Teacher)) {
+                System.out.println("\n❌ Teacher não encontrado com ID: " + id);
+                return;
+            }
+
+            Teacher teacher = (Teacher) usuario;
+
+            System.out.println("\n📋 Dados atuais do Teacher:");
+            System.out.println("   Nome: " + teacher.getName());
+            System.out.println("   Login: " + teacher.getLogin());
+
+            System.out.println("\n📝 Digite os novos dados:");
+            System.out.print("Novo nome (ou pressione ENTER para manter '" + teacher.getName() + "'): ");
+            String novoNome = scanner.nextLine();
+
+            System.out.print("Novo login (ou pressione ENTER para manter '" + teacher.getLogin() + "'): ");
+            String novoLogin = scanner.nextLine();
+
+            System.out.print("Nova senha (ou pressione ENTER para não alterar): ");
+            String novaSenha = scanner.nextLine();
+
+            // Usar valores atuais se não forem fornecidos
+            if (novoNome.trim().isEmpty()) {
+                novoNome = teacher.getName();
+            }
+
+            if (novoLogin.trim().isEmpty()) {
+                novoLogin = teacher.getLogin();
+            }
+
+            // Validações
+            if (!global.isValidEmailFormat(novoLogin)) {
+                System.out.println("\n❌ ERRO: Formato de email inválido!");
+                return;
+            }
+
+            if (!novaSenha.trim().isEmpty() && !global.isPasswordValid(novaSenha)) {
+                System.out.println("\n❌ ERRO: Senha deve ter 6-255 caracteres!");
+                return;
+            }
+
+            // Verificar se novo login já existe para outro usuário
+            User usuarioExistente = global.findUserByLoginInMemory(novoLogin);
+            if (usuarioExistente != null && usuarioExistente.getUserId() != id) {
+                System.out.println("\n❌ ERRO: Este login já está em uso por outro usuário!");
+                return;
+            }
+
+            System.out.println("\n⏳ Atualizando teacher...");
+            String resultado = global.updateTeacher(id, novoNome, novoLogin,
+                    novaSenha.trim().isEmpty() ? null : novaSenha);
+
+            if (resultado.equals("Success")) {
+                System.out.println("\n✅ TEACHER ATUALIZADO COM SUCESSO!");
+                System.out.println("📋 Dados atualizados:");
+                System.out.println("   Nome: " + novoNome);
+                System.out.println("   Login: " + novoLogin);
+                System.out.println("   Senha: " + (novaSenha.trim().isEmpty() ? "MANTIDA" : "ALTERADA"));
+
+                // Recarregar lista de usuários
+                global.readAllUserWithJplq();
+            } else {
+                System.out.println("\n❌ ERRO ao atualizar teacher: " + resultado);
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ ERRO: ID deve ser um número!");
+            scanner.nextLine(); // Limpar buffer
+        }
+    }
+
+    /**
+     * Atualiza um Student existente
+     */
+    private static void atualizarStudent() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 ATUALIZAR STUDENT");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("ID do Student a atualizar: ");
+
+        try {
+            long id = scanner.nextLong();
+            scanner.nextLine(); // Limpar buffer
+
+            User usuario = global.searchUser(id);
+
+            if (usuario == null || !(usuario instanceof Student)) {
+                System.out.println("\n❌ Student não encontrado com ID: " + id);
+                return;
+            }
+
+            Student student = (Student) usuario;
+
+            System.out.println("\n📋 Dados atuais do Student:");
+            System.out.println("   Nome: " + student.getName());
+            System.out.println("   Login: " + student.getLogin());
+            System.out.println("   Número: " + student.getStudentNumber());
+            System.out.println("   Semestre: " + student.getCurrentSemester());
+
+            System.out.println("\n📝 Digite os novos dados:");
+            System.out.print("Novo nome (ou pressione ENTER para manter '" + student.getName() + "'): ");
+            String novoNome = scanner.nextLine();
+
+            System.out.print("Novo login (ou pressione ENTER para manter '" + student.getLogin() + "'): ");
+            String novoLogin = scanner.nextLine();
+
+            System.out.print("Nova senha (ou pressione ENTER para não alterar): ");
+            String novaSenha = scanner.nextLine();
+
+            System.out.print("Novo número de estudante (ou pressione ENTER para manter '" + student.getStudentNumber() + "'): ");
+            String novoNumero = scanner.nextLine();
+
+            System.out.print("Novo semestre (ou pressione ENTER para manter " + student.getCurrentSemester() + "): ");
+            String novoSemestreStr = scanner.nextLine();
+
+            // Usar valores atuais se não forem fornecidos
+            if (novoNome.trim().isEmpty()) {
+                novoNome = student.getName();
+            }
+
+            if (novoLogin.trim().isEmpty()) {
+                novoLogin = student.getLogin();
+            }
+
+            if (novoNumero.trim().isEmpty()) {
+                novoNumero = student.getStudentNumber();
+            }
+
+            int novoSemestre = student.getCurrentSemester();
+            if (!novoSemestreStr.trim().isEmpty()) {
+                try {
+                    novoSemestre = Integer.parseInt(novoSemestreStr);
+                } catch (NumberFormatException e) {
+                    System.out.println("❌ ERRO: Semestre deve ser um número!");
+                    return;
+                }
+            }
+
+            // Validações
+            if (!global.isValidEmailFormat(novoLogin)) {
+                System.out.println("\n❌ ERRO: Formato de email inválido!");
+                return;
+            }
+
+            if (!novaSenha.trim().isEmpty() && !global.isPasswordValid(novaSenha)) {
+                System.out.println("\n❌ ERRO: Senha deve ter 6-255 caracteres!");
+                return;
+            }
+
+            // Verificar se novo login já existe para outro usuário
+            User usuarioExistente = global.findUserByLoginInMemory(novoLogin);
+            if (usuarioExistente != null && usuarioExistente.getUserId() != id) {
+                System.out.println("\n❌ ERRO: Este login já está em uso por outro usuário!");
+                return;
+            }
+
+            System.out.println("\n⏳ Atualizando student...");
+            String resultado = global.updateStudent(id, novoNome, novoLogin,
+                    novaSenha.trim().isEmpty() ? null : novaSenha,
+                    novoNumero, novoSemestre);
+
+            if (resultado.equals("Success")) {
+                System.out.println("\n✅ STUDENT ATUALIZADO COM SUCESSO!");
+                System.out.println("📋 Dados atualizados:");
+                System.out.println("   Nome: " + novoNome);
+                System.out.println("   Login: " + novoLogin);
+                System.out.println("   Senha: " + (novaSenha.trim().isEmpty() ? "MANTIDA" : "ALTERADA"));
+                System.out.println("   Número: " + novoNumero);
+                System.out.println("   Semestre: " + novoSemestre);
+
+                // Recarregar lista de usuários
+                global.readAllUserWithJplq();
+            } else {
+                System.out.println("\n❌ ERRO ao atualizar student: " + resultado);
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ ERRO: ID deve ser um número!");
+            scanner.nextLine(); // Limpar buffer
+        }
+    }
+
+    /**
+     * Deleta um usuário (Teacher ou Student)
+     */
+    private static void deletarUsuario() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 DELETAR USUÁRIO");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("ID do usuário a deletar: ");
+
+        try {
+            long id = scanner.nextLong();
+            scanner.nextLine(); // Limpar buffer
+
+            User usuario = global.searchUser(id);
+
+            if (usuario == null) {
+                System.out.println("\n❌ Usuário não encontrado com ID: " + id);
+                return;
+            }
+
+            String tipo = usuario.getRole() == UserRole.TEACHER ? "TEACHER" : "STUDENT";
+
+            System.out.println("\n⚠️  CONFIRMAÇÃO DE EXCLUSÃO");
+            System.out.println("Usuário a ser excluído:");
+            System.out.println("   👤 Nome: " + usuario.getName());
+            System.out.println("   🆔 ID: " + usuario.getUserId());
+            System.out.println("   📧 Login: " + usuario.getLogin());
+            System.out.println("   👥 Tipo: " + tipo);
+
+            if (usuario instanceof Student) {
+                Student student = (Student) usuario;
+                System.out.println("   🎓 Número: " + student.getStudentNumber());
+            }
+
+            System.out.print("\nTem certeza que deseja excluir este usuário? (S/N): ");
+            String confirmacao = scanner.nextLine().trim().toLowerCase();
+
+            if (!confirmacao.equals("s") && !confirmacao.equals("sim")) {
+                System.out.println("❌ Exclusão cancelada pelo usuário.");
+                return;
+            }
+
+            System.out.println("\n⏳ Verificando se usuário pode ser excluído...");
+            boolean podeDeletar = global.canDeleteUser(id);
+
+            if (!podeDeletar) {
+                System.out.println("\n❌ ATENÇÃO: Este usuário NÃO pode ser excluído!");
+                System.out.println("Motivo: O usuário está associado a outras entidades no sistema.");
+                System.out.println("Para excluir, primeiro remova as associações:");
+
+                if (usuario instanceof Teacher) {
+                    System.out.println("   • Remova o professor dos cursos (CourseTeacher)");
+                    System.out.println("   • Remova os prêmios atribuídos por este professor");
+                } else if (usuario instanceof Student) {
+                    System.out.println("   • Remova o aluno das equipes (TeamMember)");
+                    System.out.println("   • Remova os prêmios recebidos por este aluno");
+                }
+
+                return;
+            }
+
+            System.out.println("\n⏳ Excluindo usuário...");
+            String resultado = global.deleteUser(id);
+
+            if (resultado.equals("Success")) {
+                System.out.println("\n✅ USUÁRIO EXCLUÍDO COM SUCESSO!");
+
+                // Recarregar lista de usuários
+                global.readAllUserWithJplq();
+            } else {
+                System.out.println("\n❌ ERRO ao excluir usuário: " + resultado);
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ ERRO: ID deve ser um número!");
+            scanner.nextLine(); // Limpar buffer
+        }
+    }
+
+    /**
+     * Verifica se um usuário pode ser deletado
+     */
+    private static void verificarDeletabilidade() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 VERIFICAR SE USUÁRIO PODE SER DELETADO");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("ID do usuário para verificar: ");
+
+        try {
+            long id = scanner.nextLong();
+            scanner.nextLine(); // Limpar buffer
+
+            User usuario = global.searchUser(id);
+
+            if (usuario == null) {
+                System.out.println("\n❌ Usuário não encontrado com ID: " + id);
+                return;
+            }
+
+            String tipo = usuario.getRole() == UserRole.TEACHER ? "TEACHER" : "STUDENT";
+
+            System.out.println("\n🔍 ANALISANDO USUÁRIO:");
+            System.out.println("   👤 Nome: " + usuario.getName());
+            System.out.println("   🆔 ID: " + usuario.getUserId());
+            System.out.println("   👥 Tipo: " + tipo);
+
+            boolean podeDeletar = global.canDeleteUser(id);
+
+            if (podeDeletar) {
+                System.out.println("\n✅ RESULTADO: PODE SER DELETADO");
+                System.out.println("Este usuário não tem associações com outras entidades.");
+            } else {
+                System.out.println("\n❌ RESULTADO: NÃO PODE SER DELETADO");
+                System.out.println("Este usuário está associado a outras entidades:");
+
+                if (usuario instanceof Teacher) {
+                    System.out.println("   • Está associado a cursos (CourseTeacher)");
+                    System.out.println("   • Atribuiu prêmios a alunos (StudentAward)");
+                } else if (usuario instanceof Student) {
+                    System.out.println("   • É membro de equipes (TeamMember)");
+                    System.out.println("   • Recebeu prêmios (StudentAward)");
+                }
+
+                System.out.println("\n⚠️  Para excluir este usuário, primeiro remova essas associações.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ ERRO: ID deve ser um número!");
+            scanner.nextLine(); // Limpar buffer
+        }
+    }
+
+    /**
+     * Testa a validação de senha
+     */
+    private static void testarValidacaoSenha() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 TESTANDO VALIDAÇÃO DE SENHA");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("Digite uma senha para testar: ");
+        String senha = scanner.nextLine();
+
+        boolean valida = global.isPasswordValid(senha);
+
+        if (valida) {
+            System.out.println("\n✅ SENHA VÁLIDA!");
+            System.out.println("A senha atende aos requisitos:");
+            System.out.println("   • Tem entre 6 e 255 caracteres");
+        } else {
+            System.out.println("\n❌ SENHA INVÁLIDA!");
+            System.out.println("Requisitos da senha:");
+            System.out.println("   • Mínimo 6 caracteres");
+            System.out.println("   • Máximo 255 caracteres");
+
+            if (senha.length() < 6) {
+                System.out.println("   ⚠️  Sua senha tem apenas " + senha.length() + " caracteres");
+            } else if (senha.length() > 255) {
+                System.out.println("   ⚠️  Sua senha tem " + senha.length() + " caracteres (muito longa)");
+            }
+        }
+    }
+
+    /**
+     * Testa a validação de email
+     */
+    private static void testarValidacaoEmail() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 TESTANDO VALIDAÇÃO DE EMAIL");
+        System.out.println("🎯 ===========================================");
+
+        System.out.print("Digite um email para testar: ");
+        String email = scanner.nextLine();
+
+        boolean valido = global.isValidEmailFormat(email);
+
+        if (valido) {
+            System.out.println("\n✅ EMAIL VÁLIDO!");
+            System.out.println("Formato do email está correto.");
+        } else {
+            System.out.println("\n❌ EMAIL INVÁLIDO!");
+            System.out.println("Formato correto: usuario@dominio.extensao");
+            System.out.println("Exemplos válidos:");
+            System.out.println("   • aluno@universidade.pt");
+            System.out.println("   • professor.email@upt.pt");
+            System.out.println("   • nome.sobrenome@dominio.com");
+        }
+    }
+
+    /**
+     * Exibe estatísticas do sistema
+     */
+    private static void exibirEstatisticas() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 ESTATÍSTICAS DO SISTEMA");
+        System.out.println("🎯 ===========================================");
+
+        // Garantir que temos dados atualizados
+        global.readAllUserWithJplq();
+
+        int totalUsuarios = global.getUsers().size();
+        int professores = 0;
+        int alunos = 0;
+
+        for (User user : global.getUsers()) {
+            if (user.getRole() == UserRole.TEACHER) {
+                professores++;
+            } else if (user.getRole() == UserRole.STUDENT) {
+                alunos++;
+            }
+        }
+
+        System.out.println("\n📊 RESUMO DO SISTEMA:");
+        System.out.println("   👥 Total de usuários: " + totalUsuarios);
+        System.out.println("   👨‍🏫 Professores (Teachers): " + professores);
+        System.out.println("   👨‍🎓 Alunos (Students): " + alunos);
+
+        if (totalUsuarios > 0) {
+            double percentualProfessores = (professores * 100.0) / totalUsuarios;
+            double percentualAlunos = (alunos * 100.0) / totalUsuarios;
+
+            System.out.println("\n📈 DISTRIBUIÇÃO:");
+            System.out.println("   Professores: " + String.format("%.1f", percentualProfessores) + "%");
+            System.out.println("   Alunos: " + String.format("%.1f", percentualAlunos) + "%");
+        }
+
+        System.out.println("\n📅 Última atualização: " + new java.util.Date());
     }
 
     //=================================================================================================================================================================================================================
