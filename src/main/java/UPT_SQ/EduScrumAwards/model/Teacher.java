@@ -1,15 +1,16 @@
 package UPT_SQ.EduScrumAwards.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.Session;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "teachers")
 @PrimaryKeyJoinColumn(name = "user_id")
 public class Teacher extends User {
-
-    /*@OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnore
-    private List<CourseTeacher> courses = new ArrayList<>();*/
 
     public Teacher() {
         super();
@@ -20,19 +21,7 @@ public class Teacher extends User {
         super(name, login, password, UserRole.TEACHER);
     }
 
-    public void generateDashboard() {
-        // TODO: Implement dashboard generation
-        System.out.println("Generating teacher dashboard...");
-    }
-
-    // Getters and Setters
-    /*public List<CourseTeacher> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(List<CourseTeacher> courses) {
-        this.courses = courses;
-    }*/
+    // Getters e Setters
 
     @Override
     public String toString() {
@@ -40,7 +29,6 @@ public class Teacher extends User {
                 "userId=" + getUserId() +
                 ", name='" + getName() + '\'' +
                 ", login='" + getLogin() + '\'' +
-                /*", coursesCount=" + (courses != null ? courses.size() : 0) +*/
                 '}';
     }
 }
