@@ -43,6 +43,7 @@ public class Global {
         studentsAwards = new ArrayList<>();
     }
 
+
     @PostConstruct
     public void init() {
         try {
