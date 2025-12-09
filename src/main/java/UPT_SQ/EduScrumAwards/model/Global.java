@@ -1344,7 +1344,7 @@ public class Global {
     }
     /**
      * Loads all User objects from the database and stores them in the local users list.
-     * Uses JPQL to query the database and loads all associated lists for each user.
+     * Uses JPQL to query the database.
      */
     public void readAllUserWithJplq() {
         DatabaseHelper databaseHelper = new DatabaseHelper();
@@ -1356,24 +1356,6 @@ public class Global {
             users = new ArrayList<>(userList);
             System.out.println("✓ Loaded " + users.size() + " users from database");
 
-            // Load all associated lists for each user
-            for (User user : users) {
-                if (user instanceof Teacher) {
-                    Teacher teacher = (Teacher) user;
-                    teacher.readAllCourseTeacherWithJplq();
-                    teacher.readAllStudentAwardWithJplq();
-                    System.out.println("  Teacher " + teacher.getName() +
-                            ": " + teacher.getCourses().size() + " courses, " +
-                            teacher.getAssignedAwards().size() + " assigned awards");
-                } else if (user instanceof Student) {
-                    Student student = (Student) user;
-                    student.readAllTeamMemberWithJplq();
-                    student.readAllStudentAwardWithJplq();
-                    System.out.println("  Student " + student.getName() +
-                            ": " + student.getTeamMemberships().size() + " team memberships, " +
-                            student.getStudentAwards().size() + " awards received");
-                }
-            }
         } catch (Exception e) {
             System.err.println("ERROR loading users: " + e.getMessage());
             e.printStackTrace();
@@ -1385,7 +1367,7 @@ public class Global {
 
     /**
      * Checks if a user can be deleted (not linked to any other entities)
-     * Uses the loaded lists in memory (following Anastasia's pattern)
+     * Uses the global arrays (courses, teams, studentsAwards) to check for references
      *
      * @param userId ID of the user to check
      * @return true if can be deleted, false otherwise
@@ -1397,26 +1379,52 @@ public class Global {
         }
 
         if (user instanceof Teacher) {
-            Teacher teacher = (Teacher) user;
-            boolean hasCourseTeachers = !teacher.getCourses().isEmpty();
-            boolean hasAssignedAwards = !teacher.getAssignedAwards().isEmpty();
+            System.out.println("Checking deletability for Teacher: " + user.getName());
 
-            System.out.println("Teacher " + teacher.getName() + " deletability check:");
-            System.out.println("  - Has CourseTeachers: " + hasCourseTeachers + " (" + teacher.getCourses().size() + ")");
-            System.out.println("  - Has Assigned Awards: " + hasAssignedAwards + " (" + teacher.getAssignedAwards().size() + ")");
+            // Check if teacher is assigned to any course (via CourseTeacher)
+            for (Course course : courses) {
+                for (CourseTeacher ct : course.getCourseTeachers()) {
+                    if (ct.getTeacher().getUserId() == userId) {
+                        System.out.println("Teacher is assigned to course: " + course.getCourseName());
+                        return false;
+                    }
+                }
+            }
 
-            return !hasCourseTeachers && !hasAssignedAwards;
+            // Check if teacher has assigned any awards (via StudentAward)
+            for (StudentAward sa : studentsAwards) {
+                if (sa.getTeacher().getUserId() == userId) {
+                    System.out.println("Teacher has assigned student award: " + sa.getAward().getAwardName());
+                    return false;
+                }
+            }
+
+            System.out.println("Teacher can be deleted.");
+            return true;
 
         } else if (user instanceof Student) {
-            Student student = (Student) user;
-            boolean hasTeamMemberships = !student.getTeamMemberships().isEmpty();
-            boolean hasStudentAwards = !student.getStudentAwards().isEmpty();
+            System.out.println("Checking deletability for Student: " + user.getName());
 
-            System.out.println("Student " + student.getName() + " deletability check:");
-            System.out.println("  - Has Team Memberships: " + hasTeamMemberships + " (" + student.getTeamMemberships().size() + ")");
-            System.out.println("  - Has Student Awards: " + hasStudentAwards + " (" + student.getStudentAwards().size() + ")");
+            // Check if student is member of any team
+            for (Team team : teams) {
+                for (TeamMember tm : team.getTeamMember()) {
+                    if (tm.getStudent().getUserId() == userId) {
+                        System.out.println("Student is member of team: " + team.getTeamName());
+                        return false;
+                    }
+                }
+            }
 
-            return !hasTeamMemberships && !hasStudentAwards;
+            // Check if student has any awards
+            for (StudentAward sa : studentsAwards) {
+                if (sa.getStudent().getUserId() == userId) {
+                    System.out.println("Student has award: " + sa.getAward().getAwardName());
+                    return false;
+                }
+            }
+
+            System.out.println("Student can be deleted.");
+            return true;
         }
 
         return true;
@@ -1631,10 +1639,10 @@ public class Global {
      *         if the user does not exist, has references, or deletion fails.
      */
     public String deleteUser(long userId) {
-        // First check in memory
+        // First check in memory using global arrays
         if (!canDeleteUser(userId)) {
             return "ERROR: Cannot delete user because they are linked to other entities " +
-                    "(CourseTeachers, TeamMembers, or StudentAwards).";
+                    "(assigned to courses, member of teams, or has/has assigned awards).";
         }
 
         User user = searchUser(userId);

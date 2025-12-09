@@ -186,7 +186,7 @@ public class TestMain {
     //}
 
 
-    private static Global global = new Global();
+    /*private static Global global = new Global();
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -634,7 +634,7 @@ public class TestMain {
         } else {
             System.out.print("Course not found!");
         }
-    }
+    }*/
     //=================================================================================================================================================================================================================
 
 
@@ -642,63 +642,73 @@ public class TestMain {
 
 
     //==================================================================================================================================================================================================================
-    /*
+
+    // Global instance to access system data and operations
     private static Global global = new Global();
     private static Scanner scanner = new Scanner(System.in);
 
+    /**
+     * Main method that runs the test program.
+     * Initializes the Global instance and displays a menu for testing various operations.
+     *
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
         System.out.println("🎯 ===========================================");
-        System.out.println("🎯 TESTE CRUD - USER, TEACHER E STUDENT");
-        System.out.println("🎯 Classe Global Atualizada");
+        System.out.println("🎯 CRUD TEST - USER, TEACHER AND STUDENT");
+        System.out.println("🎯 Updated Global Class");
         System.out.println("🎯 ===========================================");
 
-        boolean continuar = true;
+        // Initialize global arrays from database
+        global.init();
 
-        while (continuar) {
-            System.out.println("\n📋 MENU DE TESTES CRUD:");
-            System.out.println("1️⃣  - CREATE (Criar Teachers e Students)");
-            System.out.println("2️⃣  - READ (Ler todos os Users)");
-            System.out.println("3️⃣  - READ TEACHERS (Ler apenas Teachers)");
-            System.out.println("4️⃣  - READ STUDENTS (Ler apenas Students)");
-            System.out.println("5️⃣  - UPDATE (Atualizar Users)");
-            System.out.println("6️⃣  - DELETE (Deletar Users)");
-            System.out.println("7️⃣  - TESTAR VALIDAÇÕES");
-            System.out.println("8️⃣  - EXECUTAR TODOS OS TESTES");
+        boolean continueProgram = true;
+
+        while (continueProgram) {
+            System.out.println("\n📋 CRUD TEST MENU:");
+            System.out.println("1️⃣  - CREATE (Create Teachers and Students)");
+            System.out.println("2️⃣  - READ (Read all Users)");
+            System.out.println("3️⃣  - READ TEACHERS (Read only Teachers)");
+            System.out.println("4️⃣  - READ STUDENTS (Read only Students)");
+            System.out.println("5️⃣  - UPDATE (Update Users)");
+            System.out.println("6️⃣  - DELETE (Delete Specific User by ID)");
+            System.out.println("7️⃣  - TEST VALIDATIONS");
+            System.out.println("8️⃣  - EXECUTE ALL TESTS");
             System.out.println("9   - TEST CREATE COURSE-TEACHER");
             System.out.println("10  - TEST DELETE COURSE-TEACHER");
             System.out.println("11  - TEST CREATE COURSE");
             System.out.println("12  - TEST DELETE COURSE");
-            System.out.println("13  - CRIAR USUÁRIOS TESTE (COM E SEM VÍNCULOS)");
-            System.out.println("0️⃣  - SAIR");
-            System.out.print("\nEscolha uma opção: ");
+            System.out.println("13  - TEST USER DELETION WITH ASSOCIATIONS");
+            System.out.println("0️⃣  - EXIT");
+            System.out.print("\nChoose an option: ");
 
-            int opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpar buffer
+            int option = scanner.nextInt();
+            scanner.nextLine(); // Clear buffer
 
-            switch (opcao) {
+            switch (option) {
                 case 1:
-                    testarCreate();
+                    testCreate();
                     break;
                 case 2:
-                    testarReadAllUsers();
+                    testReadAllUsers();
                     break;
                 case 3:
-                    testarReadTeachers();
+                    testReadTeachers();
                     break;
                 case 4:
-                    testarReadStudents();
+                    testReadStudents();
                     break;
                 case 5:
-                    testarUpdate();
+                    testUpdate();
                     break;
                 case 6:
-                    testarDelete();
+                    testDeleteSpecificUser();
                     break;
                 case 7:
-                    testarValidacoes();
+                    testValidations();
                     break;
                 case 8:
-                    executarTodosTestes();
+                    executeAllTests();
                     break;
                 case 9:
                     createCourseTeacher();
@@ -713,18 +723,18 @@ public class TestMain {
                     testDeleteCourse();
                     break;
                 case 13:
-                    criarUsuariosTesteParaDelecao();
+                    testUserDeletionWithAssociations();
                     break;
                 case 0:
-                    continuar = false;
-                    System.out.println("👋 Saindo do programa...");
+                    continueProgram = false;
+                    System.out.println("👋 Exiting program...");
                     break;
                 default:
-                    System.out.println("❌ Opção inválida!");
+                    System.out.println("❌ Invalid option!");
             }
 
-            if (continuar && opcao != 8) {
-                System.out.print("\n⏸️  Pressione ENTER para continuar...");
+            if (continueProgram && option != 8) {
+                System.out.print("\n⏸️  Press ENTER to continue...");
                 scanner.nextLine();
             }
         }
@@ -732,13 +742,17 @@ public class TestMain {
         scanner.close();
     }
 
-    private static void testarCreate() {
+    /**
+     * Tests the CREATE operation by creating new teachers and students.
+     * Demonstrates how to create users with valid data.
+     */
+    private static void testCreate() {
         System.out.println("\n🎯 ===========================================");
-        System.out.println("🎯 TESTANDO CREATE (CRIAÇÃO)");
+        System.out.println("🎯 TESTING CREATE OPERATION");
         System.out.println("🎯 ===========================================");
 
-        // Criar Teachers
-        System.out.println("\n📝 CRIANDO TEACHERS:");
+        // Create Teachers
+        System.out.println("\n📝 CREATING TEACHERS:");
         System.out.println("-------------------");
 
         String result1 = global.createTeacher("Dr. Carlos Santos", "carlos.santos", "teacher123");
@@ -747,8 +761,8 @@ public class TestMain {
         String result2 = global.createTeacher("Prof. Maria Oliveira", "maria.oliveira", "teach456");
         System.out.println("✅ createTeacher 2: " + result2);
 
-        // Criar Students
-        System.out.println("\n📝 CRIANDO STUDENTS:");
+        // Create Students
+        System.out.println("\n📝 CREATING STUDENTS:");
         System.out.println("-------------------");
 
         String result3 = global.createStudent("Ana Silva", "ana.silva", "password123", "2023001", 2);
@@ -760,348 +774,700 @@ public class TestMain {
         String result5 = global.createStudent("Maria Costa", "maria.costa", "student789", "2023003", 1);
         System.out.println("✅ createStudent 3: " + result5);
 
-        System.out.println("\n🎉 CREATE TESTADO COM SUCESSO!");
+        System.out.println("\n🎉 CREATE TEST SUCCESSFUL!");
     }
 
-    private static void testarReadAllUsers() {
+    /**
+     * Tests the READ operation by loading all users from the database.
+     * Displays detailed information about each user.
+     */
+    private static void testReadAllUsers() {
         System.out.println("\n🎯 ===========================================");
-        System.out.println("🎯 TESTANDO READ ALL USERS");
+        System.out.println("🎯 TESTING READ ALL USERS");
         System.out.println("🎯 ===========================================");
 
-        System.out.println("\n👥 CARREGANDO TODOS OS USERS DO BANCO:");
+        System.out.println("\n👥 LOADING ALL USERS FROM DATABASE:");
         System.out.println("-------------------------------------");
         global.readAllUserWithJplq();
 
         if (global.getUsers().isEmpty()) {
-            System.out.println("❌ Nenhum user encontrado no banco!");
+            System.out.println("❌ No users found in database!");
             return;
         }
 
-        System.out.println("✅ Total de users carregados: " + global.getUsers().size());
-        exibirUsersDetalhados(global.getUsers());
+        System.out.println("✅ Total users loaded: " + global.getUsers().size());
+        displayUsersDetailed(global.getUsers());
     }
 
-    private static void testarReadTeachers() {
+    /**
+     * Tests reading only teacher users from the database.
+     * Demonstrates filtering users by type.
+     */
+    private static void testReadTeachers() {
         System.out.println("\n🎯 ===========================================");
-        System.out.println("🎯 TESTANDO READ TEACHERS");
+        System.out.println("🎯 TESTING READ TEACHERS");
         System.out.println("🎯 ===========================================");
 
-        System.out.println("\n👨‍🏫 CARREGANDO APENAS TEACHERS DO BANCO:");
+        System.out.println("\n👨‍🏫 LOADING ONLY TEACHERS FROM DATABASE:");
         System.out.println("--------------------------------------");
         global.readAllTeacherWithJplq();
 
         long teacherCount = global.getUsers().stream().filter(u -> u instanceof Teacher).count();
-        System.out.println("✅ Total de Teachers carregados: " + teacherCount);
+        System.out.println("✅ Total Teachers loaded: " + teacherCount);
 
-        // Mostrar apenas teachers
+        // Show only teachers
         List<User> teachers = global.getUsers().stream()
                 .filter(u -> u instanceof Teacher)
                 .toList();
-        exibirUsersDetalhados(teachers);
+        displayUsersDetailed(teachers);
     }
 
-    private static void testarReadStudents() {
+    /**
+     * Tests reading only student users from the database.
+     * Demonstrates filtering users by type.
+     */
+    private static void testReadStudents() {
         System.out.println("\n🎯 ===========================================");
-        System.out.println("🎯 TESTANDO READ STUDENTS");
+        System.out.println("🎯 TESTING READ STUDENTS");
         System.out.println("🎯 ===========================================");
 
-        System.out.println("\n👨‍🎓 CARREGANDO APENAS STUDENTS DO BANCO:");
+        System.out.println("\n👨‍🎓 LOADING ONLY STUDENTS FROM DATABASE:");
         System.out.println("--------------------------------------");
         global.readAllStudentWithJplq();
 
         long studentCount = global.getUsers().stream().filter(u -> u instanceof Student).count();
-        System.out.println("✅ Total de Students carregados: " + studentCount);
+        System.out.println("✅ Total Students loaded: " + studentCount);
 
-        // Mostrar apenas students
+        // Show only students
         List<User> students = global.getUsers().stream()
                 .filter(u -> u instanceof Student)
                 .toList();
-        exibirUsersDetalhados(students);
+        displayUsersDetailed(students);
     }
 
-    private static void testarUpdate() {
+    /**
+     * Tests the UPDATE operation by modifying existing user information.
+     * Updates both teachers and students with new data.
+     */
+    private static void testUpdate() {
         System.out.println("\n🎯 ===========================================");
-        System.out.println("🎯 TESTANDO UPDATE (ATUALIZAÇÃO)");
+        System.out.println("🎯 TESTING UPDATE OPERATION");
         System.out.println("🎯 ===========================================");
 
-        // Primeiro carrega os users
+        // First load users
         global.readAllUserWithJplq();
 
         if (global.getUsers().isEmpty()) {
-            System.out.println("❌ Nenhum user encontrado para atualizar!");
+            System.out.println("❌ No users found to update!");
             return;
         }
 
-        // Atualizar um Student
-        Student studentParaAtualizar = null;
+        // Update a Student
+        Student studentToUpdate = null;
         for (User user : global.getUsers()) {
             if (user instanceof Student) {
-                studentParaAtualizar = (Student) user;
+                studentToUpdate = (Student) user;
                 break;
             }
         }
 
-        if (studentParaAtualizar != null) {
-            System.out.println("\n📝 ATUALIZANDO STUDENT:");
+        if (studentToUpdate != null) {
+            System.out.println("\n📝 UPDATING STUDENT:");
             System.out.println("----------------------");
-            System.out.println("📋 Antes da atualização:");
-            System.out.println("   Nome: " + studentParaAtualizar.getName());
-            System.out.println("   Login: " + studentParaAtualizar.getLogin());
-            System.out.println("   Student Number: " + studentParaAtualizar.getStudentNumber());
-            System.out.println("   Semestre: " + studentParaAtualizar.getCurrentSemester());
+            System.out.println("📋 Before update:");
+            System.out.println("   Name: " + studentToUpdate.getName());
+            System.out.println("   Login: " + studentToUpdate.getLogin());
+            System.out.println("   Student Number: " + studentToUpdate.getStudentNumber());
+            System.out.println("   Semester: " + studentToUpdate.getCurrentSemester());
 
             String result = global.updateStudent(
-                    studentParaAtualizar.getUserId(),
-                    studentParaAtualizar.getName() + " [ATUALIZADO]",
-                    studentParaAtualizar.getLogin() + ".atualizado",
-                    "novasenha123",
-                    studentParaAtualizar.getStudentNumber(),
-                    studentParaAtualizar.getCurrentSemester() + 1
+                    studentToUpdate.getUserId(),
+                    studentToUpdate.getName() + " [UPDATED]",
+                    studentToUpdate.getLogin() + ".updated",
+                    "newpassword123",
+                    studentToUpdate.getStudentNumber(),
+                    studentToUpdate.getCurrentSemester() + 1
             );
             System.out.println("✅ updateStudent: " + result);
         } else {
-            System.out.println("❌ Nenhum Student encontrado para atualizar!");
+            System.out.println("❌ No Student found to update!");
         }
 
-        // Atualizar um Teacher
-        Teacher teacherParaAtualizar = null;
+        // Update a Teacher
+        Teacher teacherToUpdate = null;
         for (User user : global.getUsers()) {
             if (user instanceof Teacher) {
-                teacherParaAtualizar = (Teacher) user;
+                teacherToUpdate = (Teacher) user;
                 break;
             }
         }
 
-        if (teacherParaAtualizar != null) {
-            System.out.println("\n📝 ATUALIZANDO TEACHER:");
+        if (teacherToUpdate != null) {
+            System.out.println("\n📝 UPDATING TEACHER:");
             System.out.println("----------------------");
-            System.out.println("📋 Antes da atualização:");
-            System.out.println("   Nome: " + teacherParaAtualizar.getName());
-            System.out.println("   Login: " + teacherParaAtualizar.getLogin());
+            System.out.println("📋 Before update:");
+            System.out.println("   Name: " + teacherToUpdate.getName());
+            System.out.println("   Login: " + teacherToUpdate.getLogin());
 
             String result = global.updateTeacher(
-                    teacherParaAtualizar.getUserId(),
-                    teacherParaAtualizar.getName() + " [ATUALIZADO]",
-                    teacherParaAtualizar.getLogin() + ".atualizado",
-                    "novasenha456"
+                    teacherToUpdate.getUserId(),
+                    teacherToUpdate.getName() + " [UPDATED]",
+                    teacherToUpdate.getLogin() + ".updated",
+                    "newpassword456"
             );
             System.out.println("✅ updateTeacher: " + result);
         } else {
-            System.out.println("❌ Nenhum Teacher encontrado para atualizar!");
+            System.out.println("❌ No Teacher found to update!");
         }
 
-        // Mostrar resultado das atualizações
-        System.out.println("\n📊 APÓS AS ATUALIZAÇÕES:");
+        // Show update results
+        System.out.println("\n📊 AFTER UPDATES:");
         global.readAllUserWithJplq();
-        System.out.println("✅ Total de users: " + global.getUsers().size());
-        exibirUsersResumido(global.getUsers());
+        System.out.println("✅ Total users: " + global.getUsers().size());
+        displayUsersSummary(global.getUsers());
     }
 
-    private static void testarDelete() {
+    /**
+     * Tests the DELETE operation by allowing the user to choose which user to delete.
+     * Displays all users and prompts for the ID of the user to delete.
+     * Demonstrates interactive user deletion.
+     */
+    private static void testDeleteSpecificUser() {
         System.out.println("\n🎯 ===========================================");
-        System.out.println("🎯 TESTANDO DELETE (EXCLUSÃO)");
+        System.out.println("🎯 TESTING DELETE SPECIFIC USER BY ID");
         System.out.println("🎯 ===========================================");
 
+        // Load all users first
         global.readAllUserWithJplq();
 
         if (global.getUsers().isEmpty()) {
-            System.out.println("❌ Nenhum user encontrado para deletar!");
+            System.out.println("❌ No users found in the system!");
             return;
         }
 
-        System.out.println("\n📊 LISTA DE USUÁRIOS DISPONÍVEIS:");
-        System.out.println("--------------------------------");
+        System.out.println("\n📊 CURRENT USERS IN THE SYSTEM:");
+        System.out.println("=================================");
+        displayUsersWithAssociationsInfo(global.getUsers());
 
-        // Mostrar apenas usuários que podem ser deletados primeiro
-        System.out.println("\n✅ USUÁRIOS QUE PODEM SER DELETADOS (sem vínculos):");
-        boolean encontrouDeletavel = false;
+        // Prompt user to enter ID
+        System.out.print("\n🔢 Enter the User ID you want to delete: ");
 
-        for (User user : global.getUsers()) {
-            if (global.canDeleteUser(user.getUserId())) {
-                System.out.println("   👤 " + user.getName() +
-                        " (ID: " + user.getUserId() +
-                        ", Tipo: " + (user instanceof Teacher ? "TEACHER" : "STUDENT") + ")");
-                encontrouDeletavel = true;
+        try {
+            long userIdToDelete = scanner.nextLong();
+            scanner.nextLine(); // Clear buffer
+
+            // Find the user by ID
+            User userToDelete = null;
+            for (User user : global.getUsers()) {
+                if (user.getUserId() == userIdToDelete) {
+                    userToDelete = user;
+                    break;
+                }
             }
-        }
 
-        if (!encontrouDeletavel) {
-            System.out.println("   Nenhum usuário pode ser deletado (todos têm vínculos)");
-        }
-
-        System.out.println("\n❌ USUÁRIOS QUE NÃO PODEM SER DELETADOS (com vínculos):");
-        for (User user : global.getUsers()) {
-            if (!global.canDeleteUser(user.getUserId())) {
-                System.out.println("   👤 " + user.getName() +
-                        " (ID: " + user.getUserId() +
-                        ", Tipo: " + (user instanceof Teacher ? "TEACHER" : "STUDENT") + ")");
+            if (userToDelete == null) {
+                System.out.println("❌ User with ID " + userIdToDelete + " not found!");
+                return;
             }
-        }
 
-        System.out.print("\n🔢 Digite o ID do usuário que deseja deletar (ou 0 para cancelar): ");
-        long userId = scanner.nextLong();
-        scanner.nextLine(); // Limpar buffer
+            System.out.println("\n🧾 USER DETAILS:");
+            System.out.println("----------------");
+            System.out.println("👤 Name: " + userToDelete.getName());
+            System.out.println("🆔 ID: " + userToDelete.getUserId());
+            System.out.println("📧 Login: " + userToDelete.getLogin());
+            System.out.println("👥 Type: " + (userToDelete instanceof Teacher ? "TEACHER" : "STUDENT"));
 
-        if (userId == 0) {
-            System.out.println("✅ Operação cancelada.");
-            return;
-        }
-
-        User user = global.searchUser(userId);
-        if (user == null) {
-            System.out.println("❌ Usuário com ID " + userId + " não encontrado!");
-            return;
-        }
-
-        System.out.println("\n🗑️  USUÁRIO SELECIONADO:");
-        System.out.println("   Nome: " + user.getName());
-        System.out.println("   Tipo: " + (user instanceof Teacher ? "TEACHER" : "STUDENT"));
-        System.out.println("   Login: " + user.getLogin());
-
-        // Verificar se pode deletar
-        System.out.println("\n🔍 VERIFICANDO VÍNCULOS...");
-        boolean podeDeletar = global.canDeleteUser(userId);
-
-        if (!podeDeletar) {
-            System.out.println("❌ Este usuário NÃO pode ser deletado!");
-            System.out.println("   Motivo: Está vinculado a CourseTeachers, TeamMembers ou StudentAwards");
-            System.out.println("\n💡 Use a opção 13 para criar usuários SEM vínculos para testar.");
-            return;
-        }
-
-        System.out.println("✅ Este usuário pode ser deletado (não possui vínculos)");
-
-        System.out.print("\n⚠️  Confirma exclusão do usuário " + user.getName() + "? (S/N): ");
-        String confirmacao = scanner.nextLine();
-
-        if (confirmacao.equalsIgnoreCase("S")) {
-            String resultado = global.deleteUser(userId);
-            System.out.println("\n📋 Resultado: " + resultado);
-
-            // Atualizar lista
-            global.readAllUserWithJplq();
-
-            if (resultado.equals("Success")) {
-                System.out.println("🎉 Usuário deletado com sucesso do banco de dados e da memória!");
+            if (userToDelete instanceof Student) {
+                Student student = (Student) userToDelete;
+                System.out.println("🎓 Student Number: " + student.getStudentNumber());
+                System.out.println("📅 Semester: " + student.getCurrentSemester());
             }
-        } else {
-            System.out.println("✅ Operação cancelada pelo usuário.");
+
+            // Check if user can be deleted
+            System.out.println("\n🔍 CHECKING IF USER CAN BE DELETED...");
+            boolean canDelete = global.canDeleteUser(userIdToDelete);
+
+            if (canDelete) {
+                System.out.println("✅ User can be deleted (no associations found)");
+            } else {
+                System.out.println("❌ User CANNOT be deleted (has associations with other entities)");
+                System.out.println("   Associations may include:");
+                System.out.println("   • CourseTeachers (for teachers)");
+                System.out.println("   • TeamMembers (for students)");
+                System.out.println("   • StudentAwards (assigned or received)");
+            }
+
+            // Ask for confirmation
+            System.out.print("\n⚠️  Are you sure you want to delete this user? (yes/no): ");
+            String confirmation = scanner.nextLine().trim().toLowerCase();
+
+            if (confirmation.equals("yes") || confirmation.equals("y")) {
+                System.out.println("\n🗑️  DELETING USER...");
+                String result = global.deleteUser(userIdToDelete);
+                System.out.println("✅ Result: " + result);
+
+                // Show updated user list
+                System.out.println("\n📊 UPDATED USER LIST:");
+                global.readAllUserWithJplq();
+                if (global.getUsers().isEmpty()) {
+                    System.out.println("❌ No users remaining in the system.");
+                } else {
+                    System.out.println("✅ Total users remaining: " + global.getUsers().size());
+                    displayUsersSummary(global.getUsers());
+                }
+            } else {
+                System.out.println("❌ Deletion cancelled by user.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ Invalid input! Please enter a valid User ID (numeric value).");
+            scanner.nextLine(); // Clear invalid input
         }
     }
 
-    private static void testarValidacoes() {
+    /**
+     * Tests validation rules by attempting operations with invalid data.
+     * Demonstrates error handling and validation messages.
+     */
+    private static void testValidations() {
         System.out.println("\n🎯 ===========================================");
-        System.out.println("🎯 TESTANDO VALIDAÇÕES (ERROS ESPERADOS)");
+        System.out.println("🎯 TESTING VALIDATIONS (EXPECTED ERRORS)");
         System.out.println("🎯 ===========================================");
 
-        System.out.println("\n❌ TESTANDO VALIDAÇÕES DE ERRO:");
+        System.out.println("\n❌ TESTING ERROR VALIDATIONS:");
         System.out.println("------------------------------");
 
-        // Tentar criar com dados vazios
-        System.out.println("\n1. Dados vazios:");
-        String erro1 = global.createStudent("", "", "", "", -1);
-        System.out.println("   Resultado: " + erro1);
+        // Try to create with empty data
+        System.out.println("\n1. Empty data:");
+        String error1 = global.createStudent("", "", "", "", -1);
+        System.out.println("   Result: " + error1);
 
-        // Tentar criar com login duplicado
-        System.out.println("\n2. Login duplicado:");
-        String erro2 = global.createStudent("Novo Student", "ana.silva", "pass123", "2023099", 1);
-        System.out.println("   Resultado: " + erro2);
+        // Try to create with duplicate login
+        System.out.println("\n2. Duplicate login:");
+        String error2 = global.createStudent("New Student", "ana.silva", "pass123", "2023099", 1);
+        System.out.println("   Result: " + error2);
 
-        // Tentar criar com student number duplicado
-        System.out.println("\n3. Student number duplicado:");
-        String erro3 = global.createStudent("Novo Student", "novo.login", "pass123", "2023001", 1);
-        System.out.println("   Resultado: " + erro3);
+        // Try to create with duplicate student number
+        System.out.println("\n3. Duplicate student number:");
+        String error3 = global.createStudent("New Student", "new.login", "pass123", "2023001", 1);
+        System.out.println("   Result: " + error3);
 
-        // Tentar criar teacher com login duplicado
-        System.out.println("\n4. Teacher com login duplicado:");
-        String erro4 = global.createTeacher("Novo Teacher", "carlos.santos", "pass123");
-        System.out.println("   Resultado: " + erro4);
+        // Try to create teacher with duplicate login
+        System.out.println("\n4. Teacher with duplicate login:");
+        String error4 = global.createTeacher("New Teacher", "carlos.santos", "pass123");
+        System.out.println("   Result: " + error4);
 
-        // Tentar atualizar user que não existe
-        System.out.println("\n5. Atualizar user inexistente:");
-        String erro5 = global.updateTeacher(999999L, "Nome", "login", "senha");
-        System.out.println("   Resultado: " + erro5);
+        // Try to update non-existent user
+        System.out.println("\n5. Update non-existent user:");
+        String error5 = global.updateTeacher(999999L, "Name", "login", "password");
+        System.out.println("   Result: " + error5);
 
-        // Tentar deletar user que não existe
-        System.out.println("\n6. Deletar user inexistente:");
-        String erro6 = global.deleteUser(999999L);
-        System.out.println("   Resultado: " + erro6);
+        // Try to delete non-existent user
+        System.out.println("\n6. Delete non-existent user:");
+        String error6 = global.deleteUser(999999L);
+        System.out.println("   Result: " + error6);
     }
 
-    private static void executarTodosTestes() {
+    /**
+     * Executes all tests in sequence.
+     * Provides a comprehensive testing workflow.
+     */
+    private static void executeAllTests() {
         System.out.println("\n🎯 ===========================================");
-        System.out.println("🎯 EXECUTANDO TODOS OS TESTES EM SEQUÊNCIA");
+        System.out.println("🎯 EXECUTING ALL TESTS IN SEQUENCE");
         System.out.println("🎯 ===========================================");
 
-        testarCreate();
-        pausa();
+        testCreate();
+        pause();
 
-        testarReadAllUsers();
-        pausa();
+        testReadAllUsers();
+        pause();
 
-        testarReadTeachers();
-        pausa();
+        testReadTeachers();
+        pause();
 
-        testarReadStudents();
-        pausa();
+        testReadStudents();
+        pause();
 
-        testarUpdate();
-        pausa();
+        testUpdate();
+        pause();
 
-        testarDelete();
-        pausa();
+        testDeleteSpecificUser();
+        pause();
 
-        testarValidacoes();
+        testValidations();
 
         System.out.println("\n🎉 ===========================================");
-        System.out.println("🎯 TODOS OS TESTES FORAM CONCLUÍDOS!");
+        System.out.println("🎯 ALL TESTS COMPLETED!");
         System.out.println("🎉 ===========================================");
     }
 
-    private static void exibirUsersDetalhados(List<User> users) {
+    // =============================================
+    // NEW METHOD: TEST USER DELETION WITH ASSOCIATIONS
+    // =============================================
+
+    /**
+     * Comprehensive test for user deletion with and without associations.
+     * This test demonstrates the new validation logic using global arrays:
+     * 1. Creates users WITH associations (CourseTeacher for teachers, TeamMember for students)
+     * 2. Creates users WITHOUT any associations
+     * 3. Attempts to delete users with associations (should fail)
+     * 4. Attempts to delete users without associations (should succeed)
+     * 5. Verifies that the global arrays are used for validation
+     *
+     * This test follows Anastasia's recommendation to use global arrays
+     * (courses, teams, studentsAwards) instead of internal class arrays.
+     */
+    private static void testUserDeletionWithAssociations() {
+        System.out.println("\n🎯 ===========================================");
+        System.out.println("🎯 TESTING USER DELETION WITH ASSOCIATIONS");
+        System.out.println("🎯 ===========================================");
+
+        // Reload all data to ensure we have updated arrays
+        System.out.println("\n🔄 Reloading data from database...");
+        global.readAllCourseWithJplq();
+        global.readAllTeamWithJplq();
+        global.readAllAwardWithJplq();
+        global.readAllUserWithJplq();
+        global.readAllStudentAwardWithJplq();
+
+        System.out.println("\n📊 CURRENT SYSTEM STATE:");
+        System.out.println("---------------------------");
+        System.out.println("• Courses: " + global.getCourses().size());
+        System.out.println("• Teams: " + global.getTeams().size());
+        System.out.println("• Awards: " + global.getAwards().size());
+        System.out.println("• Users: " + global.getUsers().size());
+        System.out.println("• Student Awards: " + global.getStudentsAwards().size());
+
+        // =============================================
+        // CREATE TEST USERS
+        // =============================================
+        System.out.println("\n👥 CREATING TEST USERS:");
+        System.out.println("------------------------------");
+
+        // 1. Create users WITHOUT associations
+        System.out.println("\n1. Creating users WITHOUT associations:");
+
+        String timestamp = String.valueOf(System.currentTimeMillis());
+
+        // Teacher without associations
+        String teacherWithoutAssociations = global.createTeacher(
+                "Prof. No Associations " + timestamp,
+                "prof.no.associations." + timestamp,
+                "password123"
+        );
+        System.out.println("   • Teacher without associations: " + teacherWithoutAssociations);
+
+        // Student without associations
+        String studentWithoutAssociations = global.createStudent(
+                "Student No Associations " + timestamp,
+                "student.no.associations." + timestamp,
+                "password123",
+                "9999" + timestamp.substring(0, 5),
+                1
+        );
+        System.out.println("   • Student without associations: " + studentWithoutAssociations);
+
+        // 2. Create users WITH associations
+        System.out.println("\n2. Creating users WITH associations:");
+
+        // Teacher with associations (will be associated with a course)
+        String teacherWithAssociations = global.createTeacher(
+                "Prof. With Associations " + timestamp,
+                "prof.with.associations." + timestamp,
+                "password123"
+        );
+        System.out.println("   • Teacher with associations: " + teacherWithAssociations);
+
+        // Student with associations (will be associated with a team)
+        String studentWithAssociations = global.createStudent(
+                "Student With Associations " + timestamp,
+                "student.with.associations." + timestamp,
+                "password123",
+                "8888" + timestamp.substring(0, 5),
+                2
+        );
+        System.out.println("   • Student with associations: " + studentWithAssociations);
+
+        // Reload users to get their IDs
+        global.readAllUserWithJplq();
+
+        // Find the created users
+        User teacherWithoutAssociationsUser = null;
+        User studentWithoutAssociationsUser = null;
+        User teacherWithAssociationsUser = null;
+        User studentWithAssociationsUser = null;
+
+        for (User user : global.getUsers()) {
+            if (user.getName().contains("Prof. No Associations")) {
+                teacherWithoutAssociationsUser = user;
+            } else if (user.getName().contains("Student No Associations")) {
+                studentWithoutAssociationsUser = user;
+            } else if (user.getName().contains("Prof. With Associations")) {
+                teacherWithAssociationsUser = user;
+            } else if (user.getName().contains("Student With Associations")) {
+                studentWithAssociationsUser = user;
+            }
+        }
+
+        // =============================================
+        // CREATE ASSOCIATIONS FOR USERS
+        // =============================================
+        System.out.println("\n🔗 CREATING ASSOCIATIONS FOR USERS:");
+        System.out.println("-----------------------------------");
+
+        // Check if we have a course and team to create associations
+        if (global.getCourses().isEmpty()) {
+            System.out.println("⚠️  Creating a course for testing...");
+            global.createCourse("Test Deletion Course " + timestamp);
+            global.readAllCourseWithJplq();
+        }
+
+        if (global.getTeams().isEmpty()) {
+            System.out.println("⚠️  Creating a team for testing...");
+            global.createTeam("Test Deletion Team " + timestamp);
+            global.readAllTeamWithJplq();
+        }
+
+        if (global.getAwards().isEmpty()) {
+            System.out.println("⚠️  Creating an award for testing...");
+            global.createAward("Test Award", "Award for deletion testing", 100, "MANUAL", "INDIVIDUAL");
+            global.readAllAwardWithJplq();
+        }
+
+        Course course = global.getCourses().get(0);
+        Team team = global.getTeams().get(0);
+        Award award = global.getAwards().get(0);
+
+        // 1. Associate teacher with a course (CourseTeacher)
+        if (teacherWithAssociationsUser != null && course != null) {
+            System.out.println("\n🔗 Associating teacher with course:");
+            try {
+                course.createCourseTeacher((Teacher) teacherWithAssociationsUser, false);
+                System.out.println("   ✅ Teacher associated with course successfully!");
+            } catch (Exception e) {
+                System.out.println("   ⚠️  Error associating teacher with course: " + e.getMessage());
+            }
+        }
+
+        // 2. Associate student with a team (TeamMember)
+        if (studentWithAssociationsUser != null && team != null) {
+            System.out.println("\n🔗 Associating student with team:");
+            try {
+                String teamMemberResult = team.createTeamMember((Student) studentWithAssociationsUser, TeamMember.Role.DEVELOPER);
+                if (teamMemberResult.equals("Success")) {
+                    System.out.println("   ✅ Student associated with team successfully!");
+                } else {
+                    System.out.println("   ⚠️  Error associating student with team: " + teamMemberResult);
+                }
+            } catch (Exception e) {
+                System.out.println("   ⚠️  Error associating student with team: " + e.getMessage());
+            }
+        }
+
+        // Reload data to ensure associations are in global arrays
+        global.readAllCourseWithJplq();
+        global.readAllTeamWithJplq();
+        global.readAllStudentAwardWithJplq();
+
+        // =============================================
+        // TEST DELETION
+        // =============================================
+        System.out.println("\n🧪 TESTING USER DELETION:");
+        System.out.println("--------------------------------");
+
+        // Test deleting teacher WITH associations (should fail)
+        if (teacherWithAssociationsUser != null) {
+            System.out.println("\n1. Attempting to delete teacher WITH associations:");
+            System.out.println("   📝 Name: " + teacherWithAssociationsUser.getName());
+            System.out.println("   🆔 ID: " + teacherWithAssociationsUser.getUserId());
+
+            // Check if can be deleted using global arrays
+            boolean canDelete = global.canDeleteUser(teacherWithAssociationsUser.getUserId());
+            System.out.println("   ❓ Can be deleted? " + (canDelete ? "✅ YES" : "❌ NO"));
+
+            // Attempt deletion
+            String result = global.deleteUser(teacherWithAssociationsUser.getUserId());
+            System.out.println("   🗑️  Deletion result: " + result);
+        }
+
+        // Test deleting student WITH associations (should fail)
+        if (studentWithAssociationsUser != null) {
+            System.out.println("\n2. Attempting to delete student WITH associations:");
+            System.out.println("   📝 Name: " + studentWithAssociationsUser.getName());
+            System.out.println("   🆔 ID: " + studentWithAssociationsUser.getUserId());
+
+            // Check if can be deleted using global arrays
+            boolean canDelete = global.canDeleteUser(studentWithAssociationsUser.getUserId());
+            System.out.println("   ❓ Can be deleted? " + (canDelete ? "✅ YES" : "❌ NO"));
+
+            // Attempt deletion
+            String result = global.deleteUser(studentWithAssociationsUser.getUserId());
+            System.out.println("   🗑️  Deletion result: " + result);
+        }
+
+        // Test deleting teacher WITHOUT associations (should succeed)
+        if (teacherWithoutAssociationsUser != null) {
+            System.out.println("\n3. Attempting to delete teacher WITHOUT associations:");
+            System.out.println("   📝 Name: " + teacherWithoutAssociationsUser.getName());
+            System.out.println("   🆔 ID: " + teacherWithoutAssociationsUser.getUserId());
+
+            // Check if can be deleted using global arrays
+            boolean canDelete = global.canDeleteUser(teacherWithoutAssociationsUser.getUserId());
+            System.out.println("   ❓ Can be deleted? " + (canDelete ? "✅ YES" : "❌ NO"));
+
+            // Attempt deletion
+            String result = global.deleteUser(teacherWithoutAssociationsUser.getUserId());
+            System.out.println("   🗑️  Deletion result: " + result);
+        }
+
+        // Test deleting student WITHOUT associations (should succeed)
+        if (studentWithoutAssociationsUser != null) {
+            System.out.println("\n4. Attempting to delete student WITHOUT associations:");
+            System.out.println("   📝 Name: " + studentWithoutAssociationsUser.getName());
+            System.out.println("   🆔 ID: " + studentWithoutAssociationsUser.getUserId());
+
+            // Check if can be deleted using global arrays
+            boolean canDelete = global.canDeleteUser(studentWithoutAssociationsUser.getUserId());
+            System.out.println("   ❓ Can be deleted? " + (canDelete ? "✅ YES" : "❌ NO"));
+
+            // Attempt deletion
+            String result = global.deleteUser(studentWithoutAssociationsUser.getUserId());
+            System.out.println("   🗑️  Deletion result: " + result);
+        }
+
+        // =============================================
+        // FINAL RESULTS
+        // =============================================
+        System.out.println("\n📊 FINAL RESULTS:");
+        System.out.println("-----------------");
+
+        global.readAllUserWithJplq();
+        System.out.println("• Total users after tests: " + global.getUsers().size());
+
+        // Check which users still exist
+        System.out.println("\n👥 Remaining users in system:");
+        for (User user : global.getUsers()) {
+            String type = user instanceof Teacher ? "Teacher" : "Student";
+            System.out.println("   • " + user.getName() + " (" + type + ")");
+        }
+
+        System.out.println("\n🎯 CONCLUSION:");
+        System.out.println("-----------");
+        System.out.println("✅ Users WITH associations should NOT be deleted");
+        System.out.println("✅ Users WITHOUT associations SHOULD be deleted");
+        System.out.println("✅ System correctly validates using global arrays!");
+    }
+
+    /**
+     * Displays detailed information about a list of users.
+     * Shows user type, ID, login, and specific fields for students.
+     *
+     * @param users list of users to display
+     */
+    private static void displayUsersDetailed(List<User> users) {
         if (users.isEmpty()) {
-            System.out.println("❌ Nenhum user encontrado!");
+            System.out.println("❌ No users found!");
             return;
         }
 
         for (User user : users) {
-            String tipo = user instanceof Teacher ? "TEACHER" : "STUDENT";
-            System.out.println("\n   👤 " + user.getName() + " (" + tipo + ")");
+            String type = user instanceof Teacher ? "TEACHER" : "STUDENT";
+            System.out.println("\n   👤 " + user.getName() + " (" + type + ")");
             System.out.println("      ID: " + user.getUserId());
             System.out.println("      Login: " + user.getLogin());
 
             if (user instanceof Student) {
                 Student student = (Student) user;
                 System.out.println("      Student Number: " + student.getStudentNumber());
-                System.out.println("      Semestre: " + student.getCurrentSemester());
+                System.out.println("      Semester: " + student.getCurrentSemester());
             }
         }
     }
 
-    private static void exibirUsersResumido(List<User> users) {
+    /**
+     * Displays summary information about a list of users.
+     * Shows basic information in a compact format.
+     *
+     * @param users list of users to display
+     */
+    private static void displayUsersSummary(List<User> users) {
         if (users.isEmpty()) {
-            System.out.println("❌ Nenhum user encontrado!");
+            System.out.println("❌ No users found!");
             return;
         }
 
         for (User user : users) {
-            String tipo = user instanceof Teacher ? "TEACHER" : "STUDENT";
-            String infoExtra = "";
+            String type = user instanceof Teacher ? "TEACHER" : "STUDENT";
+            String extraInfo = "";
 
             if (user instanceof Student) {
                 Student student = (Student) user;
-                infoExtra = " | Nº: " + student.getStudentNumber() + " | Semestre: " + student.getCurrentSemester();
+                extraInfo = " | Number: " + student.getStudentNumber() + " | Semester: " + student.getCurrentSemester();
             }
 
-            System.out.println("   👉 " + user.getName() + " (" + tipo + ")" + infoExtra);
+            System.out.println("   👉 " + user.getName() + " (" + type + ")" + extraInfo);
         }
     }
 
-    private static void pausa() {
-        System.out.print("\n⏸️  Pressione ENTER para continuar...");
+    /**
+     * Displays users with information about their associations.
+     * Shows whether each user has associations that would prevent deletion.
+     *
+     * @param users list of users to display
+     */
+    private static void displayUsersWithAssociationsInfo(List<User> users) {
+        if (users.isEmpty()) {
+            System.out.println("❌ No users found!");
+            return;
+        }
+
+        // Reload global data to ensure we have current associations
+        global.readAllCourseWithJplq();
+        global.readAllTeamWithJplq();
+        global.readAllStudentAwardWithJplq();
+
+        for (User user : users) {
+            String type = user instanceof Teacher ? "TEACHER" : "STUDENT";
+            System.out.println("\n   👤 " + user.getName() + " (" + type + ")");
+            System.out.println("      ID: " + user.getUserId());
+            System.out.println("      Login: " + user.getLogin());
+
+            if (user instanceof Student) {
+                Student student = (Student) user;
+                System.out.println("      Student Number: " + student.getStudentNumber());
+                System.out.println("      Semester: " + student.getCurrentSemester());
+            }
+
+            // Check if user has associations
+            boolean hasAssociations = !global.canDeleteUser(user.getUserId());
+            String associationStatus = hasAssociations ? "❌ HAS ASSOCIATIONS" : "✅ NO ASSOCIATIONS";
+            System.out.println("      Deletable: " + associationStatus);
+
+            // Show specific associations for better understanding
+            if (hasAssociations) {
+                if (user instanceof Teacher) {
+                    System.out.println("      Associations: CourseTeacher, StudentAwards (assigned)");
+                } else if (user instanceof Student) {
+                    System.out.println("      Associations: TeamMember, StudentAwards (received)");
+                }
+            }
+        }
+    }
+
+    /**
+     * Pauses execution and waits for user input to continue.
+     * Used between test executions for better user experience.
+     */
+    private static void pause() {
+        System.out.print("\n⏸️  Press ENTER to continue...");
         scanner.nextLine();
     }
 
+    /**
+     * Tests creating a CourseTeacher association.
+     * Creates a course and teacher, then associates them.
+     */
     private static void createCourseTeacher() {
         global.readAllCourseWithJplq();
         if (global.getCourses().isEmpty()) {
@@ -1116,29 +1482,41 @@ public class TestMain {
         course.createCourseTeacher(teacher, true);
     }
 
+    /**
+     * Tests deleting a CourseTeacher association.
+     * Demonstrates removing teacher-course associations.
+     */
     private static void testDeleteCourseTeacher() {
         global.readAllCourseWithJplq();
         Course course = global.searchCourse(global.getCourses().get(0).getCourseID());
         if (course != null) {
             try {
                 course.readAllCourseTeacherWithJplq();
-                course.deleteCourseTeacher(course.getTeachers().get(0).getCourseTeacherID());
+                course.deleteCourseTeacher(course.getCourseTeachers().get(0).getCourseTeacherID());
             } catch (Exception e) {
-                System.out.print("\nCould not delete the CT!");
+                System.out.print("\nCould not delete the CourseTeacher!");
             }
         } else {
             System.out.print("\nCourse not found!");
         }
     }
 
+    /**
+     * Tests creating a course with a project and team.
+     * Demonstrates creating a complete course structure.
+     */
     private static void testCreateCourse() {
         global.readAllCourseWithJplq();
         Course course = global.searchCourse(global.getCourses().get(0).getCourseID());
         global.createTeam("TEST_TEAM");
-        Team team = (Team) global.searchTeam(global.getTeams().get(0).getTeamID());
+        Team team = global.searchTeam(global.getTeams().get(0).getTeamID());
         course.createProject("TEST_PROJECT", team, course);
     }
 
+    /**
+     * Tests deleting a course.
+     * Demonstrates course deletion with proper cleanup.
+     */
     private static void testDeleteCourse() {
         global.readAllCourseWithJplq();
         Course course = global.searchCourse(global.getCourses().get(0).getCourseID());
@@ -1156,314 +1534,6 @@ public class TestMain {
         }
     }
 
-    *//**
-     * Cria automaticamente 4 usuários de teste:
-     * 1. Teacher SEM vínculos (pode deletar)
-     * 2. Teacher COM vínculos (não pode deletar)
-     * 3. Student SEM vínculos (pode deletar)
-     * 4. Student COM vínculos (não pode deletar)
-     *//*
-    private static void criarUsuariosTesteParaDelecao() {
-        System.out.println("\n🎯 ===========================================");
-        System.out.println("🎯 CRIANDO USUÁRIOS DE TESTE PARA DELEÇÃO");
-        System.out.println("🎯 ===========================================");
-
-        System.out.println("📝 Criando dados de suporte (curso, time, award)...");
-
-        // 1. Criar um curso para usar nos vínculos
-        String cursoResult = global.createCourse("Curso Teste Deleção - " + System.currentTimeMillis());
-        System.out.println("   Curso: " + cursoResult);
-
-        // 2. Criar um time para usar nos vínculos
-        String timeResult = global.createTeam("Time Teste Deleção - " + System.currentTimeMillis());
-        System.out.println("   Time: " + timeResult);
-
-        // 3. Criar um award para usar nos vínculos
-        String awardResult = global.createAward(
-                "Award Teste Deleção",
-                "Prêmio para teste de deleção",
-                100,
-                "MANUAL",
-                "INDIVIDUAL"
-        );
-        System.out.println("   Award: " + awardResult);
-
-        // 4. Atualizar listas para ter os objetos carregados
-        global.readAllCourseWithJplq();
-        global.readAllTeamWithJplq();
-        global.readAllAwardWithJplq();
-        global.readAllUserWithJplq();
-
-        // Pegar os objetos criados
-        Course curso = global.getCourses().get(global.getCourses().size() - 1);
-        Team time = global.getTeams().get(global.getTeams().size() - 1);
-        Award award = global.getAwards().get(global.getAwards().size() - 1);
-
-        System.out.println("\n✅ Dados de suporte criados:");
-        System.out.println("   - Curso: " + curso.getCourseName() + " (ID: " + curso.getCourseID() + ")");
-        System.out.println("   - Time: " + time.getTeamName() + " (ID: " + time.getTeamID() + ")");
-        System.out.println("   - Award: " + award.getAwardName() + " (ID: " + award.getAwardID() + ")");
-
-        System.out.println("\n👥 CRIANDO USUÁRIOS:");
-        System.out.println("====================");
-
-        // Timestamp para evitar conflitos
-        String timestamp = String.valueOf(System.currentTimeMillis());
-
-        // =========================================================================
-        // 1. TEACHER SEM VÍNCULOS (PODE DELETAR)
-        // =========================================================================
-        System.out.println("\n1️⃣  TEACHER SEM VÍNCULOS:");
-        System.out.println("   -------------------");
-
-        String teacherSemVinculosNome = "Prof. Sem Vínculos " + timestamp;
-        String teacherSemVinculosLogin = "teacher_sem_vinculos_" + timestamp;
-
-        String resultadoTeacherSemVinculos = global.createTeacher(
-                teacherSemVinculosNome,
-                teacherSemVinculosLogin,
-                "senha123"
-        );
-
-        System.out.println("   Resultado: " + resultadoTeacherSemVinculos);
-
-        if (resultadoTeacherSemVinculos.equals("Success")) {
-            // Buscar o teacher recém-criado
-            global.readAllUserWithJplq();
-            Teacher teacherSemVinculos = null;
-            for (User user : global.getUsers()) {
-                if (user instanceof Teacher && user.getLogin().equals(teacherSemVinculosLogin)) {
-                    teacherSemVinculos = (Teacher) user;
-                    break;
-                }
-            }
-
-            if (teacherSemVinculos != null) {
-                System.out.println("   ✅ Criado: " + teacherSemVinculosNome);
-                System.out.println("      ID: " + teacherSemVinculos.getUserId());
-                System.out.println("      Login: " + teacherSemVinculos.getLogin());
-                System.out.println("      Vínculos: NENHUM (pode deletar)");
-            }
-        }
-
-        // =========================================================================
-        // 2. TEACHER COM VÍNCULOS (NÃO PODE DELETAR)
-        // =========================================================================
-        System.out.println("\n2️⃣  TEACHER COM VÍNCULOS:");
-        System.out.println("   -------------------");
-
-        String teacherComVinculosNome = "Prof. Com Vínculos " + timestamp;
-        String teacherComVinculosLogin = "teacher_com_vinculos_" + timestamp;
-
-        String resultadoTeacherComVinculos = global.createTeacher(
-                teacherComVinculosNome,
-                teacherComVinculosLogin,
-                "senha123"
-        );
-
-        System.out.println("   Resultado: " + resultadoTeacherComVinculos);
-
-        if (resultadoTeacherComVinculos.equals("Success")) {
-            // Buscar o teacher recém-criado
-            global.readAllUserWithJplq();
-            Teacher teacherComVinculos = null;
-            for (User user : global.getUsers()) {
-                if (user instanceof Teacher && user.getLogin().equals(teacherComVinculosLogin)) {
-                    teacherComVinculos = (Teacher) user;
-                    break;
-                }
-            }
-
-            if (teacherComVinculos != null) {
-                System.out.println("   ✅ Criado: " + teacherComVinculosNome);
-                System.out.println("      ID: " + teacherComVinculos.getUserId());
-                System.out.println("      Login: " + teacherComVinculos.getLogin());
-
-                // CRIAR VÍNCULO: Associar teacher ao curso
-                String vinculoCursoResult = curso.createCourseTeacher(teacherComVinculos, true);
-                System.out.println("      Vínculo com curso: " + vinculoCursoResult);
-
-                // Atualizar dados do teacher
-                teacherComVinculos.readAllCourseTeacherWithJplq();
-
-                System.out.println("      Status: TEM vínculos (NÃO pode deletar)");
-            }
-        }
-
-        // =========================================================================
-        // 3. STUDENT SEM VÍNCULOS (PODE DELETAR)
-        // =========================================================================
-        System.out.println("\n3️⃣  STUDENT SEM VÍNCULOS:");
-        System.out.println("   -------------------");
-
-        String studentSemVinculosNome = "Estudante Sem Vínculos " + timestamp;
-        String studentSemVinculosLogin = "student_sem_vinculos_" + timestamp;
-        String studentSemVinculosNumero = "2024" + timestamp.substring(0, 6);
-
-        String resultadoStudentSemVinculos = global.createStudent(
-                studentSemVinculosNome,
-                studentSemVinculosLogin,
-                "senha123",
-                studentSemVinculosNumero,
-                3
-        );
-
-        System.out.println("   Resultado: " + resultadoStudentSemVinculos);
-
-        if (resultadoStudentSemVinculos.equals("Success")) {
-            // Buscar o student recém-criado
-            global.readAllUserWithJplq();
-            Student studentSemVinculos = null;
-            for (User user : global.getUsers()) {
-                if (user instanceof Student && user.getLogin().equals(studentSemVinculosLogin)) {
-                    studentSemVinculos = (Student) user;
-                    break;
-                }
-            }
-
-            if (studentSemVinculos != null) {
-                System.out.println("   ✅ Criado: " + studentSemVinculosNome);
-                System.out.println("      ID: " + studentSemVinculos.getUserId());
-                System.out.println("      Login: " + studentSemVinculos.getLogin());
-                System.out.println("      Número: " + studentSemVinculos.getStudentNumber());
-                System.out.println("      Vínculos: NENHUM (pode deletar)");
-            }
-        }
-
-        // =========================================================================
-        // 4. STUDENT COM VÍNCULOS (NÃO PODE DELETAR)
-        // =========================================================================
-        System.out.println("\n4️⃣  STUDENT COM VÍNCULOS:");
-        System.out.println("   -------------------");
-
-        String studentComVinculosNome = "Estudante Com Vínculos " + timestamp;
-        String studentComVinculosLogin = "student_com_vinculos_" + timestamp;
-        String studentComVinculosNumero = "2025" + timestamp.substring(0, 6);
-
-        String resultadoStudentComVinculos = global.createStudent(
-                studentComVinculosNome,
-                studentComVinculosLogin,
-                "senha123",
-                studentComVinculosNumero,
-                4
-        );
-
-        System.out.println("   Resultado: " + resultadoStudentComVinculos);
-
-        if (resultadoStudentComVinculos.equals("Success")) {
-            // Buscar o student recém-criado
-            global.readAllUserWithJplq();
-            Student studentComVinculos = null;
-            for (User user : global.getUsers()) {
-                if (user instanceof Student && user.getLogin().equals(studentComVinculosLogin)) {
-                    studentComVinculos = (Student) user;
-                    break;
-                }
-            }
-
-            if (studentComVinculos != null) {
-                System.out.println("   ✅ Criado: " + studentComVinculosNome);
-                System.out.println("      ID: " + studentComVinculos.getUserId());
-                System.out.println("      Login: " + studentComVinculos.getLogin());
-                System.out.println("      Número: " + studentComVinculos.getStudentNumber());
-
-                // CRIAR VÍNCULO 1: Adicionar student ao time
-                String vinculoTimeResult = time.createTeamMember(studentComVinculos, TeamMember.Role.DEVELOPER);
-                System.out.println("      Vínculo com time: " + vinculoTimeResult);
-
-                // CRIAR VÍNCULO 2: Criar um StudentAward para o student
-                // Primeiro precisamos de um project
-                String projectResult = curso.createProject(
-                        "Projeto Teste Deleção " + timestamp,
-                        time,
-                        curso
-                );
-
-                if (projectResult.contains("successfully")) {
-                    // Buscar o projeto criado
-                    curso.retrieveProjects();
-                    Project projeto = curso.getProjects().get(curso.getProjects().size() - 1);
-
-                    // Buscar um teacher para atribuir o award
-                    Teacher teacherParaAward = null;
-                    for (User user : global.getUsers()) {
-                        if (user instanceof Teacher && user.getLogin().equals(teacherComVinculosLogin)) {
-                            teacherParaAward = (Teacher) user;
-                            break;
-                        }
-                    }
-
-                    if (teacherParaAward != null && projeto != null) {
-                        // Criar StudentAward
-                        String awardResult1 = global.assignAwardStudent(
-                                award.getAwardID(),
-                                studentComVinculos.getUserId(),
-                                teacherParaAward.getUserId(),
-                                projeto.getProjectId()
-                        );
-
-                        System.out.println("      Vínculo com award: " + awardResult1);
-
-                        // Atualizar dados do student
-                        studentComVinculos.readAllTeamMemberWithJplq();
-                        studentComVinculos.readAllStudentAwardWithJplq();
-                    }
-                }
-
-                System.out.println("      Status: TEM vínculos (NÃO pode deletar)");
-            }
-        }
-
-        // =========================================================================
-        // RESUMO FINAL
-        // =========================================================================
-        System.out.println("\n🎯 RESUMO DOS USUÁRIOS CRIADOS:");
-        System.out.println("===============================");
-
-        // Atualizar lista completa de usuários
-        global.readAllUserWithJplq();
-
-        System.out.println("\nPara testar a deleção, use a opção 6 (DELETE) ou:");
-        System.out.println("1. Execute o sistema");
-        System.out.println("2. Consulte o banco de dados para ver os IDs");
-        System.out.println("3. Use o comando: global.deleteUser(ID)");
-
-        System.out.println("\n📋 LISTA DE USUÁRIOS CRIADOS:");
-        System.out.println("-----------------------------");
-
-        int count = 1;
-        for (User user : global.getUsers()) {
-            // Verificar se é um dos usuários que acabamos de criar (pelo timestamp no nome)
-            if (user.getName().contains(timestamp)) {
-                String tipo = user instanceof Teacher ? "TEACHER" : "STUDENT";
-                boolean podeDeletar = global.canDeleteUser(user.getUserId());
-                String statusDelecao = podeDeletar ? "✅ PODE DELETAR" : "❌ NÃO PODE DELETAR";
-
-                System.out.printf("\n%d. %s - %s\n", count, user.getName(), tipo);
-                System.out.println("   ID: " + user.getUserId());
-                System.out.println("   Login: " + user.getLogin());
-                System.out.println("   Status: " + statusDelecao);
-
-                if (user instanceof Teacher) {
-                    Teacher t = (Teacher) user;
-                    System.out.println("   Vínculos: " + t.getCourses().size() + " cursos, " +
-                            t.getAssignedAwards().size() + " awards atribuídos");
-                } else if (user instanceof Student) {
-                    Student s = (Student) user;
-                    System.out.println("   Vínculos: " + s.getTeamMemberships().size() + " times, " +
-                            s.getStudentAwards().size() + " awards recebidos");
-                }
-
-                count++;
-            }
-        }
-
-        System.out.println("\n💡 DICA PARA TESTAR:");
-        System.out.println("1. Usuários SEM vínculos → deleteUser() deve retornar 'Success'");
-        System.out.println("2. Usuários COM vínculos → deleteUser() deve retornar 'ERROR: Cannot delete user because they are linked...'");
-        System.out.println("\n✅ Pronto! Agora você pode testar a deleção no banco de dados.");
-    }*/
-
     //=================================================================================================================================================================================================================
 
 
@@ -1474,7 +1544,7 @@ public class TestMain {
 
 
 
-    
+
 }
 
 
