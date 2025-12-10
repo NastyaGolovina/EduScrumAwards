@@ -1,9 +1,10 @@
-import UPT_SQ.EduScrumAwards.model.Student;
-import UPT_SQ.EduScrumAwards.model.UserRole;
-import UPT_SQ.EduScrumAwards.model.User;
+import UPT_SQ.EduScrumAwards.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StudentTest {
@@ -133,5 +134,40 @@ public class StudentTest {
 
         Student defaultStudent = new Student();
         assertEquals(UserRole.STUDENT, defaultStudent.getRole());
+    }
+
+
+    @Test
+    void testCalculatePoints() {
+
+        User user = new Student();
+        user.setUserId(100L);
+
+        User otherUser = new Student();
+        otherUser.setUserId(200L);
+
+        ArrayList<StudentAward> awards = new ArrayList<>();
+
+        StudentAward sa1 = new StudentAward();
+        sa1.setPoints(30);
+        sa1.setStudent((Student) user);
+
+        StudentAward sa2 = new StudentAward();
+        sa2.setPoints(40);
+        sa2.setStudent((Student) user);
+
+        StudentAward sa3 = new StudentAward();
+        sa3.setPoints(50);
+        sa3.setStudent((Student) otherUser);
+
+        awards.add(sa1);
+        awards.add(sa2);
+        awards.add(sa3);
+
+
+
+
+        assertEquals(70, ((Student) user).calculatePoints(awards));
+        assertEquals(50, ((Student) otherUser).calculatePoints(awards));
     }
 }

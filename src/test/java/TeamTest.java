@@ -164,9 +164,8 @@ public class TeamTest {
     }
 
     @Test
-    void testEarnAward_AllBranches() {
-//        Team team = new Team();
-//        team.setTeamID(1);
+    void testEarnAward() {
+
 
         ArrayList<StudentAward> awards = new ArrayList<>();
 
@@ -179,26 +178,27 @@ public class TeamTest {
         Team otherTeam = new Team();
         otherTeam.setTeamID(2);
         StudentAward sa2 = new StudentAward();
-        sa1.setPoints(10);
-        sa1.setTeam(otherTeam);
+        sa2.setPoints(10);
+        sa2.setTeam(otherTeam);
         awards.add(sa2);
 
 
         Team sameTeam = new Team();
         sameTeam.setTeamID(1);
         StudentAward sa3 = new StudentAward();
-        sa1.setPoints(40);
-        sa1.setTeam(sameTeam);
+        sa3.setPoints(40);
+        sa3.setTeam(sameTeam);
 
         StudentAward sa4 = new StudentAward();
-        sa1.setPoints(10);
-        sa1.setTeam(sameTeam);
+        sa4.setPoints(10);
+        sa4.setTeam(sameTeam);
 
         awards.add(sa3);
         awards.add(sa4);
 
 
-        assertEquals(10, sameTeam.earnAward(awards));
+        assertEquals(50, sameTeam.earnAward(awards));
+        assertEquals(10, otherTeam.earnAward(awards));
     }
 
 

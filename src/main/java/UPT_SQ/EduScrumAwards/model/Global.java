@@ -157,9 +157,7 @@ public class Global {
         this.studentsAwards = studentsAwards;
     }
 
-    // public void readFromDB() {
 
-    // }
 
     /**
      * Creates a new Award object and saves it to the database.
@@ -413,6 +411,18 @@ public class Global {
         return null;
     }
 
+
+    /**
+     * Calculates the total points a specific student has earned in a specific course.
+     *
+     * <p>This method iterates over all {@code StudentAward} objects in the {@code studentsAwards} collection,
+     * sums up the points for awards where both the student ID and course ID match the given parameters,
+     * and returns the total sum.</p>
+     *
+     * @param courseId  the ID of the course for which to calculate the student's total points
+     * @param studentId the ID of the student whose points are being calculated
+     * @return the total number of points the student has earned in the specified course
+     */
     public int getCourseStudentPointValue(int courseId , long studentId) {
         int sum = 0;
         for (StudentAward studentAward : studentsAwards) {
