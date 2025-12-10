@@ -1,9 +1,13 @@
 package UPT_SQ.EduScrumAwards.controller;
 
 import UPT_SQ.EduScrumAwards.model.Course;
+import UPT_SQ.EduScrumAwards.model.CourseTeacher;
 import UPT_SQ.EduScrumAwards.model.Global;
 import UPT_SQ.EduScrumAwards.model.Teacher;
 import UPT_SQ.EduScrumAwards.model.User;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +22,15 @@ public class CourseTeacherController {
     public CourseTeacherController(Global global) {
         this.global = global;
     }
+
+    @GetMapping("/all")
+    public List<CourseTeacher> getAllCoursesTeachers(
+        @RequestParam int courseId
+    ) {
+        Course course = global.searchCourse(courseId);
+        return course.getCourseTeachers();
+    }
+
 
     // Create a CourseTeacher for a given course and teacher IDs
     @PostMapping("/create")

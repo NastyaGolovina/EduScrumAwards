@@ -1,6 +1,9 @@
 package UPT_SQ.EduScrumAwards.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.Session;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,18 +29,6 @@ public class Student extends User {
     // SCORE (transient - dynamically calculated)
     @Transient
     private Integer totalScore = 0;
-
-    // RELATIONSHIPS (commented until other classes are ready)
-
-    // Relationship with TeamMember (to be implemented by Lily)
-    // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JsonIgnore
-    // private List<TeamMember> teamMemberships = new ArrayList<>();
-
-    // Relationship with StudentAward (to be implemented by Anastasia)
-//    @JsonIgnore
-    // @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    // private List<StudentAward> studentAwards = new ArrayList<>();
 
     // Constructors
     public Student() {
@@ -75,51 +66,29 @@ public class Student extends User {
         return this.totalScore;
     }
 
-    /**
-     * Returns the student's award list
-     * TODO: Implement when StudentAward is ready
-     * @return List of student awards
-     */
-    public List<StudentAward> getStudentAwards() {
-        // TODO: Implement when StudentAward is ready
-        System.out.println("Retrieving student awards...");
-        return new ArrayList<>();
-    }
 
     /**
-     * Method for the student to receive an award
-     * TODO: Implement when StudentAward is ready
-     * @param award Award to be received
+     * Calculates the total points earned by this student.
+     *
+     * <p>This method iterates over a list of {@link StudentAward} objects
+     * and sums the points for all awards belonging to the current student
+     * (based on matching user IDs).</p>
+     *
+     * @param studentsAwards the list of student awards to check
+     * @return the total points awarded to this student
      */
-    public void earnAward(Award award) {
-        // TODO: Implement when Award and StudentAward are ready
-        System.out.println("Student " + this.getName() + " earned award: " + award.getAwardName());
-        // In the future: create StudentAward and add to list
+    public int calculatePoints(ArrayList<StudentAward> studentsAwards) {
+        int points = 0;
+        for(StudentAward studentAward : studentsAwards) {
+            if(studentAward.getStudent().getUserId() == this.getUserId()) {
+                points += studentAward.getPoints();
+            }
+        }
+        return points;
     }
 
-    /**
-     * Generates student's personal dashboard
-     * TODO: Implement student dashboard generation
-     */
-    public void generateDashboard() {
-        // TODO: Implement student dashboard generation
-        System.out.println("Generating student dashboard for: " + this.getName());
-        // In the future: will return progress, awards, ranking, etc.
-    }
+    // Getters e Setters
 
-    /**
-     * Checks if the student is enrolled in a specific course
-     * TODO: Implement when relationships are complete
-     * @param course Course to check
-     * @return true if student is enrolled in the course
-     */
-    public boolean isEnrolledInCourse(Course course) {
-        // TODO: Implement via Team -> Project -> Course
-        System.out.println("Checking if student is enrolled in course: " + course.getCourseName());
-        return false;
-    }
-
-    // Getters and Setters
     public String getStudentNumber() {
         return studentNumber;
     }
@@ -143,17 +112,6 @@ public class Student extends User {
     public void setTotalScore(Integer totalScore) {
         this.totalScore = totalScore;
     }
-
-    // Getters for relationships (will be uncommented when classes are ready)
-    /*
-    public List<TeamMember> getTeamMemberships() {
-        return teamMemberships;
-    }
-
-    public void setTeamMemberships(List<TeamMember> teamMemberships) {
-        this.teamMemberships = teamMemberships;
-    }
-    */
 
     @Override
     public String toString() {

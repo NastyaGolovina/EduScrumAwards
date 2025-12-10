@@ -45,11 +45,26 @@ public class Global {
 
     @PostConstruct
     public void init() {
-        readAllTeamWithJplq();
-        readAllUserWithJplq();
-        readAllAwardWithJplq();
-        readAllCourseWithJplq();
-        readAllStudentAwardWithJplq();
+        try {
+            System.out.println("Initializing Global...");
+
+            readAllTeamWithJplq();
+            readAllUserWithJplq();
+            readAllAwardWithJplq();
+            readAllCourseWithJplq();
+            readAllStudentAwardWithJplq();
+
+//            System.out.println("✓ Global initialization complete");
+//            System.out.println("  - Users: " + users.size());
+//            System.out.println("  - Courses: " + courses.size());
+//            System.out.println("  - Teams: " + teams.size());
+//            System.out.println("  - Awards: " + awards.size());
+//            System.out.println("  - Student Awards: " + studentsAwards.size());
+
+        } catch (Exception e) {
+            System.err.println("ERROR during Global initialization: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -142,9 +157,6 @@ public class Global {
         this.studentsAwards = studentsAwards;
     }
 
-    // public void readFromDB() {
-
-    // }
 
     /**
      * Creates a new Award object and saves it to the database.
@@ -398,66 +410,28 @@ public class Global {
         return null;
     }
 
-    // /**
-    // * Creates a new award rule for the specified project and teacher.
-    // *
-    // * @param completionPercent the completion percentage (0–100)
-    // * @param isAllGoalsCompleted whether all goals must be completed
-    // * @param teacherId the ID of the teacher
-    // * @param projectId the ID of the project
-    // * @param awardId the ID of the award
-    // * @return "Success" if created successfully, or an error message if any field
-    // is invalid or missing
-    // */
-    // // move to api
-    // public String createAwardRule(double completionPercent, boolean
-    // isAllGoalsCompleted, long teacherId, int projectId,int awardId) {
-    // User user = searchUser(teacherId);
-    // Award award = searchAward(awardId);
-    // Project project = null;
-    // for(Course c : courses) {
-    // project =c.findProjectById(projectId);
-    // if(project != null) {
-    // break;
-    // }
-    // }
-    // if(award != null) {
-    // if (user != null) {
-    // if(project != null) {
-    // return
-    // award.createAwardRule(completionPercent,isAllGoalsCompleted,user,project);
-    // }
-    // }
-    // }
-    //
-    // return "ERROR: One of the field is empty or null";
-    //
-    // }
-    //
-    //
-    // /**
-    // * Updates an existing award rule by its identifier.
-    // *
-    // * @param ruleId the ID of the award rule
-    // * @param completionPercent the new completion percentage (0–100)
-    // * @param isAllGoalsCompleted whether all goals must be completed
-    // * @param awardId the ID of the award
-    // * @return "Success" if updated successfully, or an error message if any field
-    // is invalid or missing
-    // */
-    // // move to api
-    // public String updateAwardRule(int ruleId, double completionPercent, boolean
-    // isAllGoalsCompleted, int awardId) {
-    // Award award = searchAward(awardId);
-    //
-    // if(award != null) {
-    // return award.updateAwardRule(ruleId,completionPercent,isAllGoalsCompleted);
-    // }
-    //
-    // return "ERROR: One of the field is empty or null";
-    //
-    // }
-    //
+
+    /**
+     * Calculates the total points a specific student has earned in a specific course.
+     *
+     * <p>This method iterates over all {@code StudentAward} objects in the {@code studentsAwards} collection,
+     * sums up the points for awards where both the student ID and course ID match the given parameters,
+     * and returns the total sum.</p>
+     *
+     * @param courseId  the ID of the course for which to calculate the student's total points
+     * @param studentId the ID of the student whose points are being calculated
+     * @return the total number of points the student has earned in the specified course
+     */
+    public int getCourseStudentPointValue(int courseId , long studentId) {
+        int sum = 0;
+        for (StudentAward studentAward : studentsAwards) {
+            if(studentAward.getStudent().getUserId() == studentId
+                    && studentAward.getProject().getCourse().getCourseID() == courseId){
+                sum += studentAward.getPoints();
+            }
+        }
+        return sum;
+    }
 
     /**
      * Finds a project by its ID across all courses.
@@ -578,7 +552,12 @@ public class Global {
                     project.getTeam(),
 //                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
 //                    Date.from(LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant()),
-                    Date.from(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()),
+//                    Date.from(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()),
+                    Date.from(
+                            LocalDateTime.now()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toInstant()
+                    ),
                     award.getPointsValue());
 
             studentsAwards.add(studentAward);
@@ -1324,10 +1303,8 @@ public class Global {
             databaseHelper.exit();
         }
     }
-
     /**
-     * Loads all User objects from the database and stores them in the local users
-     * list.
+     * Loads all User objects from the database and stores them in the local users list.
      * Uses JPQL to query the database.
      */
     public void readAllUserWithJplq() {
@@ -1339,12 +1316,79 @@ public class Global {
             List<User> userList = session.createQuery("FROM User", User.class).getResultList();
             users = new ArrayList<>(userList);
             System.out.println("✓ Loaded " + users.size() + " users from database");
+
         } catch (Exception e) {
             System.err.println("ERROR loading users: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             session.close();
             databaseHelper.exit();
         }
+    }
+
+    /**
+     * Checks if a user can be deleted (not linked to any other entities)
+     * Uses the global arrays (courses, teams, studentsAwards) to check for references
+     *
+     * @param userId ID of the user to check
+     * @return true if can be deleted, false otherwise
+     */
+    public boolean canDeleteUser(long userId) {
+        User user = searchUser(userId);
+        if (user == null) {
+            return false;
+        }
+
+        if (user instanceof Teacher) {
+            System.out.println("Checking deletability for Teacher: " + user.getName());
+
+            // Check if teacher is assigned to any course (via CourseTeacher)
+            for (Course course : courses) {
+                for (CourseTeacher ct : course.getCourseTeachers()) {
+                    if (ct.getTeacher().getUserId() == userId) {
+                        System.out.println("Teacher is assigned to course: " + course.getCourseName());
+                        return false;
+                    }
+                }
+            }
+
+            // Check if teacher has assigned any awards (via StudentAward)
+            for (StudentAward sa : studentsAwards) {
+                if (sa.getTeacher().getUserId() == userId) {
+                    System.out.println("Teacher has assigned student award: " + sa.getAward().getAwardName());
+                    return false;
+                }
+            }
+
+            System.out.println("Teacher can be deleted.");
+            return true;
+
+        } else if (user instanceof Student) {
+            System.out.println("Checking deletability for Student: " + user.getName());
+
+            // Check if student is member of any team
+            for (Team team : teams) {
+                for (TeamMember tm : team.getTeamMember()) {
+                    if (tm.getStudent().getUserId() == userId) {
+                        System.out.println("Student is member of team: " + team.getTeamName());
+                        return false;
+                    }
+                }
+            }
+
+            // Check if student has any awards
+            for (StudentAward sa : studentsAwards) {
+                if (sa.getStudent().getUserId() == userId) {
+                    System.out.println("Student has award: " + sa.getAward().getAwardName());
+                    return false;
+                }
+            }
+
+            System.out.println("Student can be deleted.");
+            return true;
+        }
+
+        return true;
     }
 
     /**
@@ -1548,12 +1592,20 @@ public class Global {
 
     /**
      * Deletes a User (Teacher or Student) with the specified ID.
+     * Only allowed if the user is not linked to any other entities.
+     * Removes from both database and in-memory arrays.
      *
      * @param userId The ID of the user to delete.
      * @return "Success" if the user was successfully deleted, or an error message
-     *         if the user does not exist or deletion fails.
+     *         if the user does not exist, has references, or deletion fails.
      */
     public String deleteUser(long userId) {
+        // First check in memory using global arrays
+        if (!canDeleteUser(userId)) {
+            return "ERROR: Cannot delete user because they are linked to other entities " +
+                    "(assigned to courses, member of teams, or has/has assigned awards).";
+        }
+
         User user = searchUser(userId);
         if (user == null) {
             return "ERROR: User with this id does not exist";
@@ -1561,21 +1613,40 @@ public class Global {
 
         DatabaseHelper databaseHelper = new DatabaseHelper();
         databaseHelper.setup();
-        Session session = databaseHelper.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
+        Session session = null;
+        Transaction transaction = null;
 
         try {
-            session.remove(user);
-            transaction.commit();
-            users.remove(user);
-            return "Success";
-        } catch (Exception e) {
-            if (transaction != null)
+            session = databaseHelper.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+
+            // Load the user from database to ensure we have a managed entity
+            User userToDelete = session.get(User.class, userId);
+            if (userToDelete == null) {
                 transaction.rollback();
+                return "ERROR: User with this id does not exist in database";
+            }
+
+            // Remove the user (this will cascade delete if CascadeType.ALL is set)
+            session.remove(userToDelete);
+            transaction.commit();
+
+            // Remove from the in-memory array (important!)
+            users.remove(user);
+
+            System.out.println("✓ User deleted successfully from DB and memory: " + userId);
+            return "Success";
+
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
             return "ERROR: Cannot delete user - " + e.getMessage() +
-                    ". User might be referenced by other entities.";
+                    ". User might be referenced by other entities (database constraint).";
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
             databaseHelper.exit();
         }
     }

@@ -162,4 +162,48 @@ public class TeamTest {
 
         assertEquals(0, teamSpy.earnAward());
     }
+
+    @Test
+    void testEarnAward() {
+
+
+        ArrayList<StudentAward> awards = new ArrayList<>();
+
+        awards.add(null);
+        StudentAward sa1 = new StudentAward();
+        sa1.setPoints(10);
+        sa1.setTeam(null);
+        awards.add(sa1);
+
+        Team otherTeam = new Team();
+        otherTeam.setTeamID(2);
+        StudentAward sa2 = new StudentAward();
+        sa2.setPoints(10);
+        sa2.setTeam(otherTeam);
+        awards.add(sa2);
+
+
+        Team sameTeam = new Team();
+        sameTeam.setTeamID(1);
+        StudentAward sa3 = new StudentAward();
+        sa3.setPoints(40);
+        sa3.setTeam(sameTeam);
+
+        StudentAward sa4 = new StudentAward();
+        sa4.setPoints(10);
+        sa4.setTeam(sameTeam);
+
+        awards.add(sa3);
+        awards.add(sa4);
+
+
+        assertEquals(50, sameTeam.earnAward(awards));
+        assertEquals(10, otherTeam.earnAward(awards));
+    }
+
+
+
+
+
+
 }
