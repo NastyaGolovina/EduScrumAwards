@@ -5,6 +5,7 @@ import org.hibernate.Session;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a team entity in the EduScrum Awards system.
@@ -154,6 +155,18 @@ public class Team {
             session.close();
             DatabaseHelper.exit();
             return "ERROR: Student not found in database!";
+        }
+
+        // --- Check if this student is already in the team ---
+        if (managedTeam.getTeamMember() != null) {
+            for (TeamMember existing : managedTeam.getTeamMember()) {
+                if (existing.getStudent() != null &&
+                        Objects.equals(existing.getStudent().getUserId(), managedStudent.getUserId())) {
+
+                    session.getTransaction().rollback();
+                    return "ERROR: This student is already a member of the team!";
+                }
+            }
         }
 
         // Create and persist the new TeamMember
