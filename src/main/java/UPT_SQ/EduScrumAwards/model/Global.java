@@ -158,7 +158,6 @@ public class Global {
     }
 
 
-
     /**
      * Creates a new Award object and saves it to the database.
      *
