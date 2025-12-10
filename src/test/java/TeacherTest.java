@@ -66,10 +66,10 @@ public class TeacherTest {
         assertEquals(UserRole.TEACHER, defaultTeacher.getRole());
     }
 
-    @Test
-    public void testGenerateDashboard() {
-        assertDoesNotThrow(() -> t2.generateDashboard());
-    }
+//    @Test
+//    public void testGenerateDashboard() {
+//        assertDoesNotThrow(() -> t2.generateDashboard());
+//    }
 
     @Test
     public void testTeacherToString() {

@@ -92,6 +92,7 @@ public class StudentAwardTest {
     @Test
     public void testStudentAwardSprint() {
         Sprint sprint = new Sprint();
+        AwardRule rule = new AwardRule();
 
 
         StudentAward saWithSprint = new StudentAward(
@@ -102,14 +103,21 @@ public class StudentAwardTest {
                 new Team(),
                 new Date(),
                 100,
-                sprint
+                sprint,
+                rule
         );
 
         assertNotNull(saWithSprint.getSprint());
         assertEquals(sprint, saWithSprint.getSprint());
 
+        assertNotNull(saWithSprint.getRule());
+        assertEquals(rule, saWithSprint.getRule());
+
 
         sa1.setSprint(sprint);
         assertEquals(sprint, sa1.getSprint());
+
+        sa1.setRule(rule);
+        assertEquals(rule, sa1.getRule());
     }
 }

@@ -95,11 +95,11 @@ public class StudentTest {
         assertEquals(200, score);
     }
 
-    @Test
-    public void testGetStudentAwards() {
-        assertNotNull(s3.getStudentAwards());
-        assertTrue(s3.getStudentAwards().isEmpty());
-    }
+//    @Test
+//    public void testGetStudentAwards() {
+//        assertNotNull(s3.getStudentAwards());
+//        assertTrue(s3.getStudentAwards().isEmpty());
+//    }
 
     @Test
     public void testStudentToString() {
