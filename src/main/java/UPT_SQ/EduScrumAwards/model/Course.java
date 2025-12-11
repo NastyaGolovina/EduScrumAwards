@@ -303,7 +303,7 @@ public class Course {
         CourseTeacher newCt = new CourseTeacher(this, teacher, isResponsible);
         courseTeachers.add(newCt);
 
-        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper DatabaseHelper = createDatabaseHelper();
         DatabaseHelper.setup();
         Session session = DatabaseHelper.getSessionFactory().openSession();
         session.beginTransaction();
@@ -320,7 +320,7 @@ public class Course {
      * Loads all CourseTeacher objects from the database and stores them locally.
      */
     public void readAllCourseTeacherWithJplq() {
-        DatabaseHelper DatabaseHelper = new DatabaseHelper();
+        DatabaseHelper DatabaseHelper = createDatabaseHelper();
         DatabaseHelper.setup();
         Session session = DatabaseHelper.getSessionFactory().openSession();
         try {
@@ -366,7 +366,7 @@ public class Course {
         if (ct != null) {
             ct.setIsResponsible(isResponsible);
 
-            DatabaseHelper DatabaseHelper = new DatabaseHelper();
+            DatabaseHelper DatabaseHelper = createDatabaseHelper();
             DatabaseHelper.setup();
             Session session = DatabaseHelper.getSessionFactory().openSession();
             session.beginTransaction();
@@ -393,7 +393,7 @@ public class Course {
             return "ERROR: CourseTeacher with ID " + id + " does not exist";
         }
 
-        DatabaseHelper databaseHelper = new DatabaseHelper();
+        DatabaseHelper databaseHelper = createDatabaseHelper();
         databaseHelper.setup();
         Session session = null;
         try {
@@ -426,7 +426,7 @@ public class Course {
 
     /** Search for a project by its ID */
     public Project searchProject(int projectId) {
-        DatabaseHelper dbHelper = new DatabaseHelper();
+        DatabaseHelper dbHelper = createDatabaseHelper();
         dbHelper.setup();
         Session session = dbHelper.getSessionFactory().openSession();
 
@@ -440,7 +440,7 @@ public class Course {
 
     /** Retrieves all projects for this course and fully loads related arrays */
     public void retrieveProjects() {
-        DatabaseHelper db = new DatabaseHelper();
+        DatabaseHelper db = createDatabaseHelper();
         db.setup();
         Session session = db.getSessionFactory().openSession();
 
@@ -473,7 +473,7 @@ public class Course {
         if (course == null)
             return "Course cannot be null!";
 
-        DatabaseHelper dbHelper = new DatabaseHelper();
+        DatabaseHelper dbHelper = createDatabaseHelper();
         dbHelper.setup();
         Session session = dbHelper.getSessionFactory().openSession();
         session.beginTransaction();
@@ -526,7 +526,7 @@ public class Course {
         if (projectName != null && !projectName.isEmpty())
             project.setProjectName(projectName);
 
-        DatabaseHelper dbHelper = new DatabaseHelper();
+        DatabaseHelper dbHelper = createDatabaseHelper();
         dbHelper.setup();
         Session session = dbHelper.getSessionFactory().openSession();
         session.beginTransaction();
@@ -551,7 +551,7 @@ public class Course {
 
     /** Delete an existing Project that belongs to this Course */
     public String deleteProject(int projectId) {
-        DatabaseHelper dbHelper = new DatabaseHelper();
+        DatabaseHelper dbHelper = createDatabaseHelper();
         dbHelper.setup();
         Session session = null;
 
@@ -630,8 +630,13 @@ public class Course {
         } finally {
             if (session != null)
                 session.close();
-            dbHelper.exit();
+            if (dbHelper != null)
+                dbHelper.exit();
         }
+    }
+
+    protected DatabaseHelper createDatabaseHelper() {
+        return new DatabaseHelper();
     }
 
     @Override
