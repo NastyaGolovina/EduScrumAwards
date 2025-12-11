@@ -6,6 +6,8 @@ import UPT_SQ.EduScrumAwards.model.Project;
 import UPT_SQ.EduScrumAwards.model.Sprint;
 import UPT_SQ.EduScrumAwards.model.Goal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -53,7 +55,22 @@ public class GoalController {
                              @RequestParam String description,
                              @RequestParam int score) {
         Sprint sprint = getSprint(courseId, projectId, sprintId);
-        return sprint != null ? sprint.createGoal(description, score) : "Sprint not found!";
+
+
+        //Assign Automatic Award
+        if (sprint == null) return "Sprint not found!";
+
+        String result =  sprint.createGoal(description, score);
+
+        if (result.contains("Goal added successfully!")) {
+            return sprint.assignAutomaticAward(global.getAwards(),global.getStudentsAwards());
+        } else {
+            return result;
+        }
+        //
+
+
+//        return sprint != null ? sprint.createGoal(description, score) : "Sprint not found!";
     }
 
     @PutMapping("/{goalId}/update")
@@ -65,8 +82,22 @@ public class GoalController {
                              @RequestParam int score,
                              @RequestParam boolean completed) {
         Sprint sprint = getSprint(courseId, projectId, sprintId);
+
+        //Assign Automatic Award
         if (sprint == null) return "Sprint not found!";
-        return sprint.updateGoal(goalId, description, score, completed);
+
+        String result =  sprint.updateGoal(goalId, description, score, completed);
+
+        if (result.contains("Goal updated successfully!")) {
+            return sprint.assignAutomaticAward(global.getAwards(),global.getStudentsAwards());
+        } else {
+            return result;
+        }
+        //
+
+//
+//        if (sprint == null) return "Sprint not found!";
+//        return sprint.updateGoal(goalId, description, score, completed);
     }
 
     @DeleteMapping("/{goalId}/delete")
@@ -75,7 +106,20 @@ public class GoalController {
                              @PathVariable int sprintId,
                              @PathVariable int goalId) {
         Sprint sprint = getSprint(courseId, projectId, sprintId);
+
+        //Assign Automatic Award
         if (sprint == null) return "Sprint not found!";
-        return sprint.deleteGoal(goalId);
+
+        String result =  sprint.deleteGoal(goalId);
+
+        if (result.contains("Goal deleted successfully!")) {
+            return sprint.assignAutomaticAward(global.getAwards(),global.getStudentsAwards());
+        } else {
+            return result;
+        }
+        //
+//
+//        if (sprint == null) return "Sprint not found!";
+//        return sprint.deleteGoal(goalId);
     }
 }

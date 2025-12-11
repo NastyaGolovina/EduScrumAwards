@@ -245,9 +245,11 @@ public class Sprint {
      */
     public boolean isRuleAssigned(ArrayList<StudentAward> studentAwards,AwardRule rule) {
         for (StudentAward studentAward : studentAwards) {
-            if(studentAward.getSprint().sprintId == this.sprintId &&
-                    studentAward.getRule().getRuleId() == rule.getRuleId()) {
+            if(studentAward.getStudent() != null && studentAward.getRule() != null) {
+                if(studentAward.getSprint().getSprintId() == this.sprintId &&
+                        studentAward.getRule().getRuleId() == rule.getRuleId()) {
                     return true;
+                }
             }
         }
         return false;
