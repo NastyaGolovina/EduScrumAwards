@@ -1,14 +1,11 @@
-import UPT_SQ.EduScrumAwards.model.Goal;
-import UPT_SQ.EduScrumAwards.model.Project;
-import UPT_SQ.EduScrumAwards.model.Sprint;
+import UPT_SQ.EduScrumAwards.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SprintTest {
     @Test
@@ -117,6 +114,111 @@ public class SprintTest {
 
         assertTrue(output.contains("sprintId=5"));
         assertTrue(output.contains("Sprint{"));
+    }
+
+
+
+    @Test
+    void testIsRuleAssigned_EmptyList() {
+        Sprint sprint = new Sprint();
+        sprint.setSprintId(1);
+
+        ArrayList<StudentAward> list = new ArrayList<>();
+        AwardRule rule = new AwardRule();
+        rule.setRuleId(10);
+
+        assertFalse(sprint.isRuleAssigned(list, rule));
+    }
+
+    @Test
+    void testIsRuleAssigned_NullSprintOrRule() {
+        Sprint sprint = new Sprint();
+        sprint.setSprintId(1);
+
+        ArrayList<StudentAward> list = new ArrayList<>();
+        StudentAward sa = new StudentAward();
+
+        AwardRule rule = new AwardRule();
+        rule.setRuleId(10);
+
+        sa.setSprint(sprint);
+        sa.setRule(null);
+        list.add(sa);
+
+
+        StudentAward sa1 = new StudentAward();
+        sa1.setSprint(null);
+        sa1.setRule(rule);
+        list.add(sa1);
+
+
+
+        assertFalse(sprint.isRuleAssigned(list, rule));
+    }
+
+    @Test
+    void testIsRuleAssigned_SprintNotMatch() {
+        Sprint sprint = new Sprint();
+        sprint.setSprintId(1);
+
+        ArrayList<StudentAward> list = new ArrayList<>();
+
+        StudentAward sa = new StudentAward();
+        sa.setRule(new AwardRule());
+        sa.getRule().setRuleId(10);
+
+        Sprint sprint1 = new Sprint();
+        sprint1.setSprintId(2);
+        sa.setSprint(sprint1);
+
+        list.add(sa);
+
+        AwardRule rule = new AwardRule();
+        rule.setRuleId(10);
+
+        assertFalse(sprint.isRuleAssigned(list, rule));
+    }
+
+    @Test
+    void testIsRuleAssigned_RuleNotMatch() {
+        Sprint sprint = new Sprint();
+        sprint.setSprintId(1);
+
+        ArrayList<StudentAward> list = new ArrayList<>();
+
+        StudentAward sa = new StudentAward();
+        sa.setSprint(sprint);
+        sa.setRule(new AwardRule());
+        sa.getRule().setRuleId(5);
+
+        list.add(sa);
+
+        AwardRule rule = new AwardRule();
+        rule.setRuleId(10);
+
+        assertFalse(sprint.isRuleAssigned(list, rule));
+    }
+
+    @Test
+    void testIsRuleAssigned_FullMatch() {
+        Sprint sprint = new Sprint();
+        sprint.setSprintId(1);
+
+        ArrayList<StudentAward> list = new ArrayList<>();
+
+        StudentAward sa = new StudentAward();
+        sa.setSprint(sprint);
+
+        AwardRule r = new AwardRule();
+        r.setRuleId(10);
+        sa.setRule(r);
+
+        list.add(sa);
+
+        AwardRule rule = new AwardRule();
+        rule.setRuleId(10);
+
+        assertTrue(sprint.isRuleAssigned(list, rule));
     }
 }
 

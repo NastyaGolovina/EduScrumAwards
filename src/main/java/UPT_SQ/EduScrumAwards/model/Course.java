@@ -631,4 +631,12 @@ public class Course {
             dbHelper.exit();
         }
     }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "courseName='" + courseName + '\'' +
+                ", courseID=" + courseID +
+                '}';
+    }
 }
