@@ -46,24 +46,24 @@ public class Student extends User {
         this.currentSemester = currentSemester;
     }
 
-    // BUSINESS METHODS
-
     /**
-     * Calculates the student's total score based on received awards
-     * TODO: Implement real calculation when StudentAward is ready
-     * @return Student's total score
+     * Calculates the total points earned by this student.
+     *
+     * <p>This method iterates over a list of {@link StudentAward} objects
+     * and sums the points for all awards belonging to the current student
+     * (based on matching user IDs).</p>
+     *
+     * @param studentsAwards the list of student awards to check
+     * @return the total points awarded to this student
      */
-    public Integer calculateTotalScore() {
-        // TODO: Implement calculation based on awards when StudentAward is ready
-        // For now, return a placeholder value
-        System.out.println("Calculating total score for student: " + this.getName());
-
-        // In the future: iterate through studentAwards and sum points
-        // for (StudentAward award : studentAwards) {
-        //     this.totalScore += award.getAward().getPointsValue();
-        // }
-
-        return this.totalScore;
+    public int calculatePoints(ArrayList<StudentAward> studentsAwards) {
+        int points = 0;
+        for(StudentAward studentAward : studentsAwards) {
+            if(studentAward.getStudent().getUserId() == this.getUserId()) {
+                points += studentAward.getPoints();
+            }
+        }
+        return points;
     }
 
 
