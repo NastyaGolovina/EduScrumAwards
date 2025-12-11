@@ -36,7 +36,7 @@ public class Course {
      * Mapped by the "course" field in CourseTeacher.
      */
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseTeacher> courseTeachers;
 
     /**
@@ -271,12 +271,12 @@ public class Course {
         return false;
     }
 
-
     /**
      * Checks if a user with the specified ID is a teacher of the course.
      *
      * @param id the ID of the user to check
-     * @return {@code true} if the user with the given ID is a teacher of the course;
+     * @return {@code true} if the user with the given ID is a teacher of the
+     *         course;
      *         {@code false} otherwise
      */
     public boolean isCourseTeacher(long id) {
@@ -445,8 +445,8 @@ public class Course {
         Session session = db.getSessionFactory().openSession();
 
         List<Project> projectList = session.createQuery(
-                        "SELECT p FROM Project p WHERE p.course.courseID = :cid",
-                        Project.class)
+                "SELECT p FROM Project p WHERE p.course.courseID = :cid",
+                Project.class)
                 .setParameter("cid", this.courseID)
                 .getResultList();
 
@@ -480,8 +480,8 @@ public class Course {
 
         // Validate one-to-one team assignment
         Long count = session.createQuery(
-                        "SELECT COUNT(p) FROM Project p WHERE p.team.teamID = :tid",
-                        Long.class)
+                "SELECT COUNT(p) FROM Project p WHERE p.team.teamID = :tid",
+                Long.class)
                 .setParameter("tid", team.getTeamID())
                 .uniqueResult();
 
@@ -504,16 +504,18 @@ public class Course {
         dbHelper.exit();
 
         // Add to local list
-        if (this.projects == null) this.projects = new ArrayList<>();
+        if (this.projects == null)
+            this.projects = new ArrayList<>();
         this.projects.add(project);
 
         // Initialize in-memory arrays
-        if (project.getSprints() == null) project.setSprints(new ArrayList<>());
-        if (team.getTeamMember() == null) team.setTeamMember(new ArrayList<>());
+        if (project.getSprints() == null)
+            project.setSprints(new ArrayList<>());
+        if (team.getTeamMember() == null)
+            team.setTeamMember(new ArrayList<>());
 
         return "Project added successfully!";
     }
-
 
     /** Update an existing Project */
     public String updateProject(int projectId, String projectName) {
@@ -547,7 +549,6 @@ public class Course {
         return "Project updated Successfully!";
     }
 
-
     /** Delete an existing Project that belongs to this Course */
     public String deleteProject(int projectId) {
         DatabaseHelper dbHelper = new DatabaseHelper();
@@ -571,12 +572,12 @@ public class Course {
 
             // Block deletion if there are StudentAward or AwardRule references
             Long awardsCount = session.createQuery(
-                            "SELECT COUNT(sa) FROM StudentAward sa WHERE sa.project.projectId = :pid", Long.class)
+                    "SELECT COUNT(sa) FROM StudentAward sa WHERE sa.project.projectId = :pid", Long.class)
                     .setParameter("pid", projectId)
                     .uniqueResult();
 
             Long rulesCount = session.createQuery(
-                            "SELECT COUNT(ar) FROM AwardRule ar WHERE ar.project.projectId = :pid", Long.class)
+                    "SELECT COUNT(ar) FROM AwardRule ar WHERE ar.project.projectId = :pid", Long.class)
                     .setParameter("pid", projectId)
                     .uniqueResult();
 
@@ -627,7 +628,8 @@ public class Course {
             }
             return "ERROR: Failed to delete project. Reason: " + e.getMessage();
         } finally {
-            if (session != null) session.close();
+            if (session != null)
+                session.close();
             dbHelper.exit();
         }
     }

@@ -54,12 +54,12 @@ public class Global {
             readAllCourseWithJplq();
             readAllStudentAwardWithJplq();
 
-//            System.out.println("✓ Global initialization complete");
-//            System.out.println("  - Users: " + users.size());
-//            System.out.println("  - Courses: " + courses.size());
-//            System.out.println("  - Teams: " + teams.size());
-//            System.out.println("  - Awards: " + awards.size());
-//            System.out.println("  - Student Awards: " + studentsAwards.size());
+            // System.out.println("✓ Global initialization complete");
+            // System.out.println(" - Users: " + users.size());
+            // System.out.println(" - Courses: " + courses.size());
+            // System.out.println(" - Teams: " + teams.size());
+            // System.out.println(" - Awards: " + awards.size());
+            // System.out.println(" - Student Awards: " + studentsAwards.size());
 
         } catch (Exception e) {
             System.err.println("ERROR during Global initialization: " + e.getMessage());
@@ -156,7 +156,6 @@ public class Global {
     public void setStudentsAwards(ArrayList<StudentAward> studentsAwards) {
         this.studentsAwards = studentsAwards;
     }
-
 
     /**
      * Creates a new Award object and saves it to the database.
@@ -410,23 +409,29 @@ public class Global {
         return null;
     }
 
-
     /**
-     * Calculates the total points a specific student has earned in a specific course.
+     * Calculates the total points a specific student has earned in a specific
+     * course.
      *
-     * <p>This method iterates over all {@code StudentAward} objects in the {@code studentsAwards} collection,
-     * sums up the points for awards where both the student ID and course ID match the given parameters,
-     * and returns the total sum.</p>
+     * <p>
+     * This method iterates over all {@code StudentAward} objects in the
+     * {@code studentsAwards} collection,
+     * sums up the points for awards where both the student ID and course ID match
+     * the given parameters,
+     * and returns the total sum.
+     * </p>
      *
-     * @param courseId  the ID of the course for which to calculate the student's total points
+     * @param courseId  the ID of the course for which to calculate the student's
+     *                  total points
      * @param studentId the ID of the student whose points are being calculated
-     * @return the total number of points the student has earned in the specified course
+     * @return the total number of points the student has earned in the specified
+     *         course
      */
-    public int getCourseStudentPointValue(int courseId , long studentId) {
+    public int getCourseStudentPointValue(int courseId, long studentId) {
         int sum = 0;
         for (StudentAward studentAward : studentsAwards) {
-            if(studentAward.getStudent().getUserId() == studentId
-                    && studentAward.getProject().getCourse().getCourseID() == courseId){
+            if (studentAward.getStudent().getUserId() == studentId
+                    && studentAward.getProject().getCourse().getCourseID() == courseId) {
                 sum += studentAward.getPoints();
             }
         }
@@ -449,7 +454,6 @@ public class Global {
         }
         return project;
     }
-
 
     /**
      * Searches for a project by its team ID.
@@ -550,14 +554,13 @@ public class Global {
                     teacher,
                     project,
                     project.getTeam(),
-//                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-//                    Date.from(LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant()),
-//                    Date.from(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()),
+                    // Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                    // Date.from(LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant()),
+                    // Date.from(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()),
                     Date.from(
                             LocalDateTime.now()
                                     .atZone(ZoneId.systemDefault())
-                                    .toInstant()
-                    ),
+                                    .toInstant()),
                     award.getPointsValue());
 
             studentsAwards.add(studentAward);
@@ -921,10 +924,7 @@ public class Global {
                 return "ERROR: Course still has projects";
             }
 
-            // Delete associated CourseTeachers
-            session.createMutationQuery("DELETE FROM CourseTeacher ct WHERE ct.course.courseID = :courseId")
-                    .setParameter("courseId", id)
-                    .executeUpdate();
+            // Delete associated CourseTeachers handled by CascadeType.ALL in Course entity
 
             session.remove(course);
 
@@ -1075,6 +1075,7 @@ public class Global {
         DatabaseHelper.exit();
         return "Success";
     }
+
     /**
      * Checks if a team is associated with any student awards.
      *
@@ -1104,9 +1105,8 @@ public class Global {
         Session session = db.getSessionFactory().openSession();
 
         Long count = session.createQuery(
-                        "SELECT COUNT(p) FROM Project p WHERE p.team.teamID = :tid",
-                        Long.class
-                ).setParameter("tid", teamId)
+                "SELECT COUNT(p) FROM Project p WHERE p.team.teamID = :tid",
+                Long.class).setParameter("tid", teamId)
                 .getSingleResult();
 
         session.close();
@@ -1144,11 +1144,11 @@ public class Global {
                     session = databaseHelper.getSessionFactory().openSession();
                     session.beginTransaction();
 
-                    session.remove(team); //delete from DB
+                    session.remove(team); // delete from DB
 
                     session.getTransaction().commit();
 
-                    //  Remove from local list
+                    // Remove from local list
                     Team localTeam = searchTeam(teamId);
                     if (localTeam != null) {
                         teams.remove(localTeam);
@@ -1176,7 +1176,6 @@ public class Global {
             return "ERROR: Team not found";
         }
     }
-
 
     // =============================================
     // BGN CRUD METHODS - USER, TEACHER AND STUDENT
@@ -1206,11 +1205,9 @@ public class Global {
         if (login.length() > 50)
             return "ERROR: Login is too long!";
 
-
         if (!isValidEmailFormat(login)) {
             return "ERROR: Login must be a valid email address!";
         }
-
 
         if (!isPasswordValid(password)) {
             return "ERROR: Password must be at least 6 characters and maximum 255!";
@@ -1278,7 +1275,6 @@ public class Global {
         if (studentNumber.length() > 20)
             return "ERROR: Student number is too long!";
 
-
         if (!isValidEmailFormat(login)) {
             return "ERROR: Login must be a valid email address!";
         }
@@ -1317,8 +1313,10 @@ public class Global {
             databaseHelper.exit();
         }
     }
+
     /**
-     * Loads all User objects from the database and stores them in the local users list.
+     * Loads all User objects from the database and stores them in the local users
+     * list.
      * Uses JPQL to query the database.
      */
     public void readAllUserWithJplq() {
@@ -1342,7 +1340,8 @@ public class Global {
 
     /**
      * Checks if a user can be deleted (not linked to any other entities)
-     * Uses the global arrays (courses, teams, studentsAwards) to check for references
+     * Uses the global arrays (courses, teams, studentsAwards) to check for
+     * references
      *
      * @param userId ID of the user to check
      * @return true if can be deleted, false otherwise
@@ -1741,11 +1740,12 @@ public class Global {
     }
 
     // =============================================
-// VALIDAÇÃO DE LOGIN E SENHA (VERSÃO SIMPLIFICADA)
-// =============================================
+    // VALIDAÇÃO DE LOGIN E SENHA (VERSÃO SIMPLIFICADA)
+    // =============================================
 
     /**
      * Valida as credenciais de login
+     * 
      * @return Usuário se válido, null se inválido
      */
     public User validateLogin(String login, String password) {
