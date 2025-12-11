@@ -282,6 +282,7 @@ public class Sprint {
                     double completion = calcCompletionByScore();
                     if (completion >= rule.getCompletionPercent() ||
                             (rule.isAllGoalsCompleted() && completion == 100.0)) {
+//                        System.out.println("Automatic award assigned successfully!" + rule.getRuleId());
                         if(!isRuleAssigned(studentAwards, rule)) {
                             try {
 
@@ -310,7 +311,7 @@ public class Sprint {
                                     session.close();
                                     databaseHelper.exit();
 
-                                    return "Success";
+//                                    return "Success";
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
