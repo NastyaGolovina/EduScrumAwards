@@ -46,7 +46,7 @@ public class TeamMemberController {
      * @param memberId the ID of the team member
      * @return TeamMember if found, otherwise null
      */
-    @GetMapping("/one")
+ /*   @GetMapping("/one")
     public TeamMember getTeamMember(
             @RequestParam int teamId,
             @RequestParam int memberId
@@ -56,8 +56,28 @@ public class TeamMemberController {
             return team.searchTeamMember(memberId);
         }
         return null;
-    }
+    }*/
 
+    @GetMapping("/one")
+    public TeamMember getTeamMember(
+            @RequestParam int teamId,
+            @RequestParam int memberId
+    ) {
+
+        Team team = global.searchTeam(teamId);
+        if (team == null) {
+            System.out.println("ERROR: Team with ID " + teamId + " not found.");
+            return null; // Response = null, status = 200
+        }
+
+        TeamMember member = team.searchTeamMember(memberId);
+        if (member == null) {
+            System.out.println("ERROR: TeamMember ID " + memberId + " not found in team " + teamId);
+            return null; // Response = null, status = 200
+        }
+
+        return member;
+    }
     /**
      * Creates a new TeamMember for a team.
      *
