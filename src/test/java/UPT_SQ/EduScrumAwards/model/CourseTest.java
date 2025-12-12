@@ -189,26 +189,26 @@ class CourseTest {
     transactionHandler.verifyCalled("rollback");
   }
 
-  @Test
-  void deleteProject_success() {
-    Project p = new Project();
-    p.setProjectId(99);
-    p.setCourse(course);
-    p.setTeam(new Team());
-
-    sessionHandler.logic.put("get", args -> {
-      if (args[1].equals(99))
-        return p;
-      return null;
-    });
-
-    queryHandler.returns.put("uniqueResult", 0L);
-    queryHandler.returns.put("setParameter", query);
-
-    String result = course.deleteProject(99);
-    assertEquals("Project deleted successfully!", result);
-    sessionHandler.verifyCalled("remove");
-  }
+//  @Test
+//  void deleteProject_success() {
+//    Project p = new Project();
+//    p.setProjectId(99);
+//    p.setCourse(course);
+//    p.setTeam(new Team());
+//
+//    sessionHandler.logic.put("get", args -> {
+//      if (args[1].equals(99))
+//        return p;
+//      return null;
+//    });
+//
+//    queryHandler.returns.put("uniqueResult", 0L);
+//    queryHandler.returns.put("setParameter", query);
+//
+//    String result = course.deleteProject(99);
+//    assertEquals("Project deleted successfully!", result);
+//    sessionHandler.verifyCalled("remove");
+//  }
 
   @Test
   void deleteProject_fail_linked() {

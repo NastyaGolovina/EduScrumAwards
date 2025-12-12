@@ -114,6 +114,26 @@ public class TeamTest {
         assertNull(team.isTeamMember(999L));
     }
 
+    @Test
+    void testIsTeamMemberNotFoundInNonEmptyList() {
+        Team team = new Team("Zeta");
+
+        Student s1 = new Student("John", "john123", "pwd");
+        s1.setUserId(100L);
+        Student s2 = new Student("Mary", "mary123", "pwd");
+        s2.setUserId(200L);
+
+        TeamMember tm1 = new TeamMember("John", TeamMember.Role.DEVELOPER, s1, team);
+        TeamMember tm2 = new TeamMember("Mary", TeamMember.Role.QA_ENGINEER, s2, team);
+
+        team.getTeamMember().add(tm1);
+        team.getTeamMember().add(tm2);
+
+        // look for an ID that is NOT in the list
+        TeamMember result = team.isTeamMember(999L);
+
+        assertNull(result);
+    }
     /* ---------------------------------------------------------
        earnAward() Tests (NO DB — mock via in-memory)
        --------------------------------------------------------- */
@@ -196,14 +216,43 @@ public class TeamTest {
         awards.add(sa3);
         awards.add(sa4);
 
-
         assertEquals(50, sameTeam.earnAward(awards));
         assertEquals(10, otherTeam.earnAward(awards));
     }
 
+    @Test
+    void testEarnAwardIgnoresAwardsFromOtherTeamsOrNull() {
+        // Spy that overrides studentsAwards() so we avoid the real DB
+        Team teamSpy = new Team() {
+            @Override
+            public ArrayList<StudentAward> studentsAwards() {
+                ArrayList<StudentAward> list = new ArrayList<>();
 
+                // 1) completely null award
+                list.add(null);
 
+                // 2) award with null team
+                StudentAward noTeam = new StudentAward();
+                noTeam.setPoints(30);
+                noTeam.setTeam(null);
+                list.add(noTeam);
 
+                // 3) award from a different team
+                Team otherTeam = new Team();
+                otherTeam.setTeamID(999);
+                StudentAward otherAward = new StudentAward();
+                otherAward.setPoints(50);
+                otherAward.setTeam(otherTeam);
+                list.add(otherAward);
 
+                return list;
+            }
+        };
 
+        // Current team has ID 1
+        teamSpy.setTeamID(1);
+
+        // None of the awards should be counted
+        assertEquals(0, teamSpy.earnAward());
+    }
 }

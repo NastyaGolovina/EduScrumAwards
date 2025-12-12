@@ -3,6 +3,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -193,6 +194,107 @@ public class GlobalTest {
 
         Team result = global.searchTeam(1);
         assertNull(result);
+    }
+
+    @Test
+    void findTeamByName_returnsTeam_caseInsensitive() {
+        Global g = new Global();
+
+        Team t1 = new Team("Alpha");
+        t1.setTeamID(1);
+        Team t2 = new Team("Beta Squad");
+        t2.setTeamID(2);
+
+        // <<< no reflection, no setTeams >>>
+        g.getTeams().clear();         // make sure list is empty
+        g.getTeams().add(t1);
+        g.getTeams().add(t2);
+
+        Team result = g.findTeamByName("beta squad");
+        assertNotNull(result);
+        assertEquals(2, result.getTeamID());
+        assertEquals("Beta Squad", result.getTeamName());
+    }
+
+    @Test
+    void findTeamByName_returnsNull_whenNotFound() {
+        Global g = new Global();
+
+        Team t1 = new Team("Alpha");
+        t1.setTeamID(1);
+
+        g.getTeams().clear();
+        g.getTeams().add(t1);
+
+        Team result = g.findTeamByName("Delta");
+
+        assertNull(result);
+    }
+
+    @Test
+    void isTeamInStudentAwards_returnsTrue_whenAwardForTeamExists() {
+        Global g = new Global();
+
+        Team team = new Team("Gamma");
+        team.setTeamID(5);
+
+        Team other = new Team("Other");
+        other.setTeamID(99);
+
+        StudentAward sa1 = new StudentAward();
+        sa1.setTeam(team);
+        sa1.setPoints(10);
+
+        StudentAward sa2 = new StudentAward();
+        sa2.setTeam(other);
+        sa2.setPoints(20);
+
+        g.getStudentsAwards().clear();
+        g.getStudentsAwards().add(sa1);
+        g.getStudentsAwards().add(sa2);
+
+        assertTrue(g.isTeamInStudentAwards(5));
+    }
+
+    @Test
+    void isTeamInStudentAwards_returnsFalse_whenNoAwardForTeam() {
+        Global g = new Global();
+
+        Team other = new Team("Other");
+        other.setTeamID(99);
+
+        StudentAward sa = new StudentAward();
+        sa.setTeam(other);
+        sa.setPoints(20);
+
+        g.getStudentsAwards().clear();
+        g.getStudentsAwards().add(sa);
+
+        assertFalse(g.isTeamInStudentAwards(1));
+    }
+
+    @Test
+    void isTeamInStudentAwards_returnsFalse_whenListEmpty() {
+        Global g = new Global();
+
+        // ensure list is empty
+        g.getStudentsAwards().clear();
+
+        assertFalse(g.isTeamInStudentAwards(1));
+    }
+
+    @Test
+    void isTeamInStudentAwards_handlesAwardWithNullTeam() {
+        Global g = new Global();
+
+        // StudentAward present, but its team is null
+        StudentAward sa = new StudentAward();
+        sa.setTeam(null);
+
+        g.getStudentsAwards().clear();
+        g.getStudentsAwards().add(sa);   // IMPORTANT: award is NOT null, only its team is null
+
+        assertFalse(g.isTeamInStudentAwards(1));
     }
 
     @Test
