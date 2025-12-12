@@ -157,6 +157,9 @@ public class Global {
         this.studentsAwards = studentsAwards;
     }
 
+
+
+
     /**
      * Creates a new Award object and saves it to the database.
      *
