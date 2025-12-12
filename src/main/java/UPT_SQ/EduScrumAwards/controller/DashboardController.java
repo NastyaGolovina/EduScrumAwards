@@ -133,6 +133,55 @@ public class DashboardController {
 
 
 
+    @GetMapping("/teams/points/{courseId}")
+    public List<TeamPointsDTO> getAllTeamsPerCourse(@PathVariable int courseId) {
+
+        List<TeamPointsDTO> teams = new ArrayList<>();
+        Course course = global.searchCourse(courseId);
+        if (course != null) {
+            for (Project project : course.getProjects()) {
+                Team team = project.getTeam();
+                int points = team.earnAward(global.getStudentsAwards());
+                teams.add(new TeamPointsDTO(team.getTeamID(), team.getTeamName(), points));
+            }
+        }
+
+
+        teams.sort((a, b) -> b.getPoints().compareTo(a.getPoints()));
+        return teams;
+    }
+
+
+    @GetMapping("/projects/progress/{studentId}")
+    public List<ProjectsProgressDTO> getAllProjectsProgressStudent(@PathVariable long studentId) {
+        List<ProjectsProgressDTO> progress = new ArrayList<>();
+        User user = global.searchUser(studentId);
+        if (user != null) {
+            if(UserRole.STUDENT == user.getRole()) {
+                for(Course course : global.getCourses()) {
+                    for(Project project : course.getProjects()) {
+                        if(project.getTeam().isTeamMember(studentId) != null) {
+                            double sum = 0;
+                            ArrayList<Sprint> sprints = (ArrayList<Sprint>) project.getSprints();
+                            if (!sprints.isEmpty())  {
+                                for (Sprint sprint :sprints) {
+                                    sum += sprint.calcCompletionByScore();
+                                }
+                                double completion = sum / sprints.size();
+                                progress.add(new ProjectsProgressDTO(project.getProjectId(),
+                                        project.getProjectName(),
+                                        completion));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return progress;
+    }
+
+
     /**
      * Calculates and returns progress for all projects.
      * Progress is determined by averaging sprint completion scores.
