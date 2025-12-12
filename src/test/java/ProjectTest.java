@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ProjectTest {
     @Test
@@ -80,4 +79,91 @@ public class ProjectTest {
         assertTrue(text.contains("sprints=[]"));
     }
 
+    @Test
+    public void testFindSprintById() {
+        Project p = new Project();
+        Sprint s1 = new Sprint(); s1.setSprintId(10);
+        Sprint s2 = new Sprint(); s2.setSprintId(20);
+        p.setSprints(List.of(s1, s2));
+
+        assertEquals(s1, p.findSprintById(10));
+        assertEquals(s2, p.findSprintById(20));
+        assertEquals(null, p.findSprintById(30));
+    }
+
+    @Test
+    public void testGetSprintsInitializesIfNull() {
+        Project p = new Project();
+        p.setSprints(null);  // simulate null
+        List<Sprint> s = p.getSprints();
+        assertTrue(s.isEmpty());
+        assertEquals(0, s.size());
+    }
+
+    @Test
+    public void testSetSprintsWithNullInitializes() {
+        Project p = new Project();
+        p.setSprints(null);
+        assertNotNull(p.getSprints());
+        assertTrue(p.getSprints().isEmpty());
+    }
+
+    @Test
+    public void testStudentsAwardsEmpty() {
+        Project p = new Project();
+        // just call method; we don’t need DB integration
+        assertTrue(p.studentsAwards().isEmpty());
+    }
+
+    @Test
+    public void testSearchSprintWithNullAndEmptyList() {
+        Project p = new Project();
+        p.setSprints(null);
+        assertNull(p.searchSprint(1));
+
+        p.setSprints(new ArrayList<>());
+        assertNull(p.searchSprint(1));
+    }
+
+    @Test
+    public void testRetrieveSprintsDoesNotThrow() {
+        Project p = new Project();
+        // just call to cover method, DB part ignored
+        p.retrieveSprints();
+    }
+
+    @Test
+    public void testSearchSprintWithNullList() {
+        Project p = new Project();
+        p.setSprints(null);
+        assertNull(p.searchSprint(1));
+    }
+
+    @Test
+    public void testSearchSprintWithEmptyList() {
+        Project p = new Project();
+        p.setSprints(new ArrayList<>());
+        assertNull(p.searchSprint(1));
+    }
+
+    @Test
+    public void testSearchSprintFound() {
+        Project p = new Project();
+        Sprint s1 = new Sprint(); s1.setSprintId(1);
+        Sprint s2 = new Sprint(); s2.setSprintId(2);
+        p.setSprints(List.of(s1, s2));
+
+        assertEquals(s1, p.searchSprint(1));
+        assertEquals(s2, p.searchSprint(2));
+    }
+
+    @Test
+    public void testSearchSprintNotFound() {
+        Project p = new Project();
+        Sprint s1 = new Sprint(); s1.setSprintId(1);
+        Sprint s2 = new Sprint(); s2.setSprintId(2);
+        p.setSprints(List.of(s1, s2));
+
+        assertNull(p.searchSprint(99)); // no match
+    }
 }
