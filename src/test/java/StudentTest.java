@@ -88,13 +88,6 @@ public class StudentTest {
         assertEquals(UserRole.STUDENT, s1.getRole());
     }
 
-//    @Test
-//    public void testCalculateTotalScore() {
-//        s3.setTotalScore(200);
-//        Integer score = s3.calculateTotalScore();
-//
-//        assertEquals(200, score);
-//    }
 
 //    @Test
 //    public void testGetStudentAwards() {
@@ -135,7 +128,6 @@ public class StudentTest {
         Student defaultStudent = new Student();
         assertEquals(UserRole.STUDENT, defaultStudent.getRole());
     }
-
 
     @Test
     void testCalculatePoints() {

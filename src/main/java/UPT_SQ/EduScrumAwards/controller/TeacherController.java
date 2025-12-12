@@ -127,18 +127,7 @@ public class TeacherController {
             }
         }
 
-        // Se senha for fornecida, validar
-        if (password != null && !password.trim().isEmpty()) {
-            if (password.length() > 255) {
-                return ResponseEntity.badRequest().body("ERROR: Password too long (max 255 characters)");
-            }
-            if (password.length() < 6) {
-                return ResponseEntity.badRequest().body("ERROR: Password must be at least 6 characters");
-            }
-        }
-
-        String result = global.updateTeacher(userId, name, login,
-                password != null ? password : "");
+        String result = global.updateTeacher(userId, name, login, password);
 
         if (result.equals("Success")) {
             return ResponseEntity.ok("SUCCESS: Teacher updated successfully");

@@ -176,19 +176,7 @@ public class StudentController {
             }
         }
 
-        // Se senha for fornecida, validar
-        String finalPassword = "";
-        if (password != null && !password.trim().isEmpty()) {
-            if (password.length() > 255) {
-                return ResponseEntity.badRequest().body("ERROR: Password too long (max 255 characters)");
-            }
-            if (password.length() < 6) {
-                return ResponseEntity.badRequest().body("ERROR: Password must be at least 6 characters");
-            }
-            finalPassword = password;
-        }
-
-        String result = global.updateStudent(userId, name, login, finalPassword,
+        String result = global.updateStudent(userId, name, login, password,
                 studentNumber, currentSemester);
 
         if (result.equals("Success")) {
