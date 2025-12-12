@@ -1488,21 +1488,34 @@ public class Global {
         if (login.length() > 50)
             return "ERROR: Login is too long!";
 
-        // ✅ VALIDAÇÃO DE EMAIL (adicionar)
+        // VALIDAÇÃO DE EMAIL
         if (!isValidEmailFormat(login)) {
             return "ERROR: Login must be a valid email address!";
         }
 
-        // Se senha for fornecida, validar
+        /*// Se senha for fornecida, validar
         String finalPassword = teacher.getPassword(); // manter senha atual por padrão
         if (password != null && !password.trim().isEmpty()) {
-            // ✅ VALIDAÇÃO DE SENHA (adicionar)
+            // VALIDAÇÃO DE SENHA (adicionar)
             if (!isPasswordValid(password)) {
                 return "ERROR: Password must be at least 6 characters and maximum 255!";
             }
             finalPassword = password;
+        }*/
+        // Se senha for fornecida, validar
+        String finalPassword = teacher.getPassword(); // manter senha atual por padrão
+        if (password != null && !password.trim().isEmpty()) {
+            // Verificar se a nova senha é DIFERENTE da atual
+            if (!password.equals(teacher.getPassword())) {
+                // Nova senha é diferente - validar e atualizar
+                if (!isPasswordValid(password)) {
+                    return "ERROR: Password must be at least 6 characters and maximum 255!";
+                }
+                finalPassword = password;
+            }
+            // Se for igual à atual, mantém a senha atual (não faz nada)
         }
-
+        // Se password for null ou vazia, também mantém a senha atual
         // Check if login already exists for another user
         User existingUser = findUserByLoginInMemory(login);
         if (existingUser != null && !existingUser.getUserId().equals(userId)) {
@@ -1578,18 +1591,25 @@ public class Global {
             return "ERROR: Login must be a valid email address!";
         }
 
-        // Se senha for fornecida, validar
+
         String finalPassword = student.getPassword(); // manter senha atual por padrão
+
         if (password != null && !password.trim().isEmpty()) {
-            // ✅ VALIDAÇÃO DE SENHA (adicionar)
-            if (!isPasswordValid(password)) {
-                return "ERROR: Password must be at least 6 characters and maximum 255!";
+
+            // Check if the new password is DIFFERENT from the current one.
+            //It only validates and updates if it's different.
+            // If it's the same, keep the current password (avoid unnecessary bank transactions).
+            if (!password.equals(student.getPassword())) {
+
+                // New password is different - validate and update
+                if (!isPasswordValid(password)) {
+                    return "ERROR: Password must be at least 6 characters and maximum 255!";
+                }
+                finalPassword = password;
             }
-            finalPassword = password;
-        } else {
-            // Se a senha não for fornecida, mantemos a senha atual
-            finalPassword = student.getPassword();
+            // If it matches the current password, it keeps the current password (does nothing - it's already in finalPassword)
         }
+        // If the password is null or empty, it also retains the current password.
 
         // Check if login already exists for another user
         User existingUser = findUserByLoginInMemory(login);
@@ -1605,7 +1625,7 @@ public class Global {
 
         student.setName(name);
         student.setLogin(login);
-        student.setPassword(finalPassword);
+        student.setPassword(finalPassword);  // Use finalPassword (it can be the old or new one)
         student.setStudentNumber(studentNumber);
         student.setCurrentSemester(currentSemester);
 
