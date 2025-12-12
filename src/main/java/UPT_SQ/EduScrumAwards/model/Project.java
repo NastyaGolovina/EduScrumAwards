@@ -160,23 +160,40 @@ public class Project {
     }
 
     /** Deletes a Sprint by ID if no StudentAwards are linked to it */
+    /** Deletes a Sprint by ID if no StudentAwards are linked to it */
     public String deleteSprint(int sprintId) {
+        if (sprints == null || sprints.isEmpty()) return "No sprints to delete!";
 
-        DatabaseHelper db = new DatabaseHelper();
-        db.setup();
-        Session session = db.getSessionFactory().openSession();
+        // Check if sprint exists in memory
+        Sprint sprintToDelete = searchSprint(sprintId);
+        if (sprintToDelete == null) return "Sprint with ID " + sprintId + " not found!";
 
-        Sprint managedSprint;
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.setup();
+        Session session = dbHelper.getSessionFactory().openSession();
 
         try {
+            // 1. Check for linked StudentAwards
+            Long awardsCount = session.createQuery(
+                            "SELECT COUNT(sa) FROM StudentAward sa WHERE sa.sprint.sprintId = :sid",
+                            Long.class
+                    ).setParameter("sid", sprintId)
+                    .getSingleResult();
+
+            if (awardsCount != null && awardsCount > 0) {
+                return "Cannot delete Sprint: StudentAwards are linked to it!";
+            }
+
+            // 2. Begin transaction to delete Sprint and its Goals
             session.beginTransaction();
 
-            // Load MANAGED sprint
-            managedSprint = session.get(Sprint.class, sprintId);
-            if (managedSprint == null)
+            // Ensure Sprint is managed
+            Sprint managedSprint = session.get(Sprint.class, sprintId);
+            if (managedSprint == null) {
                 return "Sprint not found in DB!";
+            }
 
-            // 1. DELETE ALL GOALS SAFELY
+            // 3. Delete all Goals safely
             for (Goal g : new ArrayList<>(managedSprint.getGoals())) {
                 g.setSprint(null);
                 session.merge(g);
@@ -184,7 +201,7 @@ public class Project {
             }
             managedSprint.getGoals().clear();
 
-            // 2. REMOVE sprint from project (both sides)
+            // 4. Remove sprint from Project (both sides)
             Project p = managedSprint.getProject();
             if (p != null) {
                 p.getSprints().remove(managedSprint);
@@ -192,27 +209,23 @@ public class Project {
                 session.merge(p);
             }
 
-            // 3. DELETE SPRINT OBJECT
+            // 5. Remove Sprint
             session.remove(managedSprint);
 
             session.getTransaction().commit();
 
+            // 6. Remove sprint from in-memory list
+            sprints.removeIf(s -> s.getSprintId() == sprintId);
+
+            return "Sprint deleted successfully!";
+
         } catch (Exception e) {
-            if (session.getTransaction().isActive())
-                session.getTransaction().rollback();
+            if (session.getTransaction().isActive()) session.getTransaction().rollback();
             return "ERROR: Failed to delete Sprint. " + e.getMessage();
         } finally {
             session.close();
-            db.exit();
+            dbHelper.exit();
         }
-
-        // --- UPDATE GLOBAL MEMORY ALSO ---
-        // Remove sprint from in-memory global list
-        if (sprints != null) {
-            sprints.removeIf(s -> s.getSprintId() == sprintId);
-        }
-
-        return "Sprint deleted successfully!";
     }
 
 

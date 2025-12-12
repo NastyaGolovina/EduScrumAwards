@@ -168,42 +168,50 @@ public class Sprint {
 
     /** Delete a Goal by ID */
     public String deleteGoal(int goalId) {
+        // 1. Check if in-memory goals list exists
+        if (goals == null || goals.isEmpty()) return "No goals to delete!";
+
+        // 2. Check if goal exists in memory
+        Goal goalToDelete = goals.stream()
+                .filter(g -> g.getGoalId() == goalId)
+                .findFirst()
+                .orElse(null);
+        if (goalToDelete == null) return "Goal not found!";
 
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
         Session session = db.getSessionFactory().openSession();
 
         try {
+            // 3. Begin transaction
             session.beginTransaction();
 
-            // Load managed entity from DB (NOT the one in Global)
-            Goal managedGoal = session.get(Goal.class, goalId);
-            if (managedGoal == null)
-                return "Goal not found in DB!";
+            // 4. Ensure goal is managed before removal
+            Goal managedGoal = session.contains(goalToDelete) ? goalToDelete : session.merge(goalToDelete);
 
-            // Break relationship WITH sprint
+            // 5. Break relationship with Sprint
             Sprint sprint = managedGoal.getSprint();
             if (sprint != null) {
-                sprint.getGoals().remove(managedGoal);  // remove from list
-                managedGoal.setSprint(null);            // remove owner side
+                sprint.getGoals().remove(managedGoal); // remove from Sprint list
+                managedGoal.setSprint(null);           // remove owner side
                 session.merge(sprint);
             }
 
+            // 6. Remove goal
             session.remove(managedGoal);
             session.getTransaction().commit();
 
         } catch (Exception e) {
             if (session.getTransaction().isActive())
                 session.getTransaction().rollback();
-            return "ERROR: Failed to delete goal. " + e.getMessage();
+            return "ERROR: Failed to delete Goal. " + e.getMessage();
         } finally {
             session.close();
             db.exit();
         }
 
-        // Also remove from Global sprint list
-        if (goals != null)
-            goals.removeIf(g -> g.getGoalId() == goalId);
+        // 7. Remove from in-memory list
+        goals.remove(goalToDelete);
 
         return "Goal deleted successfully!";
     }
