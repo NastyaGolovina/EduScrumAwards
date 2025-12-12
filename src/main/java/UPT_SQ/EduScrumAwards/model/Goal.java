@@ -36,7 +36,7 @@ public class Goal {
 
     /** The Sprint this Goal belongs to (many goals can belong to one sprint). */
     @ManyToOne
-    @JoinColumn(name = "sprint_id", nullable = false)
+    @JoinColumn(name = "sprint_id")
     private Sprint sprint;
 
     /** Default no-argument constructor required by JPA. */

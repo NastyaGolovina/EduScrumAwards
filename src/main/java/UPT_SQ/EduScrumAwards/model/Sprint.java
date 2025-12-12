@@ -168,29 +168,42 @@ public class Sprint {
 
     /** Delete a Goal by ID */
     public String deleteGoal(int goalId) {
-        if (goals == null || goals.isEmpty()) return "No goals to delete!";
 
-        Goal goalToDelete = goals.stream()
-                .filter(g -> g.getGoalId() == goalId)
-                .findFirst()
-                .orElse(null);
-        if (goalToDelete == null) return "Goal not found!";
-
-        // Remove from DB
         DatabaseHelper db = new DatabaseHelper();
         db.setup();
-        try (Session session = db.getSessionFactory().openSession()) {
+        Session session = db.getSessionFactory().openSession();
+
+        try {
             session.beginTransaction();
-            session.remove(session.contains(goalToDelete) ? goalToDelete : session.merge(goalToDelete));
+
+            // Load managed entity from DB (NOT the one in Global)
+            Goal managedGoal = session.get(Goal.class, goalId);
+            if (managedGoal == null)
+                return "Goal not found in DB!";
+
+            // Break relationship WITH sprint
+            Sprint sprint = managedGoal.getSprint();
+            if (sprint != null) {
+                sprint.getGoals().remove(managedGoal);  // remove from list
+                managedGoal.setSprint(null);            // remove owner side
+                session.merge(sprint);
+            }
+
+            session.remove(managedGoal);
             session.getTransaction().commit();
+
         } catch (Exception e) {
+            if (session.getTransaction().isActive())
+                session.getTransaction().rollback();
             return "ERROR: Failed to delete goal. " + e.getMessage();
         } finally {
+            session.close();
             db.exit();
         }
 
-        // Remove from in-memory list
-        goals.remove(goalToDelete);
+        // Also remove from Global sprint list
+        if (goals != null)
+            goals.removeIf(g -> g.getGoalId() == goalId);
 
         return "Goal deleted successfully!";
     }
