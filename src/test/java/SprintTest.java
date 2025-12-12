@@ -220,5 +220,52 @@ public class SprintTest {
 
         assertTrue(sprint.isRuleAssigned(list, rule));
     }
+
+    @Test
+    void testFindGoalById() {
+        Sprint sprint = new Sprint();
+        Goal g1 = new Goal(1, "G1", 10, false);
+        Goal g2 = new Goal(2, "G2", 20, true);
+        sprint.setGoals(List.of(g1, g2));
+
+        assertEquals(g1, sprint.findGoalById(1));
+        assertEquals(g2, sprint.findGoalById(2));
+        assertNull(sprint.findGoalById(3));
+    }
+
+    @Test
+    void testAddGoalUpdatesList() {
+        Sprint sprint = new Sprint();
+        Goal g = new Goal(1, "Test Goal", 10, false);
+
+        // Use only in-memory list, DB ignored
+        sprint.setGoals(new ArrayList<>());
+        sprint.getGoals().add(g);
+
+        assertTrue(sprint.getGoals().contains(g));
+        assertEquals(1, sprint.getGoals().size());
+    }
+
+    @Test
+    void testCalcCompletionByScore_AllCompleted() {
+        Goal g1 = new Goal(1, "G1", 10, true);
+        Goal g2 = new Goal(2, "G2", 20, true);
+        Sprint sprint = new Sprint();
+        sprint.setGoals(List.of(g1, g2));
+
+        assertEquals(100.0, sprint.calcCompletionByScore());
+    }
+
+    @Test
+    void testCalcCompletionByScore_PartialCompleted() {
+        Goal g1 = new Goal(1, "G1", 10, true);
+        Goal g2 = new Goal(2, "G2", 30, false);
+        Sprint sprint = new Sprint();
+        sprint.setGoals(List.of(g1, g2));
+
+        // 10/40 → 25%
+        assertEquals(25.0, sprint.calcCompletionByScore(), 0.5);
+    }
+
 }
 
