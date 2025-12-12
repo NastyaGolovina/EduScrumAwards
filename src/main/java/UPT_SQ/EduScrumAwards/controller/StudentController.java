@@ -122,13 +122,14 @@ public class StudentController {
         User user = global.searchUser(userId);
         if (user != null && user.getRole() == UserRole.STUDENT) {
             Student student = (Student) user;
+            int totalScore = student.calculatePoints(global.getStudentsAwards());
             StudentDetailDTO dto = new StudentDetailDTO(
                     student.getUserId(),
                     student.getName(),
                     student.getLogin(),
                     student.getStudentNumber(),
                     student.getCurrentSemester(),
-                    student.getTotalScore()
+                    totalScore
             );
             return ResponseEntity.ok(dto);
         }
