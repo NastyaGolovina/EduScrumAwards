@@ -5,6 +5,7 @@ import UPT_SQ.EduScrumAwards.model.Project;
 import UPT_SQ.EduScrumAwards.model.Sprint;
 import UPT_SQ.EduScrumAwards.model.Global;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -44,26 +45,31 @@ public class SprintController {
         return s;
     }
 
-    // create sprint
+
+    // CREATE
     @PostMapping("/create")
-    public String createSprint(@PathVariable int courseId,
-                               @PathVariable int projectId,
-                               @RequestParam Date startDate,
-                               @RequestParam Date endDate) {
+    public String createSprint(
+            @PathVariable int courseId,
+            @PathVariable int projectId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+
         Course c = global.searchCourse(courseId);
         if (c == null) return "Course not found!";
         Project p = c.findProjectById(projectId);
         if (p == null) return "Project not found!";
-        return p.createSprint(startDate, endDate); // Project method handles persistence
+        return p.createSprint(startDate, endDate);
     }
 
-    // update sprint
+    // UPDATE
     @PutMapping("/{sprintId}/update")
-    public String updateSprint(@PathVariable int courseId,
-                               @PathVariable int projectId,
-                               @PathVariable int sprintId,
-                               @RequestParam Date startDate,
-                               @RequestParam Date endDate) {
+    public String updateSprint(
+            @PathVariable int courseId,
+            @PathVariable int projectId,
+            @PathVariable int sprintId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+
         Course c = global.searchCourse(courseId);
         if (c == null) return "Course not found!";
         Project p = c.findProjectById(projectId);
