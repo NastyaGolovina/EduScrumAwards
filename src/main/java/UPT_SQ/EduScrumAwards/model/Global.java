@@ -741,7 +741,7 @@ public class Global {
             if (!isAwardInStudentAwards(awardId)) {
                 Boolean result = true;
                 if (award.getAwardRules().size() > 0) {
-                    result = award.deleteAllAwardRules();
+                    result = award.deleteAllAwardRules(this.studentsAwards);
                 }
                 if (result) {
                     DatabaseHelper databaseHelper = new DatabaseHelper();

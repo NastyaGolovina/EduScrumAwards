@@ -124,7 +124,7 @@ public class AwardRuleController {
         Award award = global.searchAward(awardId);
 
         if(award != null) {
-            result = award.deleteAwardRule(ruleId);
+            result = award.deleteAwardRule(ruleId,global.getStudentsAwards());
         }
 
         if (result.startsWith("Record successfully")) {

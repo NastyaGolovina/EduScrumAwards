@@ -339,6 +339,29 @@ public class Award {
 
 
     /**
+     * Checks whether a given rule ID exists within a list of student awards.
+     *
+     * This method iterates through the provided {@code studentAwards} list and
+     * returns {@code true} if any {@link StudentAward} contains a non-null rule
+     * whose rule ID matches the specified {@code ruleId}. Otherwise, it returns
+     * {@code false}.
+     *
+     * @param ruleId the ID of the rule to search for
+     * @param studentAwards the list of {@link StudentAward} objects to inspect
+     * @return {@code true} if a matching rule ID is found; {@code false} otherwise
+     */
+    public boolean isRuleInStudentAward(int ruleId, ArrayList<StudentAward> studentAwards) {
+        for (StudentAward studentAward : studentAwards) {
+            if(studentAward.getRule() != null) {
+                if(studentAward.getRule().getRuleId() == ruleId) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Deletes a single award rule from the database.
      *
      * The method performs the following steps:
@@ -350,38 +373,41 @@ public class Award {
      * @param ruleId the ID of the award rule to delete
      * @return a message indicating success or the reason for failure
      */
-    public String deleteAwardRule(int ruleId) {
+    public String deleteAwardRule(int ruleId,ArrayList<StudentAward> studentAwards) {
         AwardRule awardRule = searchAwardRule(ruleId);
         if(awardRule != null) {
 
-            DatabaseHelper databaseHelper = new DatabaseHelper();
-            Session session = null;
+            if(!isRuleInStudentAward(ruleId,studentAwards)) {
+                DatabaseHelper databaseHelper = new DatabaseHelper();
+                Session session = null;
 
-            try {
-                databaseHelper.setup();
-                session = databaseHelper.getSessionFactory().openSession();
-                session.beginTransaction();
+                try {
+                    databaseHelper.setup();
+                    session = databaseHelper.getSessionFactory().openSession();
+                    session.beginTransaction();
 
-                session.remove(awardRule);
+                    session.remove(awardRule);
 
-                session.getTransaction().commit();
+                    session.getTransaction().commit();
 
-                awardRules.remove(awardRule);
-                return "Record successfully deleted.";
+                    awardRules.remove(awardRule);
+                    return "Record successfully deleted.";
 
-            } catch (Exception e) {
-                if (session != null && session.getTransaction().isActive()) {
-                    session.getTransaction().rollback();
+                } catch (Exception e) {
+                    if (session != null && session.getTransaction().isActive()) {
+                        session.getTransaction().rollback();
+                    }
+                    return "ERROR: Failed to delete the record. Reason: " + e.getMessage();
+
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                    databaseHelper.exit();
                 }
-                return "ERROR: Failed to delete the record. Reason: " + e.getMessage();
-
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
-                databaseHelper.exit();
+            } else {
+                return "ERROR: Rule assigned in student award";
             }
-
         } else {
             return "ERROR: Award Rule not found";
         }
@@ -389,20 +415,25 @@ public class Award {
 
 
     /**
-     * Deletes all award rules associated with the current award.
+     * Deletes all award rules currently stored in the system.
      *
-     * The method iterates over a copy of the awardRules list to avoid
-     * ConcurrentModificationException, deletes each rule using {@link #deleteAwardRule(int)},
-     * and returns false immediately if any deletion fails.
+     * This method creates a copy of the internal {@code awardRules} list and attempts
+     * to delete each rule by invoking {@link #deleteAwardRule(int, ArrayList)}.
+     * If any deletion does not return the expected success message
+     * ({@code "Record successfully deleted."}), the method stops processing
+     * and returns {@code false}. If all rules are successfully deleted, the
+     * method returns {@code true}.
      *
-     *
-     * @return true if all award rules were deleted successfully, false otherwise
+     * @param studentAwards the list of {@link StudentAward} objects that may be affected
+     *                      by the deletion of award rules
+     * @return {@code true} if all award rules are successfully deleted;
+     *         {@code false} if any deletion fails
      */
-    public boolean deleteAllAwardRules() {
+    public boolean deleteAllAwardRules(ArrayList<StudentAward> studentAwards) {
         List<AwardRule> copy = new ArrayList<>(awardRules);
 
         for (AwardRule awardRule : copy) {
-            String result = deleteAwardRule(awardRule.getRuleId());
+            String result = deleteAwardRule(awardRule.getRuleId(),studentAwards);
 
             if (!result.equals("Record successfully deleted.")) {
                 return  false;

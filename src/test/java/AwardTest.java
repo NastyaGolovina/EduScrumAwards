@@ -1,7 +1,4 @@
-import UPT_SQ.EduScrumAwards.model.Award;
-import UPT_SQ.EduScrumAwards.model.AwardRule;
-import UPT_SQ.EduScrumAwards.model.AwardType;
-import UPT_SQ.EduScrumAwards.model.AssignMode;
+import UPT_SQ.EduScrumAwards.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -132,5 +129,74 @@ public class AwardTest {
 
         assertTrue(output.contains("awardID=5"));
         assertTrue(output.contains("Award{"));
+    }
+
+
+    @Test
+    void testRuleFound() {
+        // Arrange
+        ArrayList<StudentAward> awards = new ArrayList<>();
+        StudentAward sa1 = new StudentAward();
+        AwardRule ar1 = new AwardRule();
+        ar1.setRuleId(1);
+        sa1.setRule(ar1);
+
+        StudentAward sa2 = new StudentAward();
+        AwardRule ar2 = new AwardRule();
+        ar2.setRuleId(2);
+        sa2.setRule(ar2);
+
+        awards.add(sa1);
+        awards.add(sa2);
+
+        Award award = new Award();
+
+        assertTrue(award.isRuleInStudentAward(2, awards));
+    }
+
+    @Test
+    void testRuleNotFound() {
+        ArrayList<StudentAward> awards = new ArrayList<>();
+        StudentAward sa1 = new StudentAward();
+        AwardRule ar1 = new AwardRule();
+        ar1.setRuleId(1);
+        sa1.setRule(ar1);
+
+        StudentAward sa2 = new StudentAward();
+        AwardRule ar2 = new AwardRule();
+        ar2.setRuleId(3);
+        sa2.setRule(ar2);
+
+        awards.add(sa1);
+        awards.add(sa2);
+
+        Award award = new Award();
+
+        assertFalse(award.isRuleInStudentAward(2, awards));
+    }
+
+    @Test
+    void testNullRuleEntriesHandled() {
+        ArrayList<StudentAward> awards = new ArrayList<>();
+        StudentAward sa1 = new StudentAward();
+        AwardRule ar1 = new AwardRule();
+        ar1.setRuleId(5);
+        sa1.setRule(ar1);
+
+        awards.add(new StudentAward());
+        awards.add(sa1);
+
+        Award award = new Award();
+
+        assertFalse(award.isRuleInStudentAward(2, awards));
+    }
+
+    @Test
+    void testEmptyListReturnsFalse() {
+        ArrayList<StudentAward> awards = new ArrayList<>();
+
+        Award award = new Award();
+
+        assertFalse(award.isRuleInStudentAward(2, awards));
     }
 }
