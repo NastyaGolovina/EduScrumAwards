@@ -133,6 +133,14 @@ public class DashboardController {
 
 
 
+    /**
+     * Retrieves a list of all teams in a specific course along with their total points.
+     * The points are calculated based on the awards earned by the team members.
+     * The returned list is sorted in descending order of points.
+     *
+     * @param courseId the ID of the course for which the teams are fetched
+     * @return a List of {@link TeamPointsDTO} containing team ID, name, and total points
+     */
     @GetMapping("/teams/points/{courseId}")
     public List<TeamPointsDTO> getAllTeamsPerCourse(@PathVariable int courseId) {
 
@@ -152,6 +160,13 @@ public class DashboardController {
     }
 
 
+    /**
+     * Retrieves the progress of all projects for a specific student.
+     * Progress is calculated based on the completion percentage of each sprint in the project.
+     *
+     * @param studentId the ID of the student for whom project progress is fetched
+     * @return a List of {@link ProjectsProgressDTO} containing project ID, name, and completion percentage
+     */
     @GetMapping("/projects/progress/{studentId}")
     public List<ProjectsProgressDTO> getAllProjectsProgressStudent(@PathVariable long studentId) {
         List<ProjectsProgressDTO> progress = new ArrayList<>();
