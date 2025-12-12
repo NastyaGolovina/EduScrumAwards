@@ -579,6 +579,41 @@ public class GlobalTest {
     }
 
 
+    @Test
+    void testFindProjectByTeamId() {
+        Global g = new Global();
+
+        Course course1 = new Course();
+        Course course2 = new Course();
+
+        Team team1 = new Team();
+        team1.setTeamID(1);
+        Team team2 = new Team();
+        team2.setTeamID(2);
+
+        Project project1 = new Project();
+        project1.setTeam(team1);
+        Project project2 = new Project();
+        Project project3 = new Project();
+        project3.setTeam(team2);
+
+        course1.getProjects().add(project1);
+        course1.getProjects().add(project2);
+        course2.getProjects().add(project3);
+
+        g.getCourses().add(course1);
+        g.getCourses().add(course2);
+
+        // Branch 1: Project with matching teamId exists
+        assertEquals(project1, g.findProjectByTeamId(1), "Should find project with teamId 1");
+
+        // Branch 2: Project with null team is skipped (not returned)
+        assertNull(g.findProjectByTeamId(999), "Should return null when no matching teamId exists");
+
+        // Branch 3: Another project with matching teamId exists
+        assertEquals(project3, g.findProjectByTeamId(2), "Should find project with teamId 2");
+    }
+
 
 }
 

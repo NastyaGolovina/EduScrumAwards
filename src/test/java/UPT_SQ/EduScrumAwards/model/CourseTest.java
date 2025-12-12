@@ -94,4 +94,23 @@ class CourseTest {
     // Test retrieve list
     assertEquals(2, course.getProjects().size());
   }
+
+    @Test
+    void testIsCourseTeacher() {
+        Course course = new Course();
+
+        Teacher teacher1 = new Teacher();
+        teacher1.setUserId(101L);
+        Teacher teacher2 = new Teacher();
+        teacher2.setUserId(102L);
+
+        CourseTeacher ct1 = new CourseTeacher();
+        ct1.setTeacher(teacher1);
+        course.getCourseTeachers().add(ct1);
+
+
+        assertTrue(course.isCourseTeacher(101L), "Teacher with ID 101 should be a course teacher");
+
+        assertFalse(course.isCourseTeacher(102L), "Teacher with ID 102 should not be a course teacher");
+    }
 }

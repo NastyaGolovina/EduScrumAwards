@@ -468,7 +468,7 @@ public class Global {
         for (Course course : courses) {
             for (Project project : course.getProjects()) {
                 if (project.getTeam() != null && project.getTeam().getTeamID() == teamId) {
-                    return project; // нашли проект с нужной командой
+                    return project;
                 }
             }
         }
