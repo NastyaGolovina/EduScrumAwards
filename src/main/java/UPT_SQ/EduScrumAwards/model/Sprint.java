@@ -245,9 +245,11 @@ public class Sprint {
      */
     public boolean isRuleAssigned(ArrayList<StudentAward> studentAwards,AwardRule rule) {
         for (StudentAward studentAward : studentAwards) {
-            if(studentAward.getSprint().sprintId == this.sprintId &&
-                    studentAward.getRule().getRuleId() == rule.getRuleId()) {
+            if(studentAward.getSprint() != null && studentAward.getRule() != null) {
+                if(studentAward.getSprint().getSprintId() == this.sprintId &&
+                        studentAward.getRule().getRuleId() == rule.getRuleId()) {
                     return true;
+                }
             }
         }
         return false;
@@ -280,6 +282,7 @@ public class Sprint {
                     double completion = calcCompletionByScore();
                     if (completion >= rule.getCompletionPercent() ||
                             (rule.isAllGoalsCompleted() && completion == 100.0)) {
+//                        System.out.println("Automatic award assigned successfully!" + rule.getRuleId());
                         if(!isRuleAssigned(studentAwards, rule)) {
                             try {
 
@@ -308,7 +311,7 @@ public class Sprint {
                                     session.close();
                                     databaseHelper.exit();
 
-                                    return "Success";
+//                                    return "Success";
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();

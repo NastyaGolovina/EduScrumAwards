@@ -1,7 +1,4 @@
-import UPT_SQ.EduScrumAwards.model.Award;
-import UPT_SQ.EduScrumAwards.model.AwardRule;
-import UPT_SQ.EduScrumAwards.model.Project;
-import UPT_SQ.EduScrumAwards.model.Teacher;
+import UPT_SQ.EduScrumAwards.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,4 +70,17 @@ public class AwardRuleTest {
         assertEquals(p, r1.getProject());
         assertEquals(a, r1.getAward());
     }
+
+
+    @Test
+    public void testToString() {
+        AwardRule awardRule = new AwardRule();
+        awardRule.setRuleId(5);
+
+        String output = awardRule.toString();
+
+        assertTrue(output.contains("ruleId=5"));
+        assertTrue(output.contains("AwardRule{"));
+    }
+
 }

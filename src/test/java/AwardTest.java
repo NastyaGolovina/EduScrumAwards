@@ -122,4 +122,15 @@ public class AwardTest {
         AwardRule notFound = a1.searchAwardRule(99);
         assertNull(notFound, "Non-existing rule should return null");
     }
+
+    @Test
+    public void testToString() {
+        Award award = new Award();
+        award.setAwardID(5);
+
+        String output = award.toString();
+
+        assertTrue(output.contains("awardID=5"));
+        assertTrue(output.contains("Award{"));
+    }
 }

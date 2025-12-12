@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -120,4 +122,56 @@ public class StudentAwardTest {
         sa1.setRule(rule);
         assertEquals(rule, sa1.getRule());
     }
+
+    @Test
+    public void testToString() {
+        StudentAward sa = new StudentAward();
+        sa.setStudentAwardId(5);
+
+        String output = sa.toString();
+
+        assertTrue(output.contains("studentAwardId=5"));
+        assertTrue(output.contains("StudentAward{"));
+
+    }
+
+    @Test
+    void testToString_AllNonNull() {
+        StudentAward sa = new StudentAward();
+        sa.setStudentAwardId(1);
+
+        Award award = new Award();
+        award.setAwardName("Best Project");
+        sa.setAward(award);
+
+        Student student = new Student();
+        student.setUserId(101L);
+        sa.setStudent(student);
+
+        Teacher teacher = new Teacher();
+        teacher.setUserId(201L);
+        sa.setTeacher(teacher);
+
+        Project project = new Project();
+        project.setProjectName("AI Project");
+        sa.setProject(project);
+
+        Team team = new Team();
+        team.setTeamName("Team A");
+        sa.setTeam(team);
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(2025, Calendar.DECEMBER, 11);
+        sa.setDate(cal.getTime());
+        sa.setPoints(95);
+
+        String result = sa.toString();
+        assertTrue(result.contains("student=101"));
+        assertTrue(result.contains("teacher=201"));
+        assertTrue(result.contains("project=AI Project"));
+        assertTrue(result.contains("team=Team A"));
+        assertTrue(result.contains("points=95"));
+    }
+
+
 }
