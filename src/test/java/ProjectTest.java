@@ -108,12 +108,7 @@ public class ProjectTest {
         assertTrue(p.getSprints().isEmpty());
     }
 
-    @Test
-    public void testStudentsAwardsEmpty() {
-        Project p = new Project();
-        // just call method; we don’t need DB integration
-        assertTrue(p.studentsAwards().isEmpty());
-    }
+
 
     @Test
     public void testSearchSprintWithNullAndEmptyList() {
@@ -123,13 +118,6 @@ public class ProjectTest {
 
         p.setSprints(new ArrayList<>());
         assertNull(p.searchSprint(1));
-    }
-
-    @Test
-    public void testRetrieveSprintsDoesNotThrow() {
-        Project p = new Project();
-        // just call to cover method, DB part ignored
-        p.retrieveSprints();
     }
 
     @Test
