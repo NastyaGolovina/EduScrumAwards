@@ -231,7 +231,6 @@ public class DashboardController {
 //        return progress;
 //    }
 
-
     /**
      * Calculates and returns progress for all projects.
      * Progress is determined by averaging sprint completion scores.
