@@ -14,5 +14,4 @@ public class EduScrumAwardsApplication {
     public static void main(String[] args) {
         SpringApplication.run(EduScrumAwardsApplication.class, args);
     }
-
 }
