@@ -71,7 +71,7 @@ public class ProjectController {
                                 @PathVariable int projectId) {
         Course c = global.searchCourse(courseId);
         if (c == null) return "Course not found!";
-        return c.deleteProject(projectId);
+        return c.deleteProject(projectId,global.getTeams());
     }
 }
 

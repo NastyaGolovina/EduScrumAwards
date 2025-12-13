@@ -22,6 +22,8 @@ public class SetUpWithTestData {
         student.setName("Alice");
         student.setLogin("alice");
         student.setPassword("pass123");
+        student.setStudentNumber("12345");
+        student.setCurrentSemester(1);
 
         TeamMember mem = new TeamMember("Alice Wonderland", TeamMember.Role.PRODUCT_OWNER);
         mem.setTeam(team);

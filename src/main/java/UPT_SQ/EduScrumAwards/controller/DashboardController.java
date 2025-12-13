@@ -171,30 +171,65 @@ public class DashboardController {
     public List<ProjectsProgressDTO> getAllProjectsProgressStudent(@PathVariable long studentId) {
         List<ProjectsProgressDTO> progress = new ArrayList<>();
         User user = global.searchUser(studentId);
-        if (user != null) {
-            if(UserRole.STUDENT == user.getRole()) {
-                for(Course course : global.getCourses()) {
-                    for(Project project : course.getProjects()) {
-                        if(project.getTeam().isTeamMember(studentId) != null) {
+        if (user != null && UserRole.STUDENT == user.getRole()) {
+            for (Course course : global.getCourses()) {
+                for (Project project : course.getProjects()) {
+                    Team team = project.getTeam();
+                    if (team != null && team.isTeamMember(studentId) != null) {
+                        List<Sprint> sprints = project.getSprints();
+                        if (sprints != null && !sprints.isEmpty()) {
                             double sum = 0;
-                            ArrayList<Sprint> sprints = (ArrayList<Sprint>) project.getSprints();
-                            if (!sprints.isEmpty())  {
-                                for (Sprint sprint :sprints) {
-                                    sum += sprint.calcCompletionByScore();
-                                }
-                                double completion = sum / sprints.size();
-                                progress.add(new ProjectsProgressDTO(project.getProjectId(),
-                                        project.getProjectName(),
-                                        completion));
+                            for (Sprint sprint : sprints) {
+                                sum += sprint.calcCompletionByScore();
                             }
+                            double completion = sum / sprints.size();
+                            progress.add(new ProjectsProgressDTO(
+                                    project.getProjectId(),
+                                    project.getProjectName(),
+                                    completion
+                            ));
+                        } else {
+                            progress.add(new ProjectsProgressDTO(
+                                    project.getProjectId(),
+                                    project.getProjectName(),
+                                    0
+                            ));
                         }
                     }
                 }
             }
         }
-
         return progress;
     }
+
+//    @GetMapping("/projects/progress/{studentId}")
+//    public List<ProjectsProgressDTO> getAllProjectsProgressStudent(@PathVariable long studentId) {
+//        List<ProjectsProgressDTO> progress = new ArrayList<>();
+//        User user = global.searchUser(studentId);
+//        if (user != null) {
+//            if(UserRole.STUDENT == user.getRole()) {
+//                for(Course course : global.getCourses()) {
+//                    for(Project project : course.getProjects()) {
+//                        if(project.getTeam().isTeamMember(studentId) != null) {
+//                            double sum = 0;
+//                            List<Sprint> sprints = project.getSprints();
+//                            if (!sprints.isEmpty())  {
+//                                for (Sprint sprint :sprints) {
+//                                    sum += sprint.calcCompletionByScore();
+//                                }
+//                                double completion = sum / sprints.size();
+//                                progress.add(new ProjectsProgressDTO(project.getProjectId(),
+//                                        project.getProjectName(),
+//                                        completion));
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        return progress;
+//    }
 
 
     /**
@@ -208,22 +243,51 @@ public class DashboardController {
         List<ProjectsProgressDTO> progress = new ArrayList<>();
         for(Course course : global.getCourses()) {
             for(Project project : course.getProjects()) {
-                double sum = 0;
-                ArrayList<Sprint> sprints = (ArrayList<Sprint>) project.getSprints();
-                if (!sprints.isEmpty())  {
-                    for (Sprint sprint :sprints) {
+                List<Sprint> sprints = project.getSprints();
+                if (sprints != null && !sprints.isEmpty()) {
+                    double sum = 0;
+                    for (Sprint sprint : sprints) {
                         sum += sprint.calcCompletionByScore();
                     }
                     double completion = sum / sprints.size();
-                    progress.add(new ProjectsProgressDTO(project.getProjectId(),
+                    progress.add(new ProjectsProgressDTO(
+                            project.getProjectId(),
                             project.getProjectName(),
-                            completion));
+                            completion
+                    ));
+                } else {
+                    progress.add(new ProjectsProgressDTO(
+                            project.getProjectId(),
+                            project.getProjectName(),
+                            0
+                    ));
                 }
-
             }
         }
         return progress;
     }
+
+//    @GetMapping("/projects/progress")
+//    public List<ProjectsProgressDTO> getAllProjectsProgress() {
+//        List<ProjectsProgressDTO> progress = new ArrayList<>();
+//        for(Course course : global.getCourses()) {
+//            for(Project project : course.getProjects()) {
+//                double sum = 0;
+//                ArrayList<Sprint> sprints = (ArrayList<Sprint>) project.getSprints();
+//                if (!sprints.isEmpty())  {
+//                    for (Sprint sprint :sprints) {
+//                        sum += sprint.calcCompletionByScore();
+//                    }
+//                    double completion = sum / sprints.size();
+//                    progress.add(new ProjectsProgressDTO(project.getProjectId(),
+//                            project.getProjectName(),
+//                            completion));
+//                }
+//
+//            }
+//        }
+//        return progress;
+//    }
 
     /**
      * Retrieves all awards received by a specific student.

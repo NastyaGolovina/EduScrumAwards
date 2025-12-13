@@ -550,7 +550,7 @@ public class Course {
     }
 
     /** Delete an existing Project that belongs to this Course */
-    public String deleteProject(int projectId) {
+    public String deleteProject(int projectId,ArrayList<Team> teams) {
         DatabaseHelper dbHelper = createDatabaseHelper();
         dbHelper.setup();
         Session session = null;
@@ -612,6 +612,9 @@ public class Course {
                     team.getTeamMember().clear();
                 }
                 session.remove(team);
+                Team finalTeam = team;
+                teams.removeIf(t -> t.getTeamID() == finalTeam.getTeamID());
+
             }
 
             session.getTransaction().commit();
