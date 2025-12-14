@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "UPT_SQ.EduScrumAwards.repository")
 @EntityScan(basePackages = "UPT_SQ.EduScrumAwards.model")
 public class EduScrumAwardsApplication {
     public static void main(String[] args) {
